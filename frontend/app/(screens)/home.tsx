@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Button, Text, StyleSheet, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { HomeScreenNavigationProp } from '@/types/navigation';
+import { socket } from '@utils/socket'
 
 export default function HomeScreen() {
 
