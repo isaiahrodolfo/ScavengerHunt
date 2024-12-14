@@ -3,11 +3,11 @@ import { Stack } from "expo-router";
 export default function HomeLayout() {
   return (
     <Stack>
-      <Stack.Screen name="home/index" />
-      <Stack.Screen name="countdown/index" />
-      <Stack.Screen name="game/index" />
-      <Stack.Screen name="game-room/index" />
-      <Stack.Screen name="game-over/index" />
+      <Stack.Screen name="home" />
+      <Stack.Screen name="countdown" />
+      <Stack.Screen name="game" />
+      <Stack.Screen name="game-room" />
+      <Stack.Screen name="game-over" />
     </Stack>
   );
 }
