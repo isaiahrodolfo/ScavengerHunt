@@ -14,17 +14,11 @@ io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   socket.on('createRoom', (roomCode) => { handleCreateRoom(roomCode, socket) });
-  socket.on('joinRoom', (roomCode) => { handleJoinRoom(roomCode, socket) });
+  socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
   socket.on('startRoom', (roomCode) => { handleStartRoom(roomCode, socket) });
   socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket) });
   socket.on('exitRoom', (roomCode, roomIsClosed) => { handleExitRoom(roomCode, socket, roomIsClosed) });
   socket.on('logState', (roomCode) => { logState(socket) });
-
-  // socket.on('createRoom', (roomCode) => { handleCreateRoom(roomCode, socket.id) });
-  // socket.on('joinRoom', (roomCode) => { handleJoinRoom(roomCode, socket) });
-  // socket.on('startRoom', (roomCode) => { handleStartRoom(roomCode, socket.id) });
-  // socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket.id) });
-  // socket.on('exitRoom', (roomCode) => { handleExitRoom(roomCode, socket.id) });
 
   // TESTING, print any incoming emits to console
   socket.onAny((eventName, ...args) => {
@@ -41,7 +35,7 @@ io.on('connection', (socket) => {
   // Handle disconnection event
   socket.on('disconnect', () => {
     // Remove user from room because they are disconnecting
-    handleExitRoomOnDisconnect(socket.id)
+    handleExitRoomOnDisconnect(socket)
     console.log(`User disconnected: ${socket.id}`);
   });
 });

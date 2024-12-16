@@ -1,6 +1,6 @@
-const { handleCreateRoom } = require('../../src/handlers');
+const { handleCreateRoom, handleExitRoomOnDisconnect } = require('../../src/handlers');
 const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInRoomError } = require('../../src/errors');
+const { AlreadyInSomeRoomError } = require('../../src/errors');
 const { checkIfRoomExists, checkIfInAnyRoom } = require('../../src/handler-helpers');
 
 jest.mock('../../src/handler-helpers.js');
@@ -31,7 +31,7 @@ describe('handleCreateRoom', () => {
   it('should throw error if the user is already in a room', () => {
     checkIfRoomExists.mockImplementation(() => {});
     checkIfInAnyRoom.mockImplementation(() => {
-      throw new AlreadyInRoomError('User is already in a room.');
+      throw new AlreadyInSomeRoomError('User is already in a room.');
     });
 
     const roomCode = 'room123';

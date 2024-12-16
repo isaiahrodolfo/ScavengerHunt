@@ -49,16 +49,37 @@ export default function HomeScreen() {
   // Non-host joins game
   const joinGame = () => {
     if (inputtedRoomCode) {
-      socket.emit('joinRoom', inputtedRoomCode);
-      router.replace({
-        pathname: '/(screens)/game-room',
-        params: {
-          roomCode: inputtedRoomCode,
-          isHost: "false"
+      // Emit the event and pass a callback to handle the response
+      socket.emit('joinRoom', inputtedRoomCode, (response: { success: boolean; error?: string; type?: string }) => {
+        if (response.success) {
+          // Navigate to the game room on success
+          router.replace({
+            pathname: '/(screens)/game-room',
+            params: {
+              roomCode: inputtedRoomCode,
+              isHost: 'false',
+            },
+          });
+        } else {
+          // Handle error
+          switch (response.type) {
+            case 'RoomDoesNotExist':
+              setErrorMessage("The game you're trying to join does not exist.");
+              break;
+            case 'AlreadyInRoom':
+              setErrorMessage('Error: You are already in a game room. Leave the current room before joining a new one.');
+              break;
+            case 'UnknownError':
+              setErrorMessage('An unexpected error occurred. Please try again later.');
+              break;
+            default:
+              setErrorMessage(response.error || 'An unknown error occurred.');
+          }
         }
       });
     }
   };
+
 
   return (
     <View style={styles.container}>

@@ -14,9 +14,12 @@ const types_1 = require("./types"); // Import types
  * @returns Error if a room with given room code is found
  */
 function checkIfRoomExists(roomCode) {
-    if (Object.values(types_1.rooms).find((room) => room.code === roomCode)) {
+    console.log(`Checking if room exists for room code: ${roomCode}`); // Log the room code being checked
+    const room = Object.values(types_1.rooms).find((room) => room.code === roomCode);
+    console.log('Room found:', room); // Log the result of the room search
+    if (room) {
         console.log(`A room already exists with code ${roomCode}.`);
-        throw Error(`A room already exists with code ${roomCode}.`);
+        throw new errors_1.RoomAlreadyExistsError(`A room already exists with code ${roomCode}.`);
     }
 }
 /**
@@ -59,7 +62,7 @@ function checkIfInAnyRoom(id) {
     const roomCode = getRoomOfUser(id);
     if (roomCode) {
         console.log(`User ${id} is already part of room ${roomCode}.`);
-        throw new errors_1.AlreadyInRoomError(`User ${id} is already part of room ${roomCode}.`);
+        throw new errors_1.AlreadyInSomeRoomError(`User ${id} is already part of room ${roomCode}.`);
     }
     else {
         console.log(`User ${id} is not part of any room.`);
@@ -75,6 +78,6 @@ function checkIfInThisRoom(roomCode, id) {
     // Check if the user is the host or a player in the room
     const room = types_1.rooms[roomCode];
     if (room.host !== id && !room.players.has(id)) {
-        throw Error(`User ${id} is not part of the room with code ${roomCode}.`);
+        throw new errors_1.AlreadyInThisRoomError(`User ${id} is not part of the room with code ${roomCode}.`);
     }
 }

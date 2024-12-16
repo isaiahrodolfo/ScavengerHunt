@@ -1,10 +1,10 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom } = require('../../src/handlers');
+const { handleJoinRoom } = require('../../src/handlers');
 const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInRoomError, RoomDoesNotExistError } = require('../../src/errors');
+const { AlreadyInSomeRoomError, RoomDoesNotExistError } = require('../../src/errors');
 const { checkIfRoomExists, checkIfRoomDoesNotExist, checkIfInAnyRoom, checkIfInThisRoom, checkIfNotHost, getRoomOfUser } = require('../../src/handler-helpers');
 
 jest.mock('../../src/handler-helpers.js');
-jest.mock('../../src/errors.js');
+// jest.mock('../../src/errors.js');
 
 describe('handleJoinRoom', () => {
   const mockSocket = {
@@ -22,6 +22,12 @@ describe('handleJoinRoom', () => {
     checkIfInAnyRoom.mockImplementation(() => {});
 
     const roomCode = 'room123';
+    rooms[roomCode] = {
+      code: roomCode,
+      host: 'host123',
+      players: new Set(['host123'])
+    }
+
     handleJoinRoom(roomCode, mockSocket);
 
     expect(checkIfRoomDoesNotExist).toHaveBeenCalledWith(roomCode);
@@ -39,22 +45,22 @@ describe('handleJoinRoom', () => {
 
     expect(mockSocket.emit).toHaveBeenCalledWith('joinRoomError', {
       type: 'RoomDoesNotExist',
-      message: expect.any(RoomDoesNotExistError),
+      message: 'Room does not exist.',
     });
   });
 
   it('should emit error if the user is already in a room', () => {
     checkIfRoomDoesNotExist.mockImplementation(() => {});
     checkIfInAnyRoom.mockImplementation(() => {
-      throw new AlreadyInRoomError('User is already in a room.');
+      throw new AlreadyInSomeRoomError('User is already in a room room123.');
     });
 
     const roomCode = 'room123';
     handleJoinRoom(roomCode, mockSocket);
 
     expect(mockSocket.emit).toHaveBeenCalledWith('joinRoomError', {
-      type: 'AlreadyInRoom',
-      message: expect.any(AlreadyInRoomError),
+      type: 'AlreadyInSomeRoom',
+      message: 'User is already in a room room123.',
     });
   });
 });

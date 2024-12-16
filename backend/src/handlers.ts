@@ -1,6 +1,7 @@
 import { Room, rooms } from './types'; // Import types
 import { checkIfRoomDoesNotExist, checkIfRoomExists, checkIfInAnyRoom, checkIfInThisRoom, checkIfNotHost, getRoomOfUser } from './handler-helpers';
-import { AlreadyInRoomError, RoomDoesNotExistError } from './errors';
+import { AlreadyInSomeRoomError, RoomDoesNotExistError } from './errors';
+import { Socket } from 'socket.io';
 
 export function handleCreateRoom(roomCode: string, socket: any) {
 
@@ -32,12 +33,13 @@ export function handleCreateRoom(roomCode: string, socket: any) {
 }
 
 export function handleJoinRoom(roomCode: string, socket: any) {
+
   try {
     // Check if there is a room to join
     checkIfRoomDoesNotExist(roomCode);
   } catch (error) {
     if (error instanceof RoomDoesNotExistError) {
-      socket.emit('joinRoomError', { type: 'RoomDoesNotExist', message: error });
+      socket.emit('joinRoomError', { type: 'RoomDoesNotExist', message: error.message });
     } else {
       socket.emit('joinRoomError', { type: 'UnknownError', message: "An unknown error occurred while trying to join the room." });
     }
@@ -48,8 +50,8 @@ export function handleJoinRoom(roomCode: string, socket: any) {
     // A user cannot already be part of another room if they want to join this room
     checkIfInAnyRoom(socket.id);
   } catch (error) {
-    if (error instanceof AlreadyInRoomError) {
-      socket.emit('joinRoomError', { type: 'AlreadyInRoom', message: error.message });
+    if (error instanceof AlreadyInSomeRoomError) {
+      socket.emit('joinRoomError', { type: 'AlreadyInSomeRoom', message: error.message });
     } else {
       socket.emit('joinRoomError', { type: 'UnknownError', message: "An unknown error occurred while trying to join the room." });
     }
@@ -146,11 +148,11 @@ export function handleExitRoom(roomCode: string, socket: any, roomIsClosed: bool
 
 }
 
-export function handleExitRoomOnDisconnect(id: string) {
+export function handleExitRoomOnDisconnect(socket: any) {
   // If user has joined a room, leave it before disconnecting
-  const roomCode = getRoomOfUser(id);
+  const roomCode = getRoomOfUser(socket.id);
   if (roomCode) {
-    handleExitRoom(roomCode, id, false);
+    handleExitRoom(roomCode, socket, false);
   }
 }
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "npx tsc && jest",
     "start": "npx tsc && node src/server.js"
   },
   "keywords": [],

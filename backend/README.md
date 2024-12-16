@@ -16,4 +16,5 @@ Make sure another process is not already running on the port used for testing (3
 
 ### Other
 
+Run npx tsc to compile all ts files as js
 All files that are not server.js are compiled to js

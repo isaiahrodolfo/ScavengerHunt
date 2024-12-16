@@ -39,7 +39,7 @@ function handleJoinRoom(roomCode, socket) {
     }
     catch (error) {
         if (error instanceof errors_1.RoomDoesNotExistError) {
-            socket.emit('joinRoomError', { type: 'RoomDoesNotExist', message: error });
+            socket.emit('joinRoomError', { type: 'RoomDoesNotExist', message: error.message });
         }
         else {
             socket.emit('joinRoomError', { type: 'UnknownError', message: "An unknown error occurred while trying to join the room." });
@@ -51,8 +51,8 @@ function handleJoinRoom(roomCode, socket) {
         (0, handler_helpers_1.checkIfInAnyRoom)(socket.id);
     }
     catch (error) {
-        if (error instanceof errors_1.AlreadyInRoomError) {
-            socket.emit('joinRoomError', { type: 'AlreadyInRoom', message: error.message });
+        if (error instanceof errors_1.AlreadyInSomeRoomError) {
+            socket.emit('joinRoomError', { type: 'AlreadyInSomeRoom', message: error.message });
         }
         else {
             socket.emit('joinRoomError', { type: 'UnknownError', message: "An unknown error occurred while trying to join the room." });
@@ -122,11 +122,11 @@ function handleExitRoom(roomCode, socket, roomIsClosed) {
     }
     logState(socket);
 }
-function handleExitRoomOnDisconnect(id) {
+function handleExitRoomOnDisconnect(socket) {
     // If user has joined a room, leave it before disconnecting
-    const roomCode = (0, handler_helpers_1.getRoomOfUser)(id);
+    const roomCode = (0, handler_helpers_1.getRoomOfUser)(socket.id);
     if (roomCode) {
-        handleExitRoom(roomCode, id, false);
+        handleExitRoom(roomCode, socket, false);
     }
 }
 function logState(socket) {
