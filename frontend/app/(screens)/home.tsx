@@ -36,12 +36,12 @@ export default function HomeScreen() {
   // Host-created game
 
   const createGame = () => {
-    const createdroomCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit code // TODO: Make each game code unique
-    socket.emit('createRoom', createdroomCode);
+    const createdRoomCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit code // TODO: Make each game code unique
+    socket.emit('createRoom', createdRoomCode);
     router.replace({
       pathname: '/(screens)/game-room',
       params: {
-        roomCode: createdroomCode,
+        roomCode: createdRoomCode,
         isHost: "true"
       }
     });
@@ -54,10 +54,11 @@ export default function HomeScreen() {
       socket.emit('joinRoom', inputtedRoomCode, (response: { success: boolean; error?: string; type?: string }) => {
         if (response.success) {
           // Navigate to the game room on success
+          const roomCode = inputtedRoomCode;
           router.replace({
             pathname: '/(screens)/game-room',
             params: {
-              roomCode: inputtedRoomCode,
+              roomCode: roomCode,
               isHost: 'false',
             },
           });
