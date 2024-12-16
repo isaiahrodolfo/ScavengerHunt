@@ -12,7 +12,7 @@ export default function GameRoomScreen() {
 
   // Methods
   const startGame = () => {
-    socket.emit('startGame', roomCode);
+    socket.emit('startRoom', roomCode);
     router.replace({
       pathname: '/(screens)/countdown',
       params: { roomCode, isHost }
