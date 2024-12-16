@@ -16,6 +16,11 @@ export default function GameRoomScreen() {
       socket.emit('exitRoom', { roomCode, roomIsClosed: true });
       router.replace('/(screens)/home');
     });
+
+    // Receive start room emission, tell server to start the game
+    socket.on('startGame', () => {
+      router.replace('/(screens)/countdown'); // TODO: Sync countdown and game timer with host's timer
+    });
   }, []);
 
   // Methods
