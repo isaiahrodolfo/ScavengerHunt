@@ -15,7 +15,7 @@ export default function GameOverScreen() {
   }
 
   function handlePressNavigateToHomeScreen() {
-    socket.emit('closeGame', roomCode); // Close game
+    socket.emit('closeRoom', roomCode); // Close room
     router.replace('/(screens)/home'); // Go home
   }
 
