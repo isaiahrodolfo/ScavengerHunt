@@ -9,7 +9,6 @@ exports.handleExitRoomOnDisconnect = handleExitRoomOnDisconnect;
 exports.logState = logState;
 const types_1 = require("./types"); // Import types
 const handler_helpers_1 = require("./handler-helpers");
-const errors_1 = require("./errors");
 function handleCreateRoom(roomCode, socket) {
     try {
         // Check that there is no room associated with that room code
@@ -32,39 +31,21 @@ function handleCreateRoom(roomCode, socket) {
     }
     logState(socket);
 }
-function handleJoinRoom(roomCode, socket) {
-    try {
-        // Check if there is a room to join
-        (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode);
+function handleJoinRoom(roomCode, callback, socket) {
+    const room = types_1.rooms[roomCode]; // Fetch the room by code
+    if (!room) {
+        // Room doesn't exist
+        return callback({ success: false, type: 'RoomDoesNotExist' });
     }
-    catch (error) {
-        if (error instanceof errors_1.RoomDoesNotExistError) {
-            socket.emit('joinRoomError', { type: 'RoomDoesNotExist', message: error.message });
-        }
-        else {
-            socket.emit('joinRoomError', { type: 'UnknownError', message: "An unknown error occurred while trying to join the room." });
-        }
-        return;
+    if (room.players.has(socket.id)) {
+        // Already in room
+        return callback({ success: false, type: 'AlreadyInRoom' });
     }
-    try {
-        // A user cannot already be part of another room if they want to join this room
-        (0, handler_helpers_1.checkIfInAnyRoom)(socket.id);
-    }
-    catch (error) {
-        if (error instanceof errors_1.AlreadyInSomeRoomError) {
-            socket.emit('joinRoomError', { type: 'AlreadyInSomeRoom', message: error.message });
-        }
-        else {
-            socket.emit('joinRoomError', { type: 'UnknownError', message: "An unknown error occurred while trying to join the room." });
-        }
-        return;
-    }
-    // Add to rooms list as player
-    types_1.rooms[roomCode].players.add(socket.id);
+    // Add player to room
+    room.players.add(socket.id);
     socket.join(roomCode);
-    // Message
-    console.log(`Room with code ${roomCode} joined by user: ${socket.id}`);
-    logState(socket);
+    // Success
+    callback({ success: true });
 }
 function handleStartRoom(roomCode, socket) {
     try {
