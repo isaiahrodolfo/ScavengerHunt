@@ -13,11 +13,11 @@ const io = socketIo(server); // Initialize Socket.IO
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('createRoom', (roomCode) => { handleCreateRoom(roomCode, socket) });
+  socket.on('createRoom', (roomCode, callback) => { handleCreateRoom(roomCode, callback, socket) });
   socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
-  socket.on('startRoom', (roomCode) => { handleStartRoom(roomCode, socket) });
-  socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket) });
-  socket.on('exitRoom', (roomCode, roomIsClosed) => { handleExitRoom(roomCode, socket, roomIsClosed) });
+  socket.on('startRoom', (roomCode, callback) => { handleStartRoom(roomCode, callback, socket) });
+  socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
+  socket.on('exitRoom', (roomCode, callback, roomIsClosed) => { handleExitRoom(roomCode, callback, socket, roomIsClosed) });
   socket.on('logState', (roomCode) => { logState(socket) });
 
   // TESTING, print any incoming emits to console
