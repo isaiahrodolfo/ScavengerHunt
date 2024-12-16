@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function GameScreen() {
-  const { gameCode, isHost } = useLocalSearchParams();
+  const { roomCode, isHost } = useLocalSearchParams();
   const [timer, setTimer] = useState(5);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function GameScreen() {
       clearInterval(interval);
       router.replace({
         pathname: '/(screens)/game-over',
-        params: { gameCode, isHost }
+        params: { roomCode, isHost }
       });
     }
 

@@ -1,4 +1,4 @@
-const { handleCreateGame, handleJoinGame, handleStartGame, handleCloseGame } = require('./handlers');
+const { handleCreateGame, handleJoinGame, handleStartGame, handleCloseRoom, handleExitRoom} = require('./handlers');
 
 const http = require('http');
 const express = require('express');
@@ -13,14 +13,16 @@ const io = socketIo(server); // Initialize Socket.IO
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('createGame', (gameCode) => { handleCreateGame(gameCode, socket.id) });
-  socket.on('joinGame', (gameCode) => { handleJoinGame(gameCode, socket.id) });
-  socket.on('startGame', (gameCode) => { handleStartGame(gameCode, socket.id) });
-  socket.on('closeRoom', (gameCode) => { handleCloseRoom(gameCode, socket.id) });
-  socket.on('exitRoom', (gameCode) => { handleExitRoom(gameCode, socket.id) });
+  socket.on('createGame', (roomCode) => { handleCreateGame(roomCode, socket.id) });
+  socket.on('joinGame', (roomCode) => { handleJoinGame(roomCode, socket.id) });
+  socket.on('startGame', (roomCode) => { handleStartGame(roomCode, socket.id) });
+  socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket.id) });
+  socket.on('exitRoom', (roomCode) => { handleExitRoom(roomCode, socket.id) });
 
   // Handle disconnection event
   socket.on('disconnect', () => {
+    // Remove user from room because they are disconnecting
+    handleExitRoomOnDisconnect(socket.id)
     console.log(`User disconnected: ${socket.id}`);
   });
 });

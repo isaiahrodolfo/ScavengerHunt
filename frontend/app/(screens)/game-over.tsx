@@ -4,18 +4,18 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { socket } from '@utils/socket'
 
 export default function GameOverScreen() {
-  const { gameCode, isHost } = useLocalSearchParams();
+  const { roomCode, isHost } = useLocalSearchParams();
 
   function handlePressNavigateToGameRoom() {
     console.log("hi")
     router.replace({
       pathname: '/(screens)/game-room',
-      params: { gameCode, isHost }
+      params: { roomCode, isHost }
     });
   }
 
   function handlePressNavigateToHomeScreen() {
-    socket.emit('closeGame', gameCode); // Close game
+    socket.emit('closeGame', roomCode); // Close game
     router.replace('/(screens)/home'); // Go home
   }
 

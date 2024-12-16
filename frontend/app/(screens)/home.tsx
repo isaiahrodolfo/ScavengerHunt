@@ -6,16 +6,16 @@ import { socket } from '@utils/socket'
 
 export default function HomeScreen() {
 
-  const [inputtedGameCode, setInputtedGameCode] = useState('');
+  const [inputtedRoomCode, setinputtedRoomCode] = useState('');
 
   // Host-created game
   const createGame = () => {
-    const createdGameCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit code // TODO: Make each game code unique
-    socket.emit('createGame', createdGameCode);
+    const createdroomCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit code // TODO: Make each game code unique
+    socket.emit('createGame', createdroomCode);
     router.replace({
       pathname: '/(screens)/game-room',
       params: {
-        gameCode: createdGameCode,
+        roomCode: createdroomCode,
         isHost: "true"
       }
     });
@@ -23,12 +23,12 @@ export default function HomeScreen() {
 
   // Non-host joins game
   const joinGame = () => {
-    if (inputtedGameCode) {
-      socket.emit('joinGame', inputtedGameCode);
+    if (inputtedRoomCode) {
+      socket.emit('joinGame', inputtedRoomCode);
       router.replace({
         pathname: '/(screens)/game-room',
         params: {
-          gameCode: inputtedGameCode,
+          roomCode: inputtedRoomCode,
           isHost: "false"
         }
       });
@@ -41,8 +41,8 @@ export default function HomeScreen() {
       <TextInput
         style={styles.input}
         placeholder="Enter Game Code"
-        value={inputtedGameCode}
-        onChangeText={setInputtedGameCode}
+        value={inputtedRoomCode}
+        onChangeText={setinputtedRoomCode}
       />
       <Button title="Join Game" onPress={joinGame} />
     </View>

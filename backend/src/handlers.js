@@ -3,77 +3,95 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleCreateGame = handleCreateGame;
 exports.handleJoinGame = handleJoinGame;
 exports.handleStartGame = handleStartGame;
-exports.handleCloseGame = handleCloseGame;
+exports.handleCloseRoom = handleCloseRoom;
+exports.handleExitRoom = handleExitRoom;
 const types_1 = require("./types"); // Import types
+const handler_helpers_1 = require("./handler-helpers");
+;
 function handleCreateGame(gameCode, id) {
     try {
-        // Check if the user is already a host or player in any game
-        const existingGame = Object.values(types_1.games).find((game) => game.host === id || game.players.some((pid) => pid === id));
-        if (existingGame) {
-            return Error(`User ${id} is already part of game ${existingGame.code}`);
-        }
+        // Check that there is no game associated with that game code
+        (0, handler_helpers_1.checkIfGameExists)(gameCode);
+        // TODO: Randomly generated game codes can be duplicated!
+        // A user cannot already be part of another room if they want to create this room
+        (0, handler_helpers_1.checkIfInAnyRoom)(id);
         // Add to games list as host and player
         types_1.games[gameCode] = {
             code: gameCode,
             host: id,
-            players: [id]
+            players: new Set([id])
         };
         // Message
         console.log(`Game with code ${gameCode} created by user: ${id}`);
     }
     catch (error) {
-        console.error("Error: ", error);
+        console.error("Error creating game: ", error);
     }
     // Current state of the list
     console.log("games", types_1.games);
 }
 function handleJoinGame(gameCode, id) {
-    // Check if the user is already a host or player in any game
-    const existingGame = Object.values(types_1.games).find((game) => game.host === id || game.players.some((pid) => pid === id));
-    if (existingGame) {
-        console.error(`User ${id} is already part of game ${existingGame.code}`);
-        return;
-    }
     try {
+        // Check if there is a game to join
+        (0, handler_helpers_1.checkIfGameDoesNotExist)(gameCode);
+        // A user cannot already be part of another room if they want to join this room
+        (0, handler_helpers_1.checkIfInAnyRoom)(id);
         // Add to games list as player
-        types_1.games[gameCode].players.push(id);
+        types_1.games[gameCode].players.add(id);
+        // Message
+        console.log(`Game with code ${gameCode} joined by user: ${id}`);
     }
     catch (error) {
-        console.error(`Error: game with code ${gameCode} does not exist`);
+        console.error("Error joining game: ", error);
     }
-    // Message
-    console.log(`Game with code ${gameCode} join by user: ${id}`);
     // Current state of the list
     console.log("games", types_1.games);
 }
 function handleStartGame(gameCode, id) {
-    // Check if user is the host. (Only hosts can start games)
-    if (types_1.games[gameCode].host != id) {
-        console.error(`User ${id} cannot start game with code ${gameCode} since user is not the host`);
-        return;
+    try {
+        // Check that there is a game to be started
+        (0, handler_helpers_1.checkIfGameDoesNotExist)(gameCode);
+        // Check that the user is the host
+        (0, handler_helpers_1.checkIfNotHost)(gameCode, id);
+        // Message
+        console.log(`Game with code ${gameCode} started by user: ${id}`);
     }
-    // Message
-    console.log(`Game with code ${gameCode} started by user: ${id}`);
+    catch (error) {
+        console.error("Error starting game: ", error);
+    }
     // Current state of the list
     console.log("games", types_1.games);
 }
-function handleCloseGame(gameCode, id) {
+function handleCloseRoom(gameCode, id) {
     try {
-        // Check if there is a game that can be closed
-        if (Object.values(types_1.games).find((game) => game.code === gameCode)) {
-            return Error(`No game exists with code ${gameCode}`);
-        }
+        // Check if there is a room to close
+        (0, handler_helpers_1.checkIfGameDoesNotExist)(gameCode);
         // Check if user is the host. (Only hosts can close games)
-        if (types_1.games[gameCode].host != id) {
-            return Error(`User ${id} cannot start game with code ${gameCode} since user is not the host`);
-        }
+        (0, handler_helpers_1.checkIfNotHost)(gameCode, id);
         // Delete game
         delete types_1.games[gameCode];
         // Message
         console.log(`Game with code ${gameCode} closed by user: ${id}`);
     }
     catch (error) {
-        console.error("Error: ", error);
+        console.error("Error closing room: ", error);
+    }
+    // Current state of the list
+    console.log("games", types_1.games);
+}
+function handleExitRoom(gameCode, id) {
+    try {
+        // Check if there is a game to exit
+        (0, handler_helpers_1.checkIfGameDoesNotExist)(gameCode);
+        // A user can only exit this game if it is a player of it
+        (0, handler_helpers_1.checkIfInThisRoom)(gameCode, id);
+        // Remove from games list as player
+        types_1.games[gameCode].players.delete(id);
+        // Message
+        console.log(`Game with code ${gameCode} join by user: ${id}`);
+    }
+    catch (error) {
+        console.error("Error exiting room: ", error);
     }
     // Current state of the list
     console.log("games", types_1.games);
