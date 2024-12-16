@@ -21,9 +21,10 @@ export default function GameOverScreen() {
 
   return (
     <View style={styles.container}>
+      <Text>{roomCode}</Text>
       <Text>Play Again?</Text>
       <Button title="Back to Game Room" onPress={handlePressNavigateToGameRoom} />
-      <Button title="Close Game" onPress={handlePressNavigateToHomeScreen} />
+      {isHost && <Button title="Close Game" onPress={handlePressNavigateToHomeScreen} />}
     </View>
   );
 }

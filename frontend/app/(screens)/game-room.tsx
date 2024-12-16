@@ -13,13 +13,16 @@ export default function GameRoomScreen() {
   useEffect(() => {
     // Receive exit room emission, tell server to exit the Socket room and go back home
     socket.on('exitRoom', () => {
-      socket.emit('exitRoom', { roomCode, roomIsClosed: true });
+      socket.emit('exitRoom', { roomCode: roomCode, roomIsClosed: true });
       router.replace('/(screens)/home');
     });
 
     // Receive start room emission, tell server to start the game
     socket.on('startGame', () => {
-      router.replace('/(screens)/countdown'); // TODO: Sync countdown and game timer with host's timer
+      router.replace({ // TODO: Sync countdown and game timer with host's timer
+        pathname: '/(screens)/countdown',
+        params: { roomCode, isHost }
+      });
     });
   }, []);
 

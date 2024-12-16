@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(2);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,6 +24,7 @@ export default function GameScreen() {
 
   return (
     <View style={styles.container}>
+      <Text>{roomCode}</Text>
       <Text style={styles.timer}>{timer}</Text>
     </View>
   );
