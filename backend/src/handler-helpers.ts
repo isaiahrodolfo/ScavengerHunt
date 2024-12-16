@@ -7,16 +7,10 @@ import { Room, rooms } from './types'; // Import types
  * @returns Error if a room with given room code is found
  */
 
-export function checkIfRoomExists(roomCode: string): void {
-  console.log(`Checking if room exists for room code: ${roomCode}`); // Log the room code being checked
-
-  const room = Object.values(rooms).find((room) => room.code === roomCode);
-  
-  console.log('Room found:', room); // Log the result of the room search
-
-  if (room) {
-    console.log(`A room already exists with code ${roomCode}.`);
-    throw new RoomAlreadyExistsError(`A room already exists with code ${roomCode}.`);
+export function checkIfRoomExists(roomCode: string, callback: any): (any | void) {
+  if (Object.values(rooms).find((room) => room.code === roomCode)) {
+    console.log(`No room exists with code ${roomCode}.`)
+    callback({ success: false, type: 'RoomExists' })
   }
 }
 
@@ -26,10 +20,10 @@ export function checkIfRoomExists(roomCode: string): void {
  * @returns Error if no room with given room code is found
  */
 
-export function checkIfRoomDoesNotExist(roomCode: string): (RoomDoesNotExistError | void) {
+export function checkIfRoomDoesNotExist(roomCode: string, callback: any): (any | void) {
   if (!Object.values(rooms).find((room) => room.code === roomCode)) {
     console.log(`No room exists with code ${roomCode}.`)
-    throw new RoomDoesNotExistError(`No room exists with code ${roomCode}.`);
+    callback({ success: false, type: 'RoomDoesNotExist' })
   }
 }
 
@@ -64,12 +58,12 @@ export function getRoomOfUser(id: string): (string | undefined) {
  * @returns Error if user is already in a room
  */
 
-export function checkIfInAnyRoom(id: string): (AlreadyInSomeRoomError | void) {
+export function checkIfInAnyRoom(id: string, callback: any): (any | void) {
   const roomCode = getRoomOfUser(id);
 
   if (roomCode) {
     console.log(`User ${id} is already part of room ${roomCode}.`);
-    throw new AlreadyInSomeRoomError(`User ${id} is already part of room ${roomCode}.`);
+    return callback({ success: false, type: 'AlreadyInRoom' });
   } else {
     console.log(`User ${id} is not part of any room.`);
   }

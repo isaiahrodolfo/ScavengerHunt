@@ -3,15 +3,15 @@ import { checkIfRoomDoesNotExist, checkIfRoomExists, checkIfInAnyRoom, checkIfIn
 import { AlreadyInSomeRoomError, RoomDoesNotExistError } from './errors';
 import { Socket } from 'socket.io';
 
-export function handleCreateRoom(roomCode: string, socket: any) {
+export function handleCreateRoom(roomCode: string, callback: any, socket: any) {
 
   try {
     // Check that there is no room associated with that room code
-    checkIfRoomExists(roomCode);
+    checkIfRoomExists(roomCode, callback);
     // TODO: Randomly generated room codes can be duplicated!
 
     // A user cannot already be part of another room if they want to create this room
-    checkIfInAnyRoom(socket.id);
+    checkIfInAnyRoom(socket.id, callback);
 
     // Add to rooms list as host and player
     rooms[roomCode] = {
@@ -34,31 +34,35 @@ export function handleCreateRoom(roomCode: string, socket: any) {
 
 export function handleJoinRoom(roomCode: string, callback: any, socket: any) {
 
-  const room = rooms[roomCode]; // Fetch the room by code
-  if (!room) {
-    // Room doesn't exist
-    return callback({ success: false, type: 'RoomDoesNotExist' });
-  }
+  // const room = rooms[roomCode]; // Fetch the room by code
+  // if (!room) {
+  //   // Room doesn't exist
+  //   return callback({ success: false, type: 'RoomDoesNotExist' });
+  // }
 
-  if (room.players.has(socket.id)) {
-    // Already in room
-    return callback({ success: false, type: 'AlreadyInRoom' });
-  }
+  checkIfRoomDoesNotExist(roomCode, callback);
+
+  // if (room.players.has(socket.id)) {
+  //   // Already in room
+  //   return callback({ success: false, type: 'AlreadyInRoom' });
+  // }
+
+  checkIfInAnyRoom(roomCode, callback);
 
   // Add player to room
-  room.players.add(socket.id);
+  rooms[roomCode].players.add(socket.id);
   socket.join(roomCode);
 
   // Success
   callback({ success: true });
-  
+
 }
 
-export function handleStartRoom(roomCode: string, socket: any) {
+export function handleStartRoom(roomCode: string, callback: any, socket: any) {
 
   try {
     // Check that there is a room to be started
-    checkIfRoomDoesNotExist(roomCode);
+    checkIfRoomDoesNotExist(roomCode, callback);
 
     // Check that the user is the host
     checkIfNotHost(roomCode, socket.id);
@@ -76,11 +80,11 @@ export function handleStartRoom(roomCode: string, socket: any) {
 
 }
 
-export function handleCloseRoom(roomCode: string, socket: any) {
+export function handleCloseRoom(roomCode: string, callback: any, socket: any) {
 
   try {
     // Check if there is a room to close
-    checkIfRoomDoesNotExist(roomCode);
+    checkIfRoomDoesNotExist(roomCode, callback);
 
     // Check if user is the host. (Only hosts can close rooms)
     checkIfNotHost(roomCode, socket.id);
@@ -104,14 +108,14 @@ export function handleCloseRoom(roomCode: string, socket: any) {
 
 }
 
-export function handleExitRoom(roomCode: string, socket: any, roomIsClosed: boolean) {
+export function handleExitRoom(roomCode: string, callback: any, socket: any, roomIsClosed: boolean) {
 
   try {
 
     // If room is already closed by host, no need to check this
     if (!roomIsClosed) {
       // Check if there is a room to exit
-      checkIfRoomDoesNotExist(roomCode);
+      checkIfRoomDoesNotExist(roomCode, callback);
     }
 
     // A user can only exit this room if it is a player of it
@@ -138,7 +142,22 @@ export function handleExitRoomOnDisconnect(socket: any) {
   // If user has joined a room, leave it before disconnecting
   const roomCode = getRoomOfUser(socket.id);
   if (roomCode) {
-    handleExitRoom(roomCode, socket, false);
+    try {
+      // A user can only exit this room if it is a player of it
+      checkIfInThisRoom(roomCode, socket.id); // returns callback, but unused
+
+      // Remove from rooms list as player
+      rooms[roomCode].players.delete(socket.id);
+
+      // Exit socket room
+      socket.leave(roomCode);
+
+      // Message
+      console.log(`Room with code ${roomCode} exited by user: ${socket.id}`);
+
+    } catch (error) {
+      console.error("Error exiting room: ", error);
+    }
   }
 }
 
