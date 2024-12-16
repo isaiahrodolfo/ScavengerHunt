@@ -1,4 +1,4 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom} = require('./handlers');
+const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, logState } = require('./handlers');
 
 const http = require('http');
 const express = require('express');
@@ -13,17 +13,30 @@ const io = socketIo(server); // Initialize Socket.IO
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('createRoom', (roomCode) => { handleCreateRoom(roomCode, socket) }); // TODO: Host functionality
+  socket.on('createRoom', (roomCode) => { handleCreateRoom(roomCode, socket) });
   socket.on('joinRoom', (roomCode) => { handleJoinRoom(roomCode, socket) });
   socket.on('startRoom', (roomCode) => { handleStartRoom(roomCode, socket) });
-  socket.on('closeRoom', (roomCode) => { handleExitRoom(roomCode, socket) }); // TODO: Close functionality
-  socket.on('exitRoom', (roomCode) => { handleExitRoom(roomCode, socket) });
+  socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket) });
+  socket.on('exitRoom', (roomCode, roomIsClosed) => { handleExitRoom(roomCode, socket, roomIsClosed) });
+  socket.on('logState', (roomCode) => { logState(socket) });
 
   // socket.on('createRoom', (roomCode) => { handleCreateRoom(roomCode, socket.id) });
   // socket.on('joinRoom', (roomCode) => { handleJoinRoom(roomCode, socket) });
   // socket.on('startRoom', (roomCode) => { handleStartRoom(roomCode, socket.id) });
   // socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket.id) });
   // socket.on('exitRoom', (roomCode) => { handleExitRoom(roomCode, socket.id) });
+
+  // TESTING, print any incoming emits to console
+  socket.onAny((eventName, ...args) => {
+    console.log(eventName); // 'hello'
+    console.log(args); // [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+  });
+
+  // TESTING, print any outgoing emits to console
+  socket.onAnyOutgoing((eventName, ...args) => {
+    console.log(eventName); // 'hello'
+    console.log(args); // [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+  });
 
   // Handle disconnection event
   socket.on('disconnect', () => {
