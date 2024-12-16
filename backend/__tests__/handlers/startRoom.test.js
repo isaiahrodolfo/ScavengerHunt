@@ -1,6 +1,6 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom } = require('../../src/handlers');
+const { handleStartRoom } = require('../../src/handlers');
 const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInRoomError, RoomDoesNotExistError } = require('../../src/errors');
+const { AlreadyInSomeRoomError, RoomDoesNotExistError, NotHostError } = require('../../src/errors');
 const { checkIfRoomExists, checkIfRoomDoesNotExist, checkIfInAnyRoom, checkIfInThisRoom, checkIfNotHost, getRoomOfUser } = require('../../src/handler-helpers');
 
 jest.mock('../../src/handler-helpers.js');
@@ -31,7 +31,7 @@ describe('handleStartRoom', () => {
   it('should emit error if the user is not the host', () => {
     checkIfRoomDoesNotExist.mockImplementation(() => {});
     checkIfNotHost.mockImplementation(() => {
-      throw new Error('User is not the host');
+      throw new NotHostError('User is not the host');
     });
 
     const roomCode = 'room123';

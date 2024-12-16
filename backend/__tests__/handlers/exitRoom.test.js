@@ -1,6 +1,6 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom } = require('../../src/handlers');
+const { handleExitRoom } = require('../../src/handlers');
 const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInRoomError, RoomDoesNotExistError } = require('../../src/errors');
+const { AlreadyInSomeRoomError, RoomDoesNotExistError } = require('../../src/errors');
 const { checkIfRoomExists, checkIfRoomDoesNotExist, checkIfInAnyRoom, checkIfInThisRoom, checkIfNotHost, getRoomOfUser } = require('../../src/handler-helpers');
 
 jest.mock('../../src/handler-helpers.js');
@@ -21,6 +21,32 @@ describe('handleExitRoom', () => {
     checkIfInThisRoom.mockImplementation(() => {});
 
     const roomCode = 'room123';
+
+    rooms[roomCode] = {
+      code: roomCode,
+      host: 'host123',
+      players: new Set(['host123'])
+    }
+
+    handleExitRoom(roomCode, mockSocket, false);
+
+    expect(checkIfRoomDoesNotExist).toHaveBeenCalledWith(roomCode);
+    expect(checkIfInThisRoom).toHaveBeenCalledWith(roomCode, mockSocket.id);
+    expect(mockSocket.leave).toHaveBeenCalledWith(roomCode);
+  });
+
+  it('should exit the room if the user is part of the room and room is closed', () => {
+    checkIfRoomDoesNotExist.mockImplementation(() => {});
+    checkIfInThisRoom.mockImplementation(() => {});
+
+    const roomCode = 'room123';
+
+    rooms[roomCode] = {
+      code: roomCode,
+      host: 'host123',
+      players: new Set(['host123'])
+    }
+
     handleExitRoom(roomCode, mockSocket, false);
 
     expect(checkIfRoomDoesNotExist).toHaveBeenCalledWith(roomCode);
