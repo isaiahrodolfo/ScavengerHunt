@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { socket } from '@utils/socket'
@@ -9,6 +9,14 @@ export default function GameRoomScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
 
   const isHostBool = isHost == 'true'; // Change from string (since in a url format) to boolean
+
+  useEffect(() => {
+    // Receive exit room emission, tell server to exit the Socket room and go back home
+    socket.on('exitRoom', () => {
+      socket.emit('exitRoom', { roomCode, roomIsClosed: true });
+      router.replace('/(screens)/home');
+    });
+  }, []);
 
   // Methods
   const startGame = () => {
@@ -21,14 +29,16 @@ export default function GameRoomScreen() {
 
   const closeRoom = () => {
     socket.emit('closeRoom', roomCode);
-    router.replace({
-      pathname: '/(screens)/home'
-    });
+    router.replace('/(screens)/home');
   };
 
   const exitRoom = () => {
-    socket.emit('exitRoom', roomCode);
-    router.replace('/(screens)/home')
+    socket.emit('exitRoom', roomCode, false);
+    router.replace('/(screens)/home');
+  };
+
+  const logState = () => { // testing
+    socket.emit('logState', roomCode);
   };
 
   return (
@@ -42,6 +52,7 @@ export default function GameRoomScreen() {
       ) : (
         <Button title="Exit Game" onPress={exitRoom} />
       )}
+      <Button title="Log State" onPress={logState} />
     </View>
   );
 }
