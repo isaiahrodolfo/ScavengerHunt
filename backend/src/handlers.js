@@ -90,7 +90,7 @@ function handleCloseRoom(roomCode, socket) {
         // Delete room
         delete types_1.rooms[roomCode];
         // Emit message, tell others to leave room
-        socket.to(roomCode).emit('exitRoom', { roomCode, roomIsClosed: true });
+        socket.to(roomCode).emit('exitRoom'); // To client
         // Leave room
         socket.leave(roomCode);
         // Message
