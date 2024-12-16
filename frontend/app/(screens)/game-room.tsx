@@ -20,10 +20,15 @@ export default function GameRoomScreen() {
   };
 
   const closeRoom = () => {
-    socket.emit('closeGame', gameCode);
+    socket.emit('closeRoom', gameCode);
     router.replace({
       pathname: '/(screens)/home'
     });
+  };
+
+  const exitRoom = () => {
+    socket.emit('exitRoom', gameCode);
+    router.replace('/(screens)/home')
   };
 
   return (
@@ -32,10 +37,10 @@ export default function GameRoomScreen() {
       {isHostBool ? (
         <>
           <Button title="Start Game" onPress={startGame} />
-          <Button title="Close Game Room" onPress={closeRoom} />
+          <Button title="Close Room" onPress={closeRoom} />
         </>
       ) : (
-        <Button title="Exit Game" onPress={() => router.replace('/(screens)/home')} />
+        <Button title="Exit Game" onPress={exitRoom} />
       )}
     </View>
   );
