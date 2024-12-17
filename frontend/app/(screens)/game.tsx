@@ -73,7 +73,7 @@ export default function GameScreen() {
       <Text style={styles.timer}>{timer}</Text>
 
       {/* Camera View */}
-      <View>
+      <View style={styles.camera}>
         <Camera setHasPermissions={() => { }} setImage={setImage} isSelecting={isSelecting} />
       </View>
 
@@ -113,11 +113,11 @@ function getCategoryName(index: number) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white' },
-  // camera: {
-  //   flex: 1,
-  //   aspectRatio: 9 / 16, // Maintain 4:3 aspect ratio
-  //   width: '50%',
-  // },
+  camera: {
+    flex: 1,
+    aspectRatio: 9 / 16, // Maintain 4:3 aspect ratio
+    // width: '50%',
+  },
   timer: { fontSize: 20 },
   categoryObjects: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', width: '100%' },
 });
