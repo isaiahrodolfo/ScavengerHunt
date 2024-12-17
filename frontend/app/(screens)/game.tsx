@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white' },
   camera: {
     flex: 1,
-    aspectRatio: 9 / 16, // Maintain 4:3 aspect ratio
+    aspectRatio: 3 / 4,
     // width: '50%',
   },
   timer: { fontSize: 20 },

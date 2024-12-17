@@ -53,18 +53,20 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+    >
       {/* Camera View */}
       <CameraView
         ref={cameraRef}
-        style={styles.camera}
+        style={[styles.camera, { aspectRatio: 3 / 4, }]}
         facing={facing}
         onCameraReady={() => setIsCameraReady(true)}
       >
         {/* Image Overlay */}
         {isSelecting && (
           <Image
-            style={[styles.camera, { position: 'absolute', }]}
+            style={StyleSheet.absoluteFillObject}
             source={{ uri: imageUrl }}
           />
         )}
@@ -97,7 +99,6 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
     width: '100%',
-    aspectRatio: 3 / 4,
     backgroundColor: 'black',
   },
   message: {
