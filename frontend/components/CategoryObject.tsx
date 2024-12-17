@@ -11,7 +11,7 @@ interface CategoryObjectProps {
 
 const CategoryObject = ({ backgroundColor, number, text, images }: CategoryObjectProps) => {
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container, { backgroundColor: 'lavender' }]}>
       {/* Top Half: Number and Text */}
       <View style={styles.description}>
         <Text style={styles.number}>{number}</Text>
