@@ -1,4 +1,5 @@
-const { handleCreateGame, handleJoinGame, handleStartGame, handleCloseRoom, handleExitRoom} = require('./handlers');
+const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleRestartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, logState } = require('./handlers');
+const { Room, rooms } = require('./types');
 
 const http = require('http');
 const express = require('express');
@@ -13,16 +14,27 @@ const io = socketIo(server); // Initialize Socket.IO
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  socket.on('createGame', (roomCode) => { handleCreateGame(roomCode, socket.id) });
-  socket.on('joinGame', (roomCode) => { handleJoinGame(roomCode, socket.id) });
-  socket.on('startGame', (roomCode) => { handleStartGame(roomCode, socket.id) });
-  socket.on('closeRoom', (roomCode) => { handleCloseRoom(roomCode, socket.id) });
-  socket.on('exitRoom', (roomCode) => { handleExitRoom(roomCode, socket.id) });
+  socket.on('createRoom', (roomCode, callback) => { handleCreateRoom(roomCode, callback, socket) });
+  socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
+  socket.on('startRoom', (roomCode, callback) => { handleStartRoom(roomCode, callback, socket) });
+  socket.on('restartRoom', (roomCode, callback) => { handleRestartRoom(roomCode, callback, socket) });
+  socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
+  socket.on('exitRoom', (roomCode, roomIsClosed, callback) => { handleExitRoom(roomCode, roomIsClosed, callback, socket) });
+
+  // TESTING, print any incoming emits to console
+  socket.onAny((eventName, ...args) => {
+    console.log(eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+  });
+
+  // TESTING, print any outgoing emits to console
+  socket.onAnyOutgoing((eventName, ...args) => {
+    console.log(eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+  });
 
   // Handle disconnection event
   socket.on('disconnect', () => {
     // Remove user from room because they are disconnecting
-    handleExitRoomOnDisconnect(socket.id)
+    handleExitRoom(socket)
     console.log(`User disconnected: ${socket.id}`);
   });
 });

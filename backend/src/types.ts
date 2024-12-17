@@ -2,10 +2,11 @@ export type User = {
   id: string;
 };
 
-export type Game = {
+export type Room = {
   code: string;
   host: string; // User id
   players: Set<string>; // User id
+  started: boolean;
 };
 
-export const games: Record<string, Game> = {};
+export const rooms: Record<string, Room> = {};
