@@ -1,36 +1,62 @@
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 
 interface CategoryObjectProps {
+  categoryIndex: number;
   backgroundColor: string;
   number: number;
   text: string;
   images: string[]; // Array of CameraCapturedPicture objects
+  onPress: (index: number) => void;
+  isSelecting: boolean;
 }
 
-const CategoryObject = ({ backgroundColor, number, text, images }: CategoryObjectProps) => {
+const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, images, onPress, isSelecting }: CategoryObjectProps) => {
   return (
-    <View style={[styles.container, { backgroundColor: 'lavender' }]}>
-      {/* Top Half: Number and Text */}
-      <View style={styles.description}>
-        <Text style={styles.number}>{number}</Text>
-        <Text style={styles.text}>{text}</Text>
-      </View>
+    isSelecting ? (
+      <TouchableOpacity style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} onPress={() => onPress(index)}>
+        {/* Top Half: Number and Text */}
+        <View style={styles.description}>
+          <Text style={styles.number}>{number}</Text>
+          <Text style={styles.text}>{text}</Text>
+        </View>
 
-      {/* Bottom Half: Scrollable Images */}
-      <View style={styles.images}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-          {images.map((imageUri, index) => (
-            <Image
-              key={index}
-              source={{ uri: imageUri }}
-              style={styles.image}
-            />
-          ))}
-        </ScrollView>
+        {/* Bottom Half: Scrollable Images */}
+        <View style={styles.images}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+            {images.map((imageUri, index) => (
+              <Image
+                key={index}
+                source={{ uri: imageUri }}
+                style={styles.image}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </TouchableOpacity>
+    ) : (
+      <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]}>
+        {/* Top Half: Number and Text */}
+        <View style={styles.description}>
+          <Text style={styles.number}>{number}</Text>
+          <Text style={styles.text}>{text}</Text>
+        </View>
+
+        {/* Bottom Half: Scrollable Images */}
+        <View style={styles.images}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+            {images.map((imageUri, index) => (
+              <Image
+                key={index}
+                source={{ uri: imageUri }}
+                style={styles.image}
+              />
+            ))}
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    )
   );
 };
 
