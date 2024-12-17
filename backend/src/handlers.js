@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleCreateRoom = handleCreateRoom;
 exports.handleJoinRoom = handleJoinRoom;
 exports.handleStartRoom = handleStartRoom;
+exports.handleRestartRoom = handleRestartRoom;
 exports.handleCloseRoom = handleCloseRoom;
 exports.handleExitRoom = handleExitRoom;
 exports.handleExitRoomOnDisconnect = handleExitRoomOnDisconnect;
@@ -70,6 +71,36 @@ function handleStartRoom(roomCode, callback, socket) {
     types_1.rooms[roomCode].started = true;
     // Emit the "startGame" event to all users in the room
     socket.to(roomCode).emit("startGame");
+    // Log the action for debugging
+    // console.log(`Room ${roomCode} started by host ${socket.id}`);
+    // Callback with success message
+    callback({ success: true });
+}
+/**
+ * Handles restarting a room.
+ */
+// TODO: Write tests for restarting a room
+function handleRestartRoom(roomCode, callback, socket) {
+    // Ensure the room exists
+    if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
+        return;
+    // Ensure the user is the host
+    if ((0, handler_helpers_1.checkIfNotHost)(roomCode, callback, socket.id))
+        return;
+    // // Ensure the room has players (excluding the host)
+    // if (rooms[roomCode].players.size <= 1) {
+    //   callback({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
+    //   return;
+    // }
+    // Ensure the game has already started
+    if (!types_1.rooms[roomCode].started) {
+        callback({ success: false, type: 'GameHasNotStarted', error: 'Game has not started' });
+        return;
+    }
+    // Restart the room
+    types_1.rooms[roomCode].started = false;
+    // // Emit the "startGame" event to all users in the room
+    // socket.to(roomCode).emit("startGame");
     // Log the action for debugging
     // console.log(`Room ${roomCode} started by host ${socket.id}`);
     // Callback with success message

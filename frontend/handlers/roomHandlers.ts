@@ -81,6 +81,34 @@ export function startRoom(roomCode: string): Promise<string>{
   });
 }
 
+export function restartRoom(roomCode: string): Promise<string>{
+  return new Promise((resolve, reject) => {
+    socket.emit('restartRoom', roomCode, (response: { success: boolean; error?: string; type?: string }) => {
+      if (response.success) {
+        resolve('');
+      } else {
+        switch (response.type) {
+          case 'RoomDoesNotExist':
+            resolve("Error: The game you're trying to join does not exist.");
+            break;
+          case 'NotHost':
+            resolve('Error: You are not the host. Only the host can start the game.');
+            break;
+          case 'GameHasNotStarted':
+            resolve('You cannot restart this game because the game has not started.');
+            break;
+          case 'UnknownError':
+            resolve('An unexpected error occurred. Please try again later.');
+            break;
+          default:
+            resolve(response.error || 'An unknown error occurred.');
+            break;
+        }
+      }
+    });
+  });
+}
+
 export function closeRoom(roomCode: string): Promise<string>{
   return new Promise((resolve, reject) => {
     socket.emit('closeRoom', roomCode, (response: { success: boolean; error?: string; type?: string }) => {
