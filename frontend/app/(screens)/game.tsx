@@ -112,21 +112,27 @@ export default function GameScreen() {
   function handleImagePressed(target: ImageAndTargetLocation): void {
     switch (gameState) {
       case 'take': // Selected a image to view
+        // TODO: View the selected image
         setGameState('view');
-      case 'retake': ; // Toggle selection mode
+        break;
+      case 'view': // Move the image to a different location
+        // TODO: Move the image to a different location
+        setGameState('take');
       default: break;
     }
   }
 
-  // PRESS RETAKE, INSTEAD
-  // function handlePressCancel(event: GestureResponderEvent): void {
-  //   switch (gameState) {
-  //     case 'view': // Canceled viewing an image
-  //       setGameState('take');
-  //     case 'put': // Canceled putting an image
-  //       setGameState('take');
-  //   }
-  // }
+  function handlePressCancel(event: GestureResponderEvent): void {
+    switch (gameState) {
+      // case 'take':
+      //   setGameState('view'); // testing
+      //   break;
+      case 'view': // Canceled viewing an image
+        setGameState('take');
+      case 'retake': // Canceled retaking an image
+        setGameState('take');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -137,7 +143,7 @@ export default function GameScreen() {
         <Camera setHasPermissions={() => { }} setImage={setImage} isSelecting={isSelecting} />
       </View>
 
-      {/* <Button title={'Cancel'} onPress={handlePressCancel}/> */}
+      <Button title={'Cancel'} onPress={handlePressCancel} />
 
       <View style={[styles.categoryObjects, { width: width - 20 }]}>
         {categoryImages.map((category, index) => (
