@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Pressable } from 'react-native';
 import React from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 
@@ -14,8 +14,10 @@ interface CategoryObjectProps {
 
 const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, images, onPress, isSelecting }: CategoryObjectProps) => {
   return (
-    isSelecting ? (
-      <TouchableOpacity style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} onPress={() => onPress(index)}>
+    <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} pointerEvents={isSelecting ? 'auto' : 'none'}>
+      <Pressable onPress={() => onPress(index)}
+      // activeOpacity={0.9}
+      >
         {/* Top Half: Number and Text */}
         <View style={styles.description}>
           <Text style={styles.number}>{number}</Text>
@@ -23,40 +25,25 @@ const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, i
         </View>
 
         {/* Bottom Half: Scrollable Images */}
-        <View style={styles.images}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-            {images.map((imageUri, index) => (
-              <Image
-                key={index}
-                source={{ uri: imageUri }}
-                style={styles.image}
-              />
-            ))}
-          </ScrollView>
+        <View style={styles.imagesWrapper} pointerEvents='auto'>
+          {images.length > 0 ? (
+            // Cannot select individual photos when selecting a category
+            <ScrollView style={styles.scrollView} horizontal showsHorizontalScrollIndicator={true} pointerEvents={isSelecting ? 'none' : 'auto'}>
+              {images.map((imageUri, index) => (
+                <Pressable key={index} style={styles.image}>
+                  <Image source={{ uri: imageUri }} style={styles.image} />
+                </Pressable>
+              ))}
+            </ScrollView>
+          ) : (
+            // Placeholder when there are no images
+            <View style={styles.scrollView}>
+              <View style={styles.emptyImagePlaceholder} />
+            </View>
+          )}
         </View>
-      </TouchableOpacity>
-    ) : (
-      <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]}>
-        {/* Top Half: Number and Text */}
-        <View style={styles.description}>
-          <Text style={styles.number}>{number}</Text>
-          <Text style={styles.text}>{text}</Text>
-        </View>
-
-        {/* Bottom Half: Scrollable Images */}
-        <View style={styles.images}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-            {images.map((imageUri, index) => (
-              <Image
-                key={index}
-                source={{ uri: imageUri }}
-                style={styles.image}
-              />
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-    )
+      </Pressable>
+    </View>
   );
 };
 
@@ -65,10 +52,11 @@ export default CategoryObject;
 const styles = StyleSheet.create({
   container: {
     width: '45%', // Slightly less than half the screen width
-    height: 130, // Adjust the height as needed
+    height: 130, // Height remains the same for consistency
     margin: 10,
     borderRadius: 15,
-    overflow: 'hidden', // Prevent content overflow
+    overflow: 'hidden', // Prevent content overflow but keep rounded corners
+    backgroundColor: 'lavender', // Default background color
   },
   description: {
     flex: 1, // Takes half of the container's height
@@ -93,18 +81,26 @@ const styles = StyleSheet.create({
     flexShrink: 1, // Prevent overflow of text
     marginRight: 10
   },
-  images: {
+  imagesWrapper: {
     flex: 1, // Takes the other half
     paddingVertical: 5,
     marginLeft: 5,
     marginRight: 5,
+    borderRadius: 10, // Keep images inside rounded container
+  },
+  scrollView: {
+    height: 60
   },
   image: {
     width: 60, // Fixed width for each image
     height: 50, // Fixed height for each image
     marginLeft: 5,
-    marginRight: 5,
+    marginRight: 10,
     borderRadius: 10,
     backgroundColor: '#ccc', // Placeholder for images
+  },
+  emptyImagePlaceholder: {
+    height: 50, // Fixed height for placeholder image
+    borderRadius: 10,
   },
 });
