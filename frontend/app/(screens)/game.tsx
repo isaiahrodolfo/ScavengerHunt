@@ -1,7 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ActivityIndicator, Image, FlatList } from 'react-native';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -11,7 +11,7 @@ export default function GameScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
-  const [photo, setPhoto] = useState<string | null>(null); // Store the captured photo
+  const [photos, setPhotos] = useState<string[]>([]); // Store the list of captured photo URIs
 
   const cameraRef = useRef<any>(null); // Reference to the camera
 
@@ -54,7 +54,7 @@ export default function GameScreen() {
     if (cameraRef.current && isCameraReady) {
       try {
         const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
-        setPhoto(photo.uri); // Save the captured image URI
+        setPhotos((prevPhotos) => [...prevPhotos, photo.uri]); // Add the new photo to the list
       } catch (error) {
         console.error("Error taking picture:", error);
       }
@@ -65,26 +65,36 @@ export default function GameScreen() {
     <View style={styles.container}>
       <Text>{roomCode}</Text>
       <Text style={styles.timer}>{timer}</Text>
-      {photo ? (
-        // Display the captured photo
-        <Image source={{ uri: photo }} style={styles.photo} />
-      ) : (
-        <CameraView
-          ref={cameraRef}
-          style={styles.camera}
-          facing={facing}
-          onCameraReady={() => setIsCameraReady(true)}
-        >
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-              <Text style={styles.text}>Flip Camera</Text>
-            </TouchableOpacity>
-          </View>
-        </CameraView>
-      )}
-      <TouchableOpacity style={styles.button} onPress={takePicture}>
+
+      {/* Camera View */}
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        facing={facing}
+        onCameraReady={() => setIsCameraReady(true)}
+      >
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
+
+      {/* Take Picture Button */}
+      <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
         <Text style={styles.text}>Take Picture</Text>
       </TouchableOpacity>
+
+      {/* Photo List */}
+      <FlatList
+        data={photos}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal
+        renderItem={({ item }) => (
+          <Image source={{ uri: item }} style={styles.thumbnail} />
+        )}
+        contentContainerStyle={styles.photoList}
+      />
     </View>
   );
 }
@@ -106,11 +116,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  photo: {
-    flex: 1,
-    width: '100%',
-    resizeMode: 'contain',
-  },
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -122,9 +127,25 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     alignItems: 'center',
   },
+  captureButton: {
+    padding: 10,
+    backgroundColor: 'blue',
+    borderRadius: 10,
+    marginVertical: 10,
+  },
   text: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
+  },
+  photoList: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  thumbnail: {
+    width: 100,
+    height: 100,
+    marginHorizontal: 5,
+    borderRadius: 10,
   },
 });
