@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 export default function CountdownScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
 
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(1);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,6 +25,7 @@ export default function CountdownScreen() {
 
   return (
     <View style={styles.container}>
+      <Text>{roomCode}</Text>
       <Text style={styles.countdown}>{countdown}</Text>
     </View>
   );
