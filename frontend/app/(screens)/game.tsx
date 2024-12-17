@@ -59,10 +59,10 @@ export default function GameScreen() {
         contentContainerStyle={styles.photoList}
       /> */}
       <View style={[styles.categoryObjects, { width: width - 20 }]}>
-        <CategoryObject backgroundColor="#FF595E" text="Category 1" />
-        <CategoryObject backgroundColor="#FFCA3A" text="Category 2" />
-        <CategoryObject backgroundColor="#8AC926" text="Category 3" />
-        <CategoryObject backgroundColor="#1982C4" text="Category 4" />
+        <CategoryObject backgroundColor="#FF595E" number={4} text="musical instruments" images={photos} />
+        <CategoryObject backgroundColor="#FFCA3A" number={6} text="TVs" images={photos} />
+        <CategoryObject backgroundColor="#8AC926" number={3} text="fridges/freezers" images={photos} />
+        <CategoryObject backgroundColor="#1982C4" number={5} text="different types of bibles" images={photos} />
       </View>
     </View>
   );
