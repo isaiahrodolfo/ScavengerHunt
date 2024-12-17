@@ -1,4 +1,5 @@
 const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, logState } = require('./handlers');
+const { Room, rooms } = require('./types');
 
 const http = require('http');
 const express = require('express');
@@ -17,19 +18,16 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
   socket.on('startRoom', (roomCode, callback) => { handleStartRoom(roomCode, callback, socket) });
   socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
-  socket.on('exitRoom', (roomCode, callback, roomIsClosed) => { handleExitRoom(roomCode, callback, socket, roomIsClosed) });
-  socket.on('logState', (roomCode) => { logState(socket) });
+  socket.on('exitRoom', (roomCode, roomIsClosed, callback) => { handleExitRoom(roomCode, roomIsClosed, callback, socket) });
 
   // TESTING, print any incoming emits to console
   socket.onAny((eventName, ...args) => {
-    console.log(eventName); // 'hello'
-    console.log(args); // [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+    console.log(eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
   });
 
   // TESTING, print any outgoing emits to console
   socket.onAnyOutgoing((eventName, ...args) => {
-    console.log(eventName); // 'hello'
-    console.log(args); // [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+    console.log(eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
   });
 
   // Handle disconnection event

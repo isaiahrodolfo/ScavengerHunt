@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const [inputtedRoomCode, setinputtedRoomCode] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
 
-  async function createGame() {
+  async function handleCreateRoom() {
 
     const createdRoomCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit code // TODO: Make each game code unique
 
@@ -28,7 +28,7 @@ export default function HomeScreen() {
   }
 
   // Non-host joins game
-  async function joinGame() {
+  async function handleJoinRoom() {
 
     if (inputtedRoomCode) {
       const res = await joinRoom(inputtedRoomCode);
@@ -53,21 +53,33 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Button title="Host Game" onPress={createGame} />
+      <Button title="Host Game" onPress={handleCreateRoom} />
       <TextInput
         style={styles.input}
         placeholder="Enter Game Code"
         value={inputtedRoomCode}
         onChangeText={setinputtedRoomCode}
       />
-      <Button title="Join Game" onPress={joinGame} />
+      <Button title="Join Game" onPress={handleJoinRoom} />
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>} {/* Display error message */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  input: { borderWidth: 1, marginVertical: 10, padding: 5, width: 200 },
-  errorText: { color: 'red', marginTop: 10 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  input: {
+    borderWidth: 1,
+    marginVertical: 10,
+    padding: 5,
+    width: 200
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10
+  },
 });

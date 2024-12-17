@@ -19,10 +19,10 @@ export class AlreadyInSomeRoomError extends Error {
   }
 }
 
-export class AlreadyInThisRoomError extends Error {
+export class NotInThisRoomError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "AlreadyInThisRoom";
+    this.name = "NotInThisRoom";
   }
 }
 

@@ -1,10 +1,15 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { socket } from '@/utils/socket'
+import { closeRoom, exitRoom } from '@/handlers/roomHandlers';
 
 export default function GameOverScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
+
+  const isHostBool = isHost == 'true';
+  const roomCodeString = roomCode.toString();
 
   function handlePressNavigateToGameRoom() {
     console.log("hi")
@@ -14,9 +19,22 @@ export default function GameOverScreen() {
     });
   }
 
-  function handlePressNavigateToHomeScreen() {
-    socket.emit('closeRoom', roomCode); // Close room
-    router.replace('/(screens)/home'); // Go home
+  async function handleCloseRoom() {
+    const res = await closeRoom(roomCodeString);
+    if (res) {
+      setErrorMessage(res);
+    } else {
+      router.replace('/(screens)/home');
+    }
+  }
+
+  async function handleExitRoom() {
+    const res = await exitRoom(roomCodeString);
+    if (res) {
+      setErrorMessage(res);
+    } else {
+      router.replace('/(screens)/home');
+    }
   }
 
   return (
@@ -24,11 +42,21 @@ export default function GameOverScreen() {
       <Text>{roomCode}</Text>
       <Text>Play Again?</Text>
       <Button title="Back to Game Room" onPress={handlePressNavigateToGameRoom} />
-      {isHost && <Button title="Close Game" onPress={handlePressNavigateToHomeScreen} />}
+      {isHostBool && <Button title="Close Game" onPress={handleCloseRoom} />}
+      {!isHostBool && <Button title="Exit Game" onPress={handleExitRoom} />}
+      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>} {/* Display error message */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10
+  },
 });

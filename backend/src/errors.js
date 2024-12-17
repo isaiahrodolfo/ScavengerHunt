@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotHostError = exports.AlreadyInThisRoomError = exports.AlreadyInSomeRoomError = exports.RoomAlreadyExistsError = exports.RoomDoesNotExistError = void 0;
+exports.NotHostError = exports.NotInThisRoomError = exports.AlreadyInSomeRoomError = exports.RoomAlreadyExistsError = exports.RoomDoesNotExistError = void 0;
 class RoomDoesNotExistError extends Error {
     constructor(message) {
         super(message);
@@ -22,13 +22,13 @@ class AlreadyInSomeRoomError extends Error {
     }
 }
 exports.AlreadyInSomeRoomError = AlreadyInSomeRoomError;
-class AlreadyInThisRoomError extends Error {
+class NotInThisRoomError extends Error {
     constructor(message) {
         super(message);
-        this.name = "AlreadyInThisRoom";
+        this.name = "NotInThisRoom";
     }
 }
-exports.AlreadyInThisRoomError = AlreadyInThisRoomError;
+exports.NotInThisRoomError = NotInThisRoomError;
 class NotHostError extends Error {
     constructor(message) {
         super(message);
