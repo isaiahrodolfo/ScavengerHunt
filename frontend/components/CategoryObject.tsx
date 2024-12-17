@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
+import { ImageAndTargetLocation } from '@/types/game';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -9,10 +10,11 @@ interface CategoryObjectProps {
   text: string;
   images: string[]; // Array of CameraCapturedPicture objects
   onPress: (index: number) => void;
+  onPressImage: (target: ImageAndTargetLocation) => void;
   isSelecting: boolean;
 }
 
-const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, images, onPress, isSelecting }: CategoryObjectProps) => {
+const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, onPress, onPressImage, isSelecting }: CategoryObjectProps) => {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -26,7 +28,7 @@ const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, i
   return (
     <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} pointerEvents={isSelecting ? 'auto' : 'none'}>
       <Pressable onPress={() => {
-        onPress(index);
+        onPress(categoryIndex);
         scrollViewRef.current?.scrollToEnd();
       }}>
         {/* Top Half: Number and Text */}
@@ -46,7 +48,7 @@ const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, i
               ref={scrollViewRef}
             >
               {images.map((imageUri, index) => (
-                <TouchableOpacity key={index} style={styles.image}>
+                <TouchableOpacity key={index} style={styles.image} onPress={() => onPressImage({ imageUri, categoryIndex, imageIndex: index })}>
                   <Image source={{ uri: imageUri }} style={styles.image} />
                 </TouchableOpacity>
               ))}
