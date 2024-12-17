@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
   // Handle disconnection event
   socket.on('disconnect', () => {
     // Remove user from room because they are disconnecting
-    handleExitRoomOnDisconnect(socket)
+    handleExitRoom(socket)
     console.log(`User disconnected: ${socket.id}`);
   });
 });
