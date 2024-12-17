@@ -11,7 +11,7 @@ describe('handleCreateRoom', () => {
     Object.keys(rooms).forEach((key) => delete rooms[key]); // Reset rooms
   });
 
-  test('should create a room successfully', () => {
+  it('should create a room successfully', () => {
     handleCreateRoom('room123', callback, socket);
 
     expect(rooms['room123']).toBeDefined();
@@ -20,7 +20,7 @@ describe('handleCreateRoom', () => {
     expect(socket.join).toHaveBeenCalledWith('room123');
   });
 
-  test('should fail if room already exists', () => {
+  it('should fail if room already exists', () => {
     rooms['room123'] = { code: 'room123', host: 'anotherUser', players: new Set() };
 
     handleCreateRoom('room123', callback, socket);
@@ -28,7 +28,7 @@ describe('handleCreateRoom', () => {
     expect(callback).toHaveBeenCalledWith({ success: false, type: 'RoomExists' });
   });
 
-  test('should fail if user is already in another room', () => {
+  it('should fail if user is already in another room', () => {
     rooms['room123'] = { code: 'room123', host: 'anotherUser', players: new Set(['user1']) };
 
     handleCreateRoom('room456', callback, socket);

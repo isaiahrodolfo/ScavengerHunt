@@ -33,7 +33,7 @@ function checkIfRoomDoesNotExist(roomCode, callback) {
 function checkIfInAnyRoom(id, callback) {
     const roomCode = getRoomOfUser(id);
     if (roomCode) {
-        callback({ success: false, type: 'AlreadyInRoom', roomCode: roomCode });
+        callback({ success: false, type: 'AlreadyInRoom', roomCode });
         return true;
     }
     return false;
@@ -53,10 +53,12 @@ function checkIfInThisRoom(roomCode, callback, id) {
 /**
  * Ensures the user is the host of the room.
  */
-function checkIfNotHost(roomCode, id) {
-    if (types_1.rooms[roomCode].host !== id) {
-        throw new Error(`User ${id} is not the host of room ${roomCode}`);
+function checkIfNotHost(roomCode, callback, socketId) {
+    if (types_1.rooms[roomCode].host !== socketId) {
+        callback({ success: false, type: 'NotHost', message: 'Only the host can perform this action.' });
+        return true;
     }
+    return false;
 }
 /**
  * Gets the room of the given user
