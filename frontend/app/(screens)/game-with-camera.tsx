@@ -63,7 +63,7 @@ export default function GameScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>{roomCode}</Text>
+
       <Text style={styles.timer}>{timer}</Text>
 
       {/* Camera View */}
