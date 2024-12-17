@@ -87,6 +87,43 @@ export function handleStartRoom(roomCode: string, callback: any, socket: any) {
   callback({ success: true });
 }
 
+/**
+ * Handles restarting a room.
+ */
+// TODO: Write tests for restarting a room
+export function handleRestartRoom(roomCode: string, callback: any, socket: any) {
+  // Ensure the room exists
+  if (checkIfRoomDoesNotExist(roomCode, callback)) return;
+
+  // Ensure the user is the host
+  if (checkIfNotHost(roomCode, callback, socket.id)) return;
+  
+  // // Ensure the room has players (excluding the host)
+  // if (rooms[roomCode].players.size <= 1) {
+  //   callback({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
+  //   return;
+  // }
+
+  // Ensure the game has already started
+  if (!rooms[roomCode].started) {
+    callback({ success: false, type: 'GameHasNotStarted', error: 'Game has not started' });
+    return;
+  }
+
+  // Restart the room
+  rooms[roomCode].started = false;
+
+  // // Emit the "startGame" event to all users in the room
+  // socket.to(roomCode).emit("startGame");
+
+  // Log the action for debugging
+  // console.log(`Room ${roomCode} started by host ${socket.id}`);
+
+  // Callback with success message
+  callback({ success: true });
+}
+
+
 
 /**
  * Handles closing a room.

@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { socket } from '@/utils/socket'
-import { closeRoom, exitRoom } from '@/handlers/roomHandlers';
+import { closeRoom, exitRoom, restartRoom } from '@/handlers/roomHandlers';
 
 export default function GameOverScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -11,12 +11,24 @@ export default function GameOverScreen() {
   const isHostBool = isHost == 'true';
   const roomCodeString = roomCode.toString();
 
-  function handlePressNavigateToGameRoom() {
-    console.log("hi")
-    router.replace({
-      pathname: '/(screens)/game-room',
-      params: { roomCode, isHost }
-    });
+  async function handleRestartRoom() {
+    if (isHostBool) {
+      const res = await restartRoom(roomCodeString);
+      if (res) {
+        setErrorMessage(res);
+      } else {
+        router.replace({
+          pathname: '/(screens)/game-room',
+          params: { roomCode, isHost }
+        });
+      }
+    } else {
+      router.replace({
+        pathname: '/(screens)/game-room',
+        params: { roomCode, isHost }
+      });
+    }
+
   }
 
   async function handleCloseRoom() {
@@ -28,7 +40,7 @@ export default function GameOverScreen() {
     }
   }
 
-  async function handleExitRoom() {
+  async function handleExitRoom() { // TODO: Users are still in room after game over, and not redirected to game room
     const res = await exitRoom(roomCodeString);
     if (res) {
       setErrorMessage(res);
@@ -41,7 +53,7 @@ export default function GameOverScreen() {
     <View style={styles.container}>
       <Text>{roomCode}</Text>
       <Text>Play Again?</Text>
-      <Button title="Back to Game Room" onPress={handlePressNavigateToGameRoom} />
+      <Button title="Back to Game Room" onPress={handleRestartRoom} />
       {isHostBool && <Button title="Close Game" onPress={handleCloseRoom} />}
       {!isHostBool && <Button title="Exit Game" onPress={handleExitRoom} />}
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>} {/* Display error message */}

@@ -1,4 +1,4 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, logState } = require('./handlers');
+const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleRestartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, logState } = require('./handlers');
 const { Room, rooms } = require('./types');
 
 const http = require('http');
@@ -17,6 +17,7 @@ io.on('connection', (socket) => {
   socket.on('createRoom', (roomCode, callback) => { handleCreateRoom(roomCode, callback, socket) });
   socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
   socket.on('startRoom', (roomCode, callback) => { handleStartRoom(roomCode, callback, socket) });
+  socket.on('restartRoom', (roomCode, callback) => { handleRestartRoom(roomCode, callback, socket) });
   socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
   socket.on('exitRoom', (roomCode, roomIsClosed, callback) => { handleExitRoom(roomCode, roomIsClosed, callback, socket) });
 
