@@ -1,16 +1,19 @@
 import Camera from '@/components/Camera';
+import CategoryObject from '@/components/CategoryObject';
 import { CameraCapturedPicture } from 'expo-camera';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image, FlatList, useWindowDimensions } from 'react-native';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(1000);
   const [hasCameraPermissions, setHasCameraPermissions] = useState<boolean>(false);
   const [photos, setPhotos] = useState<string[]>([]); // Array to hold image URIs
 
   const [image, setImage] = useState<CameraCapturedPicture | null>(null);
+
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,7 +39,7 @@ export default function GameScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>{roomCode}</Text>
+
       <Text style={styles.timer}>{timer}</Text>
 
       {/* Camera View */}
@@ -46,7 +49,7 @@ export default function GameScreen() {
       />
 
       {/* Photo List */}
-      <FlatList
+      {/* <FlatList
         data={photos}
         keyExtractor={(item, index) => index.toString()}
         horizontal
@@ -54,7 +57,13 @@ export default function GameScreen() {
           <Image source={{ uri: item }} style={styles.thumbnail} />
         )}
         contentContainerStyle={styles.photoList}
-      />
+      /> */}
+      <View style={[styles.categoryObjects, { width: width - 20 }]}>
+        <CategoryObject backgroundColor="#FF595E" text="Category 1" />
+        <CategoryObject backgroundColor="#FFCA3A" text="Category 2" />
+        <CategoryObject backgroundColor="#8AC926" text="Category 3" />
+        <CategoryObject backgroundColor="#1982C4" text="Category 4" />
+      </View>
     </View>
   );
 }
@@ -62,20 +71,32 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'white',
   },
   timer: {
-    fontSize: 50
+    fontSize: 20,
+    // fontSize: 50,
+    // fontWeight: 'bold',
   },
-  photoList: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  thumbnail: {
-    width: 100,
-    height: 100,
-    marginHorizontal: 5,
+  cameraPlaceholder: {
+    flex: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ccc',
+    width: '100%',
+    marginVertical: 10,
     borderRadius: 10,
+  },
+  categoryObjects: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
+    maxHeight: 300,
+    flex: 2,
   },
 });

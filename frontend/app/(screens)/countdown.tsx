@@ -25,7 +25,7 @@ export default function CountdownScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>{roomCode}</Text>
+
       <Text style={styles.countdown}>{countdown}</Text>
     </View>
   );
