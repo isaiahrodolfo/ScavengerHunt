@@ -5,49 +5,36 @@ import { Socket } from 'socket.io';
 
 export function handleCreateRoom(roomCode: string, callback: any, socket: any) {
 
-  try {
-    // Check that there is no room associated with that room code
-    checkIfRoomExists(roomCode, callback);
-    // TODO: Randomly generated room codes can be duplicated!
+  // Check that there is no room associated with that room code
+  if (checkIfRoomExists(roomCode, callback)) return; // TODO: Randomly generated room codes may not be unique
 
-    // A user cannot already be part of another room if they want to create this room
-    checkIfInAnyRoom(socket.id, callback);
+  // A user cannot already be part of another room if they want to create this room
+  if (checkIfInAnyRoom(socket.id, callback)) return;
 
-    // Add to rooms list as host and player
-    rooms[roomCode] = {
-      code: roomCode,
-      host: socket.id,
-      players: new Set([socket.id])
-    }
-    socket.join(roomCode);
-
-    // Message
-    console.log(`Room with code ${roomCode} created by user: ${socket.id}`);
-
-  } catch (error) {
-    console.error("Error creating room: ", error);
+  // Add to rooms list as host and player
+  rooms[roomCode] = {
+    code: roomCode,
+    host: socket.id,
+    players: new Set([socket.id])
   }
+  socket.join(roomCode);
 
-  logState(socket);
+  // Message
+  console.log(`Room with code ${roomCode} created by user: ${socket.id}`);
+
+  // Success
+  callback({ success: true });
+
+  // logState(socket);
 
 }
 
 export function handleJoinRoom(roomCode: string, callback: any, socket: any) {
 
-  // const room = rooms[roomCode]; // Fetch the room by code
-  // if (!room) {
-  //   // Room doesn't exist
-  //   return callback({ success: false, type: 'RoomDoesNotExist' });
-  // }
-
-  checkIfRoomDoesNotExist(roomCode, callback);
-
-  // if (room.players.has(socket.id)) {
-  //   // Already in room
-  //   return callback({ success: false, type: 'AlreadyInRoom' });
-  // }
-
-  checkIfInAnyRoom(roomCode, callback);
+  // If the given room does not exist, user cannot join it
+  if (checkIfRoomDoesNotExist(roomCode, callback)) return;
+  // If user is already in a room, they cannot join this one
+  if (checkIfInAnyRoom(socket.id, callback)) return;
 
   // Add player to room
   rooms[roomCode].players.add(socket.id);

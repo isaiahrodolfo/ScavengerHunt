@@ -6,7 +6,7 @@
       "@/*": [
         "./*",
       ],
-      "@utils/*": ["./utils/*"],
+      // "@utils/*": ["./utils/*"],
     },
     "forceConsistentCasingInFileNames": true
   },
