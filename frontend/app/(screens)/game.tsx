@@ -1,7 +1,7 @@
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -10,6 +10,10 @@ export default function GameScreen() {
   // State variables for camera
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
+  const [photo, setPhoto] = useState<string | null>(null); // Store the captured photo
+
+  const cameraRef = useRef<any>(null); // Reference to the camera
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,7 +41,7 @@ export default function GameScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
@@ -46,17 +50,41 @@ export default function GameScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  async function takePicture() {
+    if (cameraRef.current && isCameraReady) {
+      try {
+        const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
+        setPhoto(photo.uri); // Save the captured image URI
+      } catch (error) {
+        console.error("Error taking picture:", error);
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text>{roomCode}</Text>
       <Text style={styles.timer}>{timer}</Text>
-      <CameraView style={styles.camera} facing={facing}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+      {photo ? (
+        // Display the captured photo
+        <Image source={{ uri: photo }} style={styles.photo} />
+      ) : (
+        <CameraView
+          ref={cameraRef}
+          style={styles.camera}
+          facing={facing}
+          onCameraReady={() => setIsCameraReady(true)}
+        >
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      )}
+      <TouchableOpacity style={styles.button} onPress={takePicture}>
+        <Text style={styles.text}>Take Picture</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -76,6 +104,12 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+    width: '100%',
+  },
+  photo: {
+    flex: 1,
+    width: '100%',
+    resizeMode: 'contain',
   },
   buttonContainer: {
     flex: 1,
