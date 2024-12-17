@@ -1,31 +1,27 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleCloseRoom, handleExitRoom } = require('../../src/handlers');
 const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInSomeRoomError, RoomDoesNotExistError, RoomAlreadyExistsError } = require('../../src/errors');
-const { checkIfRoomExists, checkIfRoomDoesNotExist, checkIfInAnyRoom, checkIfInThisRoom, checkIfNotHost, getRoomOfUser } = require('../../src/handler-helpers');
-
-jest.mock('../../src/handler-helpers.js');
-jest.mock('../../src/errors.js');
-
-jest.mock('../../src/types', () => ({
-  rooms: {
-    room123: {
-      code: 'room123',
-      host: 'host1',
-      players: new Set(['host1']),
-    },
-  },
-}));
+const { checkIfRoomExists } = require('../../src/handler-helpers');
 
 describe('checkIfRoomExists', () => {
-  it('should throw error if room exists', () => { // TODO: Fix this (in practice, it works)
-    // expect(() => checkIfRoomExists('room123')).toThrowError('A room already exists with code room123.');
-    expect(() => checkIfRoomExists('room123')).toStrictEqual(
-      RoomAlreadyExistsError('A room already exists with code room123.')
-    );
+  let callback;
+
+  beforeEach(() => {
+    callback = jest.fn();
+    Object.keys(rooms).forEach(key => delete rooms[key]); // Reset rooms
   });
 
-  it('should not throw error if room does not exist', () => {
-    expect(() => checkIfRoomExists('room456')).not.toThrow();
-    // expect(() => checkIfRoomExists('room456')).toThrow();
+  test('should return true and call callback if room exists', () => {
+    rooms['room123'] = { code: 'room123', host: 'user1', players: new Set() };
+
+    const result = checkIfRoomExists('room123', callback);
+
+    expect(result).toBe(true);
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'RoomExists' });
+  });
+
+  test('should return false if room does not exist', () => {
+    const result = checkIfRoomExists('room123', callback);
+
+    expect(result).toBe(false);
+    expect(callback).not.toHaveBeenCalled();
   });
 });

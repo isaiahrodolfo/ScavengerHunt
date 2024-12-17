@@ -8,7 +8,7 @@ describe('handleCreateRoom', () => {
   beforeEach(() => {
     socket = { id: 'user1', join: jest.fn() };
     callback = jest.fn();
-    Object.keys(rooms).forEach(key => delete rooms[key]); // Reset rooms
+    Object.keys(rooms).forEach((key) => delete rooms[key]); // Reset rooms
   });
 
   test('should create a room successfully', () => {

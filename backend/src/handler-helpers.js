@@ -2,51 +2,60 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkIfRoomExists = checkIfRoomExists;
 exports.checkIfRoomDoesNotExist = checkIfRoomDoesNotExist;
-exports.checkIfNotHost = checkIfNotHost;
-exports.getRoomOfUser = getRoomOfUser;
 exports.checkIfInAnyRoom = checkIfInAnyRoom;
 exports.checkIfInThisRoom = checkIfInThisRoom;
-const errors_1 = require("./errors");
+exports.checkIfNotHost = checkIfNotHost;
+exports.getRoomOfUser = getRoomOfUser;
 const types_1 = require("./types"); // Import types
 /**
- * Checks if the room code does not have an existing room associated with it
- * @param roomCode
- * @returns Error if a room with given room code is found
+ * Checks if the room code already exists.
  */
 function checkIfRoomExists(roomCode, callback) {
-    if (Object.values(types_1.rooms).find((room) => room.code === roomCode)) {
-        console.log(`No room exists with code ${roomCode}.`);
+    const exists = !!types_1.rooms[roomCode];
+    if (exists) {
         callback({ success: false, type: 'RoomExists' });
-        return true;
     }
-    else {
-        return false;
-    }
+    return exists;
 }
 /**
- * Checks if the room code has an existing room associated with it
- * @param roomCode
- * @returns Error if no room with given room code is found
+ * Checks if the room does not exist.
  */
 function checkIfRoomDoesNotExist(roomCode, callback) {
-    if (!Object.values(types_1.rooms).find((room) => room.code === roomCode)) {
-        console.log(`No room exists with code ${roomCode}.`);
+    const notExists = !types_1.rooms[roomCode];
+    if (notExists) {
         callback({ success: false, type: 'RoomDoesNotExist' });
-        return true;
     }
-    else {
-        return false;
-    }
+    return notExists;
 }
 /**
- * Checks if user is the host of the room with the given room id. If not, returns error
- * @param roomCode
- * @param id
- * @returns Error if user is not the host
+ * Checks if the user is in any room.
+ */
+function checkIfInAnyRoom(id, callback) {
+    const roomCode = getRoomOfUser(id);
+    if (roomCode) {
+        callback({ success: false, type: 'AlreadyInRoom', roomCode: roomCode });
+        return true;
+    }
+    return false;
+}
+/**
+ * Checks if the user is in this room.
+ */
+function checkIfInThisRoom(roomCode, callback, id) {
+    // Check if the user is a player (or host) in the room
+    const room = types_1.rooms[roomCode];
+    if (room.host !== id && !room.players.has(id)) {
+        callback({ success: false, type: 'AlreadyInThisRoom', roomCode });
+        return true;
+    }
+    return false;
+}
+/**
+ * Ensures the user is the host of the room.
  */
 function checkIfNotHost(roomCode, id) {
-    if (types_1.rooms[roomCode].host != id) {
-        throw Error(`User ${id} cannot start room with code ${roomCode} since user is not the host.`);
+    if (types_1.rooms[roomCode].host !== id) {
+        throw new Error(`User ${id} is not the host of room ${roomCode}`);
     }
 }
 /**
@@ -57,34 +66,4 @@ function checkIfNotHost(roomCode, id) {
 function getRoomOfUser(id) {
     const existingRoom = Object.values(types_1.rooms).find((room) => room.players.has(id));
     return existingRoom === null || existingRoom === void 0 ? void 0 : existingRoom.code; // Returns the room code or undefined  
-}
-/**
- * Checks if the user is already a host or player in any room
- * @param id
- * @returns Error if user is already in a room
- */
-function checkIfInAnyRoom(id, callback) {
-    const roomCode = getRoomOfUser(id);
-    if (roomCode) {
-        console.log(`User ${id} is already part of room ${roomCode}.`);
-        callback({ success: false, type: 'AlreadyInRoom' });
-        return true;
-    }
-    else {
-        console.log(`User ${id} is not part of any room.`);
-        return false;
-    }
-}
-/**
- * Checks if the user is already a host or player in the given room
- * @param roomCode
- * @param id
- * @returns Error if user is not in the given room
- */
-function checkIfInThisRoom(roomCode, id) {
-    // Check if the user is the host or a player in the room
-    const room = types_1.rooms[roomCode];
-    if (room.host !== id && !room.players.has(id)) {
-        throw new errors_1.AlreadyInThisRoomError(`User ${id} is not part of the room with code ${roomCode}.`);
-    }
 }

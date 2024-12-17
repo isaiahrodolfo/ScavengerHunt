@@ -36,14 +36,28 @@ export function checkIfInAnyRoom(id: string, callback: any): boolean {
 }
 
 /**
- * Ensures the user is the host of the room.
+ * Checks if the user is in this room.
  */
-export function checkIfNotHost(roomCode: string, id: string): (Error | void) {
-  if (rooms[roomCode].host !== id) {
-    throw new Error(`User ${id} is not the host of room ${roomCode}`);
+export function checkIfInThisRoom(roomCode: string, callback: any, id: string): boolean {
+  // Check if the user is a player (or host) in the room
+  const room = rooms[roomCode];
+  if (room.host !== id && !room.players.has(id)) {
+    callback({ success: false, type: 'AlreadyInThisRoom', roomCode });
+    return true;
   }
+  return false;
 }
 
+/**
+ * Ensures the user is the host of the room.
+ */
+export function checkIfNotHost(roomCode: string, socketId: string, callback: any): boolean {
+  if (rooms[roomCode].host !== socketId) {
+    callback({ success: false, type: 'NotHost', message: 'Only the host can perform this action.' });
+    return true;
+  }
+  return false;
+}
 
 /**
  * Gets the room of the given user
@@ -55,17 +69,4 @@ export function getRoomOfUser(id: string): (string | undefined) {
   const existingRoom = Object.values(rooms).find((room) => room.players.has(id));
 
   return existingRoom?.code; // Returns the room code or undefined  
-}
-/**
- * Checks if the user is already a host or player in the given room
- * @param roomCode
- * @param id 
- * @returns Error if user is not in the given room
- */
-export function checkIfInThisRoom(roomCode: string, id: string): (AlreadyInThisRoomError | void) {
-  // Check if the user is the host or a player in the room
-  const room = rooms[roomCode];
-  if (room.host !== id && !room.players.has(id)) {
-    throw new AlreadyInThisRoomError(`User ${id} is not part of the room with code ${roomCode}.`);
-  }
 }

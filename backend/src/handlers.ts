@@ -5,7 +5,6 @@ import {
   checkIfInAnyRoom,
   checkIfNotHost,
   checkIfInThisRoom,
-  getRoomOfUser,
 } from './handler-helpers';
 
 /**
@@ -55,18 +54,11 @@ export function handleJoinRoom(roomCode: string, callback: any, socket: any) {
 export function handleStartRoom(roomCode: string, callback: any, socket: any) {
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
-  try {
-    checkIfNotHost(roomCode, socket.id);
-    socket.to(roomCode).emit("startGame");
-    console.log(`Room ${roomCode} started by host ${socket.id}`);
-    callback({ success: true });
-  } catch (error) {
-    if (error instanceof Error) {
-      callback({ success: false, type: 'NotHost', message: error.message });
-    } else {
-      callback({ success: false, type: 'UnknownError', message: 'An unknown error occurred.' });
-    }
-  }
+  if (checkIfNotHost(roomCode, callback, socket.id)) return;
+
+  socket.to(roomCode).emit("startGame");
+  console.log(`Room ${roomCode} started by host ${socket.id}`);
+  callback({ success: true });
 }
 
 /**
@@ -75,18 +67,38 @@ export function handleStartRoom(roomCode: string, callback: any, socket: any) {
 export function handleCloseRoom(roomCode: string, callback: any, socket: any) {
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
-  try {
-    checkIfNotHost(roomCode, socket.id);
-    delete rooms[roomCode];
-    socket.to(roomCode).emit('exitRoom');
-    socket.leave(roomCode);
-    console.log(`Room ${roomCode} closed by ${socket.id}`);
-    callback({ success: true });
-  } catch (error) {
-    if (error instanceof Error) {
-      callback({ success: false, type: 'NotHost', message: error.message });
-    } else {
-      callback({ success: false, type: 'UnknownError', message: 'An unknown error occurred.' });
-    }
+  if (checkIfNotHost(roomCode, callback, socket.id)) return;
+
+  delete rooms[roomCode];
+  socket.to(roomCode).emit('exitRoom');
+  socket.leave(roomCode);
+  console.log(`Room ${roomCode} closed by ${socket.id}`);
+  callback({ success: true });
+}
+
+/**
+ * Handles exiting a room.
+ */
+export function handleExitRoom(roomCode: string, callback: any, socket: any, roomIsClosed: boolean) {
+
+  // If room is already closed by host, no need to check this
+  if (!roomIsClosed) {
+    // Check if there is a room to exit
+    if (checkIfRoomDoesNotExist(roomCode, callback)) return;
   }
+
+  // A user can only exit this room if it is a player of it
+  if (checkIfInThisRoom(roomCode, callback, socket.id)) return;
+
+  // Remove from rooms list as player
+  rooms[roomCode].players.delete(socket.id);
+
+  // Exit socket room
+  socket.leave(roomCode);
+
+  // Message
+  console.log(`Room with code ${roomCode} exited by user: ${socket.id}`);
+
+  callback({ success: true });
+
 }
