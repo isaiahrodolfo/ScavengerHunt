@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity 
 import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndTargetLocation } from '@/types/game';
+import { useGameState } from '@/store/useGameState';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -16,6 +17,8 @@ interface CategoryObjectProps {
 
 const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, onPress, onPressImage, isSelecting }: CategoryObjectProps) => {
 
+  const { gameState, setGameState } = useGameState();
+
   const scrollViewRef = useRef<ScrollView | null>(null);
 
   // Use an effect to scroll to the end after the images have been laid out
@@ -26,7 +29,7 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
   }, [images]); // This will trigger whenever images change
 
   return (
-    <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} pointerEvents={isSelecting ? 'auto' : 'none'}>
+    <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
       <Pressable onPress={() => {
         onPress(categoryIndex);
         scrollViewRef.current?.scrollToEnd();
