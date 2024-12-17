@@ -1,43 +1,48 @@
 const { handleCloseRoom } = require('../../src/handlers');
-const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInSomeRoomError, RoomDoesNotExistError, NotHostError } = require('../../src/errors');
-const { checkIfRoomExists, checkIfRoomDoesNotExist, checkIfInAnyRoom, checkIfInThisRoom, checkIfNotHost, getRoomOfUser } = require('../../src/handler-helpers');
-
-jest.mock('../../src/handler-helpers.js');
-jest.mock('../../src/errors.js');
+const { rooms } = require('../../src/types'); // Import rooms from your types file
 
 describe('handleCloseRoom', () => {
-  const mockSocket = {
-    id: 'host1',
-    to: jest.fn(),
-    leave: jest.fn(),
-  };
+  let socket;
+  let callback;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    // Reset mocks for socket and callback
+    socket = { 
+      id: 'user1', 
+      leave: jest.fn(), // Add a mock for socket.leave
+      to: jest.fn(() => ({ emit: jest.fn() }))
+    };
+    callback = jest.fn();
+    Object.keys(rooms).forEach((key) => delete rooms[key]); // Clear rooms before each test
   });
 
-  it('should close the room if the user is the host', () => {
-    checkIfRoomDoesNotExist.mockImplementation(() => {});
-    checkIfNotHost.mockImplementation(() => {});
+  it('should allow the host to close an existing room', () => {
 
-    const roomCode = 'room123';
-    handleCloseRoom(roomCode, mockSocket);
+    rooms['room1'] = { code: 'room1', host: socket.id, players: new Set([socket.id, 'user2']) };
 
-    expect(checkIfRoomDoesNotExist).toHaveBeenCalledWith(roomCode);
-    expect(checkIfNotHost).toHaveBeenCalledWith(roomCode, mockSocket.id);
-    expect(mockSocket.to).toHaveBeenCalledWith(roomCode);
+    handleCloseRoom('room1', callback, socket);
+
+    expect(rooms['room1']).toBeUndefined(); // Room should no longer exist
+    expect(socket.leave).toHaveBeenCalledWith('room1'); // Host is removed from the room
+    expect(callback).toHaveBeenCalledWith({ success: true });
   });
 
-  it('should emit error if the user is not the host', () => {
-    checkIfRoomDoesNotExist.mockImplementation(() => {});
-    checkIfNotHost.mockImplementation(() => {
-      throw new NotHostError('User is not the host');
-    });
+  it('should fail if room does not exist', () => {
 
-    const roomCode = 'room123';
-    handleCloseRoom(roomCode, mockSocket);
+    handleCloseRoom('nonexistent', callback, socket);
 
-    expect(mockSocket.leave).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'RoomDoesNotExist' }); // Callback reports failure
+    expect(socket.leave).not.toHaveBeenCalled(); // socket.leave is never called
+  });
+
+  it('should fail if user is not the host', () => {
+    // Create a room with a different host
+    rooms['room1'] = { code: 'room1', host: 'otherHost', players: new Set(['otherHost', socket.id]) };
+
+    handleCloseRoom('room1', callback, socket);
+
+    expect(rooms['room1']).toBeDefined(); // Room still exists
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'NotHost' }); // Callback reports failure due to not being the host
+    expect(socket.leave).not.toHaveBeenCalled(); // socket.leave is never called
   });
 });
