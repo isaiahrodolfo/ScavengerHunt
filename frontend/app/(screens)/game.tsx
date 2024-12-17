@@ -1,38 +1,33 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import Camera from '@/components/Camera';
 import CategoryObject from '@/components/CategoryObject';
 import { CameraCapturedPicture } from 'expo-camera';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image, FlatList, useWindowDimensions } from 'react-native';
 
 type Category = {
-  images: string[]
-}
+  images: string[];
+};
 
 type ImageTargetLocation = {
-  category: number,
-  imageIndex: number, // 0+ as index, -1 for append to list
-}
+  category: number;
+  imageIndex: number; // 0+ as index, -1 for append to list
+};
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
   const [timer, setTimer] = useState(1000);
-  const [hasCameraPermissions, setHasCameraPermissions] = useState<boolean>(false);
-
-  const [imageTargetLocation, setImageTargetLocation] = useState<ImageTargetLocation | null>(null);
-
-  const [photos, setPhotos] = useState<string[]>([]); // Array to hold image URIs
-  const [categoryImages, setCategoryImages] = useState<Category[]>([
-    { images: [] }, // Category 0
-    { images: [] }, // Category 1
-    { images: [] }, // Category 2
-    { images: [] }, // Category 3
-  ]);
-
+  const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [image, setImage] = useState<CameraCapturedPicture | null>(null);
-
+  const [categoryImages, setCategoryImages] = useState<Category[]>([
+    { images: [] },
+    { images: [] },
+    { images: [] },
+    { images: [] },
+  ]);
   const { width } = useWindowDimensions();
 
+  // Timer logic
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -42,131 +37,85 @@ export default function GameScreen() {
       clearInterval(interval);
       router.replace({
         pathname: '/(screens)/game-over',
-        params: { roomCode, isHost }
+        params: { roomCode, isHost },
       });
     }
 
     return () => clearInterval(interval);
   }, [timer]);
 
-  useEffect(() => {
-    if (image) {
-      if (imageTargetLocation) {
-        setCategoryImages(categoryImages => {
-          const newCategoryImages = [...categoryImages]; // Create a copy of the old array
-          const newImages = newCategoryImages[imageTargetLocation.category].images; // Get the old array's image list
-          newImages[imageTargetLocation.imageIndex] = image.uri; // Replace the image with the new one
-          newCategoryImages[imageTargetLocation.category] = { images: newImages }; // Replace the category with the one with an updated image
-          return newCategoryImages; // Return the updated array
-        });
-      } else {
-        // TODO: Now ask the user to select a location
-      }
-      // setPhotos((prevPhotos) => [...prevPhotos, image.uri]); // Add the new photo URI to the list
-    }
-  }, [image]);
-
-  const handleCategorySelection = (categoryIndex: number) => {
-    if (image) {
+  // Handle image addition to a selected category
+  const handleCategoryPressed = (index: number) => {
+    if (isSelecting && image) {
       setCategoryImages((prevCategories) => {
         const updatedCategories = [...prevCategories];
-        updatedCategories[categoryIndex] = {
-          images: [...updatedCategories[categoryIndex].images, image.uri], // Append image
+        updatedCategories[index] = {
+          images: [...updatedCategories[index].images, image.uri],
         };
         return updatedCategories;
       });
-      setImageTargetLocation(null); // Reset the target location
-      setImage(null); // Reset the captured image
+      setIsSelecting(false);
+      setImage(null); // Reset captured image
     }
   };
 
+  // Once an image is captured, toggle selection mode
+  useEffect(() => {
+    if (image) {
+      setIsSelecting(true);
+    }
+  }, [image]);
+
   return (
     <View style={styles.container}>
-
       <Text style={styles.timer}>{timer}</Text>
 
       {/* Camera View */}
-      <Camera
-        setHasPermissions={setHasCameraPermissions}
-        setImage={setImage}
-      />
-
-      <View style={styles.buttonContainer}>
-        {categoryImages.map((_, index) => (
-          <Text
-            key={index}
-            style={styles.categoryButton}
-            onPress={() => handleCategorySelection(index)}
-          >
-            Add to Category {index + 1}
-          </Text>
-        ))}
+      <View style={styles.camera}>
+        <Camera setHasPermissions={() => { }} setImage={setImage} />
       </View>
 
-      {/* Photo List */}
-      {/* <FlatList
-        data={photos}
-        keyExtractor={(item, index) => index.toString()}
-        horizontal
-        renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.thumbnail} />
-        )}
-        contentContainerStyle={styles.photoList}
-      /> */}
       <View style={[styles.categoryObjects, { width: width - 20 }]}>
-        <CategoryObject backgroundColor="#FF595E" number={4} text="musical instruments" images={categoryImages[0]?.images || []} />
-        <CategoryObject backgroundColor="#FFCA3A" number={6} text="TVs" images={categoryImages[1]?.images || []} />
-        <CategoryObject backgroundColor="#8AC926" number={3} text="fridges/freezers" images={categoryImages[2]?.images || []} />
-        <CategoryObject backgroundColor="#1982C4" number={5} text="different types of bibles" images={categoryImages[3]?.images || []} />      </View>
+        {categoryImages.map((category, index) => (
+          <CategoryObject
+            key={index}
+            categoryIndex={index}
+            backgroundColor={getCategoryColor(index)}
+            onPress={() => handleCategoryPressed(index)} // Triggered on press
+            isSelecting={isSelecting}
+            number={getCategoryNumber(index)}
+            text={getCategoryName(index)}
+            images={category.images}
+          />
+        ))}
+      </View>
     </View>
   );
 }
 
+// TODO: Make a JSON object that stores this data
+function getCategoryNumber(index: number) {
+  const numbers = [4, 6, 3, 5];
+  return numbers[index] || 0;
+}
+
+function getCategoryColor(index: number) {
+  const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
+  return colors[index] || '#ccc';
+}
+
+function getCategoryName(index: number) {
+  const colors = ['musical instruments', 'TVs', 'fridges/freezers', 'different types of bibles'];
+  return colors[index] || '#ccc';
+}
+
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1, justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white' },
+  camera: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: 'white',
+    aspectRatio: 9 / 16, // Maintain 4:3 aspect ratio
+    width: '50%',
   },
-  timer: {
-    fontSize: 20,
-    // fontSize: 50,
-    // fontWeight: 'bold',
-  },
-  cameraPlaceholder: {
-    flex: 3,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
-    width: '100%',
-    marginVertical: 10,
-    borderRadius: 10,
-  },
-  categoryObjects: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: '100%',
-    maxHeight: 300,
-    flex: 2,
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
-  categoryButton: {
-    padding: 10,
-    margin: 5,
-    backgroundColor: '#007BFF',
-    color: 'white',
-    borderRadius: 5,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-
+  timer: { fontSize: 20 },
+  categoryObjects: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', width: '100%' },
 });
