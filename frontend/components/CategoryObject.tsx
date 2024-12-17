@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ScrollView, Image, Pressable } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 
 interface CategoryObjectProps {
@@ -13,11 +13,22 @@ interface CategoryObjectProps {
 }
 
 const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, images, onPress, isSelecting }: CategoryObjectProps) => {
+
+  const scrollViewRef = useRef<ScrollView | null>(null);
+
+  // Use an effect to scroll to the end after the images have been laid out
+  useEffect(() => {
+    if (images.length > 0 && scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [images]); // This will trigger whenever images change
+
   return (
     <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} pointerEvents={isSelecting ? 'auto' : 'none'}>
-      <Pressable onPress={() => onPress(index)}
-      // activeOpacity={0.9}
-      >
+      <Pressable onPress={() => {
+        onPress(index);
+        scrollViewRef.current?.scrollToEnd();
+      }}>
         {/* Top Half: Number and Text */}
         <View style={styles.description}>
           <Text style={styles.number}>{number}</Text>
@@ -28,11 +39,16 @@ const CategoryObject = ({ categoryIndex: index, backgroundColor, number, text, i
         <View style={styles.imagesWrapper} pointerEvents='auto'>
           {images.length > 0 ? (
             // Cannot select individual photos when selecting a category
-            <ScrollView style={styles.scrollView} horizontal showsHorizontalScrollIndicator={true} pointerEvents={isSelecting ? 'none' : 'auto'}>
+            <ScrollView
+              style={styles.scrollView}
+              horizontal showsHorizontalScrollIndicator={true}
+              pointerEvents={isSelecting ? 'none' : 'auto'}
+              ref={scrollViewRef}
+            >
               {images.map((imageUri, index) => (
-                <Pressable key={index} style={styles.image}>
+                <TouchableOpacity key={index} style={styles.image}>
                   <Image source={{ uri: imageUri }} style={styles.image} />
-                </Pressable>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           ) : (
