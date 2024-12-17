@@ -4,7 +4,7 @@ import {
   checkIfRoomExists,
   checkIfInAnyRoom,
   checkIfNotHost,
-  checkIfInThisRoom,
+  checkIfNotInThisRoom,
   checkIfHost,
   getRoomOfUser,
 } from './handler-helpers';
@@ -28,7 +28,7 @@ export function handleCreateRoom(roomCode: string, callback: any, socket: any) {
   };
 
   socket.join(roomCode);
-  console.log(`Room ${roomCode} created by ${socket.id}`);
+  // console.log(`Room ${roomCode} created by ${socket.id}`);
 
   callback({ success: true });
 }
@@ -46,7 +46,7 @@ export function handleJoinRoom(roomCode: string, callback: any, socket: any) {
   // Add the user to the room
   rooms[roomCode].players.add(socket.id);
   socket.join(roomCode);
-  console.log(`User ${socket.id} joined room ${roomCode}`);
+  // console.log(`User ${socket.id} joined room ${roomCode}`);
 
   callback({ success: true });
 }
@@ -61,15 +61,16 @@ export function handleStartRoom(roomCode: string, callback: any, socket: any) {
   // Ensure the user is the host
   if (checkIfNotHost(roomCode, callback, socket.id)) return;
 
-  // Ensure the room has players (including the host)
-  if (rooms[roomCode].players.size === 0) {
-    callback({ success: false, message: 'Cannot start a room with no players' });
+  // TODO: Write tests for these new types
+  // Ensure the room has players (excluding the host)
+  if (rooms[roomCode].players.size <= 1) {
+    callback({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
     return;
   }
 
-  // Ensure the room is not already started
+  // Ensure the game is not already started
   if (rooms[roomCode].started) {
-    callback({ success: false, message: 'Room has already started' });
+    callback({ success: false, type: 'GameStarted', error: 'Game has already started' });
     return;
   }
 
@@ -80,7 +81,7 @@ export function handleStartRoom(roomCode: string, callback: any, socket: any) {
   socket.to(roomCode).emit("startGame");
 
   // Log the action for debugging
-  console.log(`Room ${roomCode} started by host ${socket.id}`);
+  // console.log(`Room ${roomCode} started by host ${socket.id}`);
 
   // Callback with success message
   callback({ success: true });
@@ -98,14 +99,14 @@ export function handleCloseRoom(roomCode: string, callback: any, socket: any) {
   delete rooms[roomCode];
   socket.to(roomCode).emit('exitRoom');
   socket.leave(roomCode);
-  console.log(`Room ${roomCode} closed by ${socket.id}`);
+  // console.log(`Room ${roomCode} closed by ${socket.id}`);
   callback({ success: true });
 }
 
 /**
  * Handles exiting a room.
  */
-export function handleExitRoom(roomCode: string, callback: any, socket: any, roomIsClosed: boolean) {
+export function handleExitRoom(roomCode: string, roomIsClosed: boolean, callback: any, socket: any ) {
 
   // If room is already closed by host, no need to check this
   if (!roomIsClosed) {
@@ -125,7 +126,7 @@ export function handleExitRoom(roomCode: string, callback: any, socket: any, roo
   }
 
   // A user can only exit this room if it is a player of it
-  if (checkIfInThisRoom(roomCode, callback, socket.id)) return;
+  if (checkIfNotInThisRoom(roomCode, callback, socket.id)) return;
 
   // Remove from rooms list as player
   rooms[roomCode].players.delete(socket.id);
@@ -134,7 +135,7 @@ export function handleExitRoom(roomCode: string, callback: any, socket: any, roo
   socket.leave(roomCode);
 
   // Message
-  console.log(`Room with code ${roomCode} exited by user: ${socket.id}`);
+  // console.log(`Room with code ${roomCode} exited by user: ${socket.id}`);
 
   callback({ success: true });
 
@@ -152,6 +153,6 @@ export function handleExitRoomOnDisconnect(socket: any) {
     const dummyCallback = () => {};
 
     // Call handleExitRoom for cleanup on disconnect
-    handleExitRoom(roomCode, dummyCallback, socket, false);
+    handleExitRoom(roomCode, false, dummyCallback, socket); // TODO: If user is host, the room is to be closed.
   }
 }

@@ -20,7 +20,7 @@ describe('handleExitRoom', () => {
 
     rooms['room1'] = { code: 'room1', host: 'host1', players: new Set(['host1', socket.id]) };
 
-    handleExitRoom('room1', callback, socket, false);
+    handleExitRoom('room1', false, callback, socket);
 
     expect(rooms['room1']).toBeDefined(); // Room should still exist
     expect(rooms['room1'].players.has(socket.id)).toBeFalsy(); // User is removed from the room
@@ -30,7 +30,7 @@ describe('handleExitRoom', () => {
 
   it('should fail if room does not exist', () => {
 
-    handleExitRoom('nonexistent', callback, socket, false);
+    handleExitRoom('nonexistent', false, callback, socket);
 
     expect(callback).toHaveBeenCalledWith({ success: false, type: 'RoomDoesNotExist' }); // Callback reports failure
     expect(socket.leave).not.toHaveBeenCalled(); // socket.leave is never called
@@ -40,7 +40,7 @@ describe('handleExitRoom', () => {
     // Create a room with a user as host
     rooms['room1'] = { code: 'room1', host: 'host1', players: new Set(['host1', socket.id]) };
 
-    handleExitRoom('room1', callback, socket, true);
+    handleExitRoom('room1', true, callback, socket);
 
     expect(rooms['room1']).toBeDefined(); // Room should still exist
     expect(rooms['room1'].players.has(socket.id)).toBeFalsy(); // User is removed from the room
@@ -52,7 +52,7 @@ describe('handleExitRoom', () => {
     // Create a room with a user as host
     rooms['room1'] = { code: 'room1', host: socket.id, players: new Set([socket.id, 'otherPlayer']) };
 
-    handleExitRoom('room1', callback, socket, true);
+    handleExitRoom('room1', true, callback, socket);
 
     // expect(handleCloseRoom).toHaveBeenCalled(); // Close the room
     expect(rooms['room1']).toBeFalsy(); // Room is now removed
