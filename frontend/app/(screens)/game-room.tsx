@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { socket } from '@utils/socket'
+import { socket } from '@/utils/socket'
 
 export default function GameRoomScreen() {
 

@@ -9,8 +9,11 @@ import { Room, rooms } from './types'; // Import types
 
 export function checkIfRoomExists(roomCode: string, callback: any): (any | void) {
   if (Object.values(rooms).find((room) => room.code === roomCode)) {
-    console.log(`No room exists with code ${roomCode}.`)
-    callback({ success: false, type: 'RoomExists' })
+    console.log(`No room exists with code ${roomCode}.`);
+    callback({ success: false, type: 'RoomExists' });
+    return true;
+  } else {
+    return false;
   }
 }
 
@@ -22,8 +25,11 @@ export function checkIfRoomExists(roomCode: string, callback: any): (any | void)
 
 export function checkIfRoomDoesNotExist(roomCode: string, callback: any): (any | void) {
   if (!Object.values(rooms).find((room) => room.code === roomCode)) {
-    console.log(`No room exists with code ${roomCode}.`)
-    callback({ success: false, type: 'RoomDoesNotExist' })
+    console.log(`No room exists with code ${roomCode}.`);
+    callback({ success: false, type: 'RoomDoesNotExist' });
+    return true;
+  } else {
+    return false;
   }
 }
 
@@ -63,9 +69,11 @@ export function checkIfInAnyRoom(id: string, callback: any): (any | void) {
 
   if (roomCode) {
     console.log(`User ${id} is already part of room ${roomCode}.`);
-    return callback({ success: false, type: 'AlreadyInRoom' });
+    callback({ success: false, type: 'AlreadyInRoom' });
+    return true;
   } else {
     console.log(`User ${id} is not part of any room.`);
+    return false;
   }
 }
 

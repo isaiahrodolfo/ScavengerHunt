@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { socket } from '@utils/socket'
+import { socket } from '@/utils/socket'
 
 export default function GameOverScreen() {
   const { roomCode, isHost } = useLocalSearchParams();

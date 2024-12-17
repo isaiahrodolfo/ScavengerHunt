@@ -13,13 +13,14 @@ const types_1 = require("./types"); // Import types
  * @param roomCode
  * @returns Error if a room with given room code is found
  */
-function checkIfRoomExists(roomCode) {
-    console.log(`Checking if room exists for room code: ${roomCode}`); // Log the room code being checked
-    const room = Object.values(types_1.rooms).find((room) => room.code === roomCode);
-    console.log('Room found:', room); // Log the result of the room search
-    if (room) {
-        console.log(`A room already exists with code ${roomCode}.`);
-        throw new errors_1.RoomAlreadyExistsError(`A room already exists with code ${roomCode}.`);
+function checkIfRoomExists(roomCode, callback) {
+    if (Object.values(types_1.rooms).find((room) => room.code === roomCode)) {
+        console.log(`No room exists with code ${roomCode}.`);
+        callback({ success: false, type: 'RoomExists' });
+        return true;
+    }
+    else {
+        return false;
     }
 }
 /**
@@ -27,10 +28,14 @@ function checkIfRoomExists(roomCode) {
  * @param roomCode
  * @returns Error if no room with given room code is found
  */
-function checkIfRoomDoesNotExist(roomCode) {
+function checkIfRoomDoesNotExist(roomCode, callback) {
     if (!Object.values(types_1.rooms).find((room) => room.code === roomCode)) {
         console.log(`No room exists with code ${roomCode}.`);
-        throw new errors_1.RoomDoesNotExistError(`No room exists with code ${roomCode}.`);
+        callback({ success: false, type: 'RoomDoesNotExist' });
+        return true;
+    }
+    else {
+        return false;
     }
 }
 /**
@@ -58,14 +63,16 @@ function getRoomOfUser(id) {
  * @param id
  * @returns Error if user is already in a room
  */
-function checkIfInAnyRoom(id) {
+function checkIfInAnyRoom(id, callback) {
     const roomCode = getRoomOfUser(id);
     if (roomCode) {
         console.log(`User ${id} is already part of room ${roomCode}.`);
-        throw new errors_1.AlreadyInSomeRoomError(`User ${id} is already part of room ${roomCode}.`);
+        callback({ success: false, type: 'AlreadyInRoom' });
+        return true;
     }
     else {
         console.log(`User ${id} is not part of any room.`);
+        return false;
     }
 }
 /**

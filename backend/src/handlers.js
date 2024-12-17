@@ -9,48 +9,43 @@ exports.handleExitRoomOnDisconnect = handleExitRoomOnDisconnect;
 exports.logState = logState;
 const types_1 = require("./types"); // Import types
 const handler_helpers_1 = require("./handler-helpers");
-function handleCreateRoom(roomCode, socket) {
-    try {
-        // Check that there is no room associated with that room code
-        (0, handler_helpers_1.checkIfRoomExists)(roomCode);
-        // TODO: Randomly generated room codes can be duplicated!
-        // A user cannot already be part of another room if they want to create this room
-        (0, handler_helpers_1.checkIfInAnyRoom)(socket.id);
-        // Add to rooms list as host and player
-        types_1.rooms[roomCode] = {
-            code: roomCode,
-            host: socket.id,
-            players: new Set([socket.id])
-        };
-        socket.join(roomCode);
-        // Message
-        console.log(`Room with code ${roomCode} created by user: ${socket.id}`);
-    }
-    catch (error) {
-        console.error("Error creating room: ", error);
-    }
-    logState(socket);
+function handleCreateRoom(roomCode, callback, socket) {
+    // Check that there is no room associated with that room code
+    if ((0, handler_helpers_1.checkIfRoomExists)(roomCode, callback))
+        return; // TODO: Randomly generated room codes may not be unique
+    // A user cannot already be part of another room if they want to create this room
+    if ((0, handler_helpers_1.checkIfInAnyRoom)(socket.id, callback))
+        return;
+    // Add to rooms list as host and player
+    types_1.rooms[roomCode] = {
+        code: roomCode,
+        host: socket.id,
+        players: new Set([socket.id])
+    };
+    socket.join(roomCode);
+    // Message
+    console.log(`Room with code ${roomCode} created by user: ${socket.id}`);
+    // Success
+    callback({ success: true });
+    // logState(socket);
 }
 function handleJoinRoom(roomCode, callback, socket) {
-    const room = types_1.rooms[roomCode]; // Fetch the room by code
-    if (!room) {
-        // Room doesn't exist
-        return callback({ success: false, type: 'RoomDoesNotExist' });
-    }
-    if (room.players.has(socket.id)) {
-        // Already in room
-        return callback({ success: false, type: 'AlreadyInRoom' });
-    }
+    // If the given room does not exist, user cannot join it
+    if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
+        return;
+    // If user is already in a room, they cannot join this one
+    if ((0, handler_helpers_1.checkIfInAnyRoom)(socket.id, callback))
+        return;
     // Add player to room
-    room.players.add(socket.id);
+    types_1.rooms[roomCode].players.add(socket.id);
     socket.join(roomCode);
     // Success
     callback({ success: true });
 }
-function handleStartRoom(roomCode, socket) {
+function handleStartRoom(roomCode, callback, socket) {
     try {
         // Check that there is a room to be started
-        (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode);
+        (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback);
         // Check that the user is the host
         (0, handler_helpers_1.checkIfNotHost)(roomCode, socket.id);
         socket.to(roomCode).emit("startGame");
@@ -62,10 +57,10 @@ function handleStartRoom(roomCode, socket) {
     }
     logState(socket);
 }
-function handleCloseRoom(roomCode, socket) {
+function handleCloseRoom(roomCode, callback, socket) {
     try {
         // Check if there is a room to close
-        (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode);
+        (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback);
         // Check if user is the host. (Only hosts can close rooms)
         (0, handler_helpers_1.checkIfNotHost)(roomCode, socket.id);
         // Delete room
@@ -82,12 +77,12 @@ function handleCloseRoom(roomCode, socket) {
     }
     logState(socket);
 }
-function handleExitRoom(roomCode, socket, roomIsClosed) {
+function handleExitRoom(roomCode, callback, socket, roomIsClosed) {
     try {
         // If room is already closed by host, no need to check this
         if (!roomIsClosed) {
             // Check if there is a room to exit
-            (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode);
+            (0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback);
         }
         // A user can only exit this room if it is a player of it
         (0, handler_helpers_1.checkIfInThisRoom)(roomCode, socket.id);
@@ -107,7 +102,19 @@ function handleExitRoomOnDisconnect(socket) {
     // If user has joined a room, leave it before disconnecting
     const roomCode = (0, handler_helpers_1.getRoomOfUser)(socket.id);
     if (roomCode) {
-        handleExitRoom(roomCode, socket, false);
+        try {
+            // A user can only exit this room if it is a player of it
+            (0, handler_helpers_1.checkIfInThisRoom)(roomCode, socket.id); // returns callback, but unused
+            // Remove from rooms list as player
+            types_1.rooms[roomCode].players.delete(socket.id);
+            // Exit socket room
+            socket.leave(roomCode);
+            // Message
+            console.log(`Room with code ${roomCode} exited by user: ${socket.id}`);
+        }
+        catch (error) {
+            console.error("Error exiting room: ", error);
+        }
     }
 }
 function logState(socket) {
