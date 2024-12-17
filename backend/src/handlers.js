@@ -49,20 +49,11 @@ function handleJoinRoom(roomCode, callback, socket) {
 function handleStartRoom(roomCode, callback, socket) {
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
-    try {
-        (0, handler_helpers_1.checkIfNotHost)(roomCode, socket.id);
-        socket.to(roomCode).emit("startGame");
-        console.log(`Room ${roomCode} started by host ${socket.id}`);
-        callback({ success: true });
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            callback({ success: false, type: 'NotHost', message: error.message });
-        }
-        else {
-            callback({ success: false, type: 'UnknownError', message: 'An unknown error occurred.' });
-        }
-    }
+    if ((0, handler_helpers_1.checkIfNotHost)(roomCode, callback, socket.id))
+        return;
+    socket.to(roomCode).emit("startGame");
+    console.log(`Room ${roomCode} started by host ${socket.id}`);
+    callback({ success: true });
 }
 /**
  * Handles closing a room.
@@ -70,22 +61,13 @@ function handleStartRoom(roomCode, callback, socket) {
 function handleCloseRoom(roomCode, callback, socket) {
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
-    try {
-        (0, handler_helpers_1.checkIfNotHost)(roomCode, socket.id);
-        delete types_1.rooms[roomCode];
-        socket.to(roomCode).emit('exitRoom');
-        socket.leave(roomCode);
-        console.log(`Room ${roomCode} closed by ${socket.id}`);
-        callback({ success: true });
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            callback({ success: false, type: 'NotHost', message: error.message });
-        }
-        else {
-            callback({ success: false, type: 'UnknownError', message: 'An unknown error occurred.' });
-        }
-    }
+    if ((0, handler_helpers_1.checkIfNotHost)(roomCode, callback, socket.id))
+        return;
+    delete types_1.rooms[roomCode];
+    socket.to(roomCode).emit('exitRoom');
+    socket.leave(roomCode);
+    console.log(`Room ${roomCode} closed by ${socket.id}`);
+    callback({ success: true });
 }
 /**
  * Handles exiting a room.

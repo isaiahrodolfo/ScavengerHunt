@@ -16,7 +16,7 @@ describe('handleCloseRoom', () => {
     Object.keys(rooms).forEach((key) => delete rooms[key]); // Clear rooms before each test
   });
 
-  it('should allow the host to close an existing room', () => {
+  test('should allow the host to close an existing room', () => {
 
     rooms['room1'] = { code: 'room1', host: socket.id, players: new Set([socket.id, 'user2']) };
 
@@ -42,7 +42,7 @@ describe('handleCloseRoom', () => {
     handleCloseRoom('room1', callback, socket);
 
     expect(rooms['room1']).toBeDefined(); // Room still exists
-    expect(callback).toHaveBeenCalledWith({ success: false, type: 'NotHost' }); // Callback reports failure due to not being the host
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'NotHost', message: 'Only the host can perform this action.' }); // Callback reports failure due to not being the host
     expect(socket.leave).not.toHaveBeenCalled(); // socket.leave is never called
   });
 });

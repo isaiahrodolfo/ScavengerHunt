@@ -51,7 +51,7 @@ export function checkIfInThisRoom(roomCode: string, callback: any, id: string): 
 /**
  * Ensures the user is the host of the room.
  */
-export function checkIfNotHost(roomCode: string, socketId: string, callback: any): boolean {
+export function checkIfNotHost(roomCode: string, callback: any, socketId: string): boolean {
   if (rooms[roomCode].host !== socketId) {
     callback({ success: false, type: 'NotHost', message: 'Only the host can perform this action.' });
     return true;
