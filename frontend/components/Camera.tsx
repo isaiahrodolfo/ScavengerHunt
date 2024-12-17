@@ -1,6 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
 import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useGameState } from '@/store/useGameState';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -14,7 +15,16 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
 
+  const { gameState, setGameState } = useGameState();
+
   const cameraRef = useRef<any>(null);
+
+  // useEffect(() => {
+  //   switch (gameState) {
+  //     case 'put':
+
+  //   }
+  // }, [gameState])
 
   if (!permission) {
     return <ActivityIndicator size="large" />;
@@ -52,6 +62,28 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
     setImageUrl('');
   }
 
+  function handleCaptureButtonPressed() {
+    console.log('capture button pressed');
+    switch (gameState) {
+      case 'take': // Pressed the "Take" button, so take a picture
+        takePicture();
+        setGameState('put'); // TODO: The parent handles this once they have gotten the image
+        break;
+      case 'put': // Pressed the "Retake" button, so restart
+        resetImage();
+        setGameState('take');
+      case 'view': // Pressed the "Retake" button, so restart
+        // resetImage();
+        setGameState('retake');
+        break;
+      case 'retake': // Pressed the "Take" button, so retake the picture
+        takePicture();
+      // setGameState('take'); // TODO: The parent handles this once they have gotten the image
+      default: break;
+    }
+    // isSelecting ? resetImage() : takePicture();
+  }
+
   return (
     <View
       style={styles.container}
@@ -64,7 +96,7 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
         onCameraReady={() => setIsCameraReady(true)}
       >
         {/* Image Overlay */}
-        {isSelecting && (
+        {['put', 'view'].includes(gameState) && (
           <Image
             style={StyleSheet.absoluteFillObject}
             source={{ uri: imageUrl }}
@@ -80,9 +112,7 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
       {/* Capture or Retake Button */}
       <TouchableOpacity
         style={styles.captureButton}
-        onPress={() => {
-          isSelecting ? resetImage() : takePicture();
-        }}
+        onPress={handleCaptureButtonPressed}
       >
         <Text style={styles.text}>{isSelecting ? 'Retake' : 'Take Photo'}</Text>
       </TouchableOpacity>
