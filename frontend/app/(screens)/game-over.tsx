@@ -13,6 +13,7 @@ export default function GameOverScreen() {
 
   async function handleRestartRoom() {
     if (isHostBool) {
+      // Host restarts game
       const res = await restartRoom(roomCodeString);
       if (res) {
         setErrorMessage(res);
@@ -23,6 +24,8 @@ export default function GameOverScreen() {
         });
       }
     } else {
+      // TODO: Wait for host to restart game before allowed to go back to game room
+      // TODO: Something like "Waiting for the host..."
       router.replace({
         pathname: '/(screens)/game-room',
         params: { roomCode, isHost }

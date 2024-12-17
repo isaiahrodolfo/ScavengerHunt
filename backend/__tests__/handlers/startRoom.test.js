@@ -61,7 +61,7 @@ describe('handleStartRoom', () => {
     handleStartRoom('room1', callback, socket);
 
     // Assert: Callback receives an error
-    expect(callback).toHaveBeenCalledWith({ success: false, type: 'NotHost', message: 'Only the host can perform this action.' });
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'NotHost', error: 'Only the host can perform this action.' });
   });
 
   it('should fail to start the room if there are no players', () => {
@@ -77,7 +77,7 @@ describe('handleStartRoom', () => {
     handleStartRoom('room1', callback, socket);
 
     // Assert: Callback receives an error
-    expect(callback).toHaveBeenCalledWith({ success: false, message: 'Cannot start a room with no players' });
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
   });
 
   it('should not re-start the room if it has already started', () => {
@@ -93,6 +93,6 @@ describe('handleStartRoom', () => {
     handleStartRoom('room1', callback, socket);
 
     // Assert: Callback receives an appropriate message
-    expect(callback).toHaveBeenCalledWith({ success: false, message: 'Room has already started' });
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'GameStarted', error: 'Game has already started' });
   });
 });
