@@ -5,6 +5,7 @@ exports.handleJoinRoom = handleJoinRoom;
 exports.handleStartRoom = handleStartRoom;
 exports.handleCloseRoom = handleCloseRoom;
 exports.handleExitRoom = handleExitRoom;
+exports.handleExitRoomOnDisconnect = handleExitRoomOnDisconnect;
 const types_1 = require("./types");
 const handler_helpers_1 = require("./handler-helpers");
 /**
@@ -22,6 +23,7 @@ function handleCreateRoom(roomCode, callback, socket) {
         code: roomCode,
         host: socket.id,
         players: new Set([socket.id]),
+        started: false
     };
     socket.join(roomCode);
     console.log(`Room ${roomCode} created by ${socket.id}`);
@@ -47,12 +49,29 @@ function handleJoinRoom(roomCode, callback, socket) {
  * Handles starting a room.
  */
 function handleStartRoom(roomCode, callback, socket) {
+    // Ensure the room exists
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
+    // Ensure the user is the host
     if ((0, handler_helpers_1.checkIfNotHost)(roomCode, callback, socket.id))
         return;
+    // Ensure the room has players (including the host)
+    if (types_1.rooms[roomCode].players.size === 0) {
+        callback({ success: false, message: 'Cannot start a room with no players' });
+        return;
+    }
+    // Ensure the room is not already started
+    if (types_1.rooms[roomCode].started) {
+        callback({ success: false, message: 'Room has already started' });
+        return;
+    }
+    // Start the room
+    types_1.rooms[roomCode].started = true;
+    // Emit the "startGame" event to all users in the room
     socket.to(roomCode).emit("startGame");
+    // Log the action for debugging
     console.log(`Room ${roomCode} started by host ${socket.id}`);
+    // Callback with success message
     callback({ success: true });
 }
 /**
@@ -78,6 +97,17 @@ function handleExitRoom(roomCode, callback, socket, roomIsClosed) {
         // Check if there is a room to exit
         if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
             return;
+        // Check if user is the host
+        if ((0, handler_helpers_1.checkIfHost)(roomCode, callback, socket.id))
+            return;
+    }
+    else {
+        // Check if user is the host
+        if ((0, handler_helpers_1.checkIfHost)(roomCode, callback, socket.id)) {
+            // If user is host and room is to be closed, close the room
+            handleCloseRoom(roomCode, callback, socket);
+            return;
+        }
     }
     // A user can only exit this room if it is a player of it
     if ((0, handler_helpers_1.checkIfInThisRoom)(roomCode, callback, socket.id))
@@ -89,4 +119,17 @@ function handleExitRoom(roomCode, callback, socket, roomIsClosed) {
     // Message
     console.log(`Room with code ${roomCode} exited by user: ${socket.id}`);
     callback({ success: true });
+}
+/**
+ * Handles exiting a room on disconnect.
+ */
+function handleExitRoomOnDisconnect(socket) {
+    // If the user is in a room, exit it
+    const roomCode = (0, handler_helpers_1.getRoomOfUser)(socket.id);
+    if (roomCode) {
+        // Dummy callback to handle silent cleanup
+        const dummyCallback = () => { };
+        // Call handleExitRoom for cleanup on disconnect
+        handleExitRoom(roomCode, dummyCallback, socket, false);
+    }
 }

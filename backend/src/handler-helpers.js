@@ -5,6 +5,7 @@ exports.checkIfRoomDoesNotExist = checkIfRoomDoesNotExist;
 exports.checkIfInAnyRoom = checkIfInAnyRoom;
 exports.checkIfInThisRoom = checkIfInThisRoom;
 exports.checkIfNotHost = checkIfNotHost;
+exports.checkIfHost = checkIfHost;
 exports.getRoomOfUser = getRoomOfUser;
 const types_1 = require("./types"); // Import types
 /**
@@ -56,6 +57,16 @@ function checkIfInThisRoom(roomCode, callback, id) {
 function checkIfNotHost(roomCode, callback, socketId) {
     if (types_1.rooms[roomCode].host !== socketId) {
         callback({ success: false, type: 'NotHost', message: 'Only the host can perform this action.' });
+        return true;
+    }
+    return false;
+}
+/**
+ * Ensures the user is not the host of the room.
+ */
+function checkIfHost(roomCode, callback, socketId) {
+    if (types_1.rooms[roomCode].host == socketId) {
+        callback({ success: false, type: 'Host', message: 'Only non-host players can perform this action.' });
         return true;
     }
     return false;

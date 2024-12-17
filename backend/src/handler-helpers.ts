@@ -60,6 +60,17 @@ export function checkIfNotHost(roomCode: string, callback: any, socketId: string
 }
 
 /**
+ * Ensures the user is not the host of the room.
+ */
+export function checkIfHost(roomCode: string, callback: any, socketId: string): boolean {
+  if (rooms[roomCode].host == socketId) {
+    callback({ success: false, type: 'Host', message: 'Only non-host players can perform this action.' });
+    return true;
+  }
+  return false;
+}
+
+/**
  * Gets the room of the given user
  * @param id 
  * @returns string if room exists, undefined otherwise

@@ -1,5 +1,5 @@
 const { handleCreateRoom } = require('../../src/handlers');
-const { rooms } = require('../../src/types');  // Import rooms from your types file
+const { rooms } = require('../../src/types');
 
 describe('handleCreateRoom', () => {
   let socket;
