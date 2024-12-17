@@ -1,56 +1,38 @@
-const { handleCreateRoom, handleExitRoomOnDisconnect } = require('../../src/handlers');
+const { handleCreateRoom } = require('../../src/handlers');
 const { rooms } = require('../../src/types');  // Import rooms from your types file
-const { AlreadyInSomeRoomError } = require('../../src/errors');
-const { checkIfRoomExists, checkIfInAnyRoom } = require('../../src/handler-helpers');
-
-jest.mock('../../src/handler-helpers.js');
-jest.mock('../../src/errors.js');
 
 describe('handleCreateRoom', () => {
-  const mockSocket = {
-    id: 'user1',
-    join: jest.fn(),
-  };
+  let socket;
+  let callback;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    socket = { id: 'user1', join: jest.fn() };
+    callback = jest.fn();
+    Object.keys(rooms).forEach(key => delete rooms[key]); // Reset rooms
   });
 
-  it('should create a room if no room exists with the given code and the user is not part of another room', () => {
-    checkIfRoomExists.mockImplementation(() => {});
-    checkIfInAnyRoom.mockImplementation(() => {});
+  test('should create a room successfully', () => {
+    handleCreateRoom('room123', callback, socket);
 
-    const roomCode = 'room123';
-    handleCreateRoom(roomCode, mockSocket);
-
-    expect(checkIfRoomExists).toHaveBeenCalledWith(roomCode);
-    expect(checkIfInAnyRoom).toHaveBeenCalledWith(mockSocket.id);
-    expect(mockSocket.join).toHaveBeenCalledWith(roomCode);
+    expect(rooms['room123']).toBeDefined();
+    expect(rooms['room123'].host).toBe('user1');
+    expect(callback).toHaveBeenCalledWith({ success: true });
+    expect(socket.join).toHaveBeenCalledWith('room123');
   });
 
-  it('should throw error if the user is already in a room', () => {
-    checkIfRoomExists.mockImplementation(() => {});
-    checkIfInAnyRoom.mockImplementation(() => {
-      throw new AlreadyInSomeRoomError('User is already in a room.');
-    });
+  test('should fail if room already exists', () => {
+    rooms['room123'] = { code: 'room123', host: 'anotherUser', players: new Set() };
 
-    const roomCode = 'room123';
-    handleCreateRoom(roomCode, mockSocket);
+    handleCreateRoom('room123', callback, socket);
 
-    expect(checkIfRoomExists).toHaveBeenCalledWith(roomCode);
-    expect(checkIfInAnyRoom).toHaveBeenCalledWith(mockSocket.id);
-    expect(mockSocket.join).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'RoomExists' });
   });
 
-  it('should handle error if room code already exists', () => {
-    checkIfRoomExists.mockImplementation(() => {
-      throw new Error('Room already exists');
-    });
+  test('should fail if user is already in another room', () => {
+    rooms['room123'] = { code: 'room123', host: 'anotherUser', players: new Set(['user1']) };
 
-    const roomCode = 'room123';
-    handleCreateRoom(roomCode, mockSocket);
+    handleCreateRoom('room456', callback, socket);
 
-    expect(checkIfRoomExists).toHaveBeenCalledWith(roomCode);
-    expect(mockSocket.join).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith({ success: false, type: 'AlreadyInRoom', roomCode: 'room123' });
   });
 });
