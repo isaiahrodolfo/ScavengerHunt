@@ -1,23 +1,24 @@
 import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
-import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import React, { useRef, useState } from 'react';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
-  setImage: (image: CameraCapturedPicture) => void; // Callback function prop
+  setImage: (image: CameraCapturedPicture | null) => void;
+  isSelecting: boolean;
 }
 
-export default function Camera({ setImage, setHasPermissions }: CameraProps) {
+export default function Camera({ setImage, setHasPermissions, isSelecting }: CameraProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
 
-  const cameraRef = useRef<any>(null); // Reference to the camera
-
-  // TODO: If camera is not ready (!isCameraReady), return ActivityMonitor?
+  const cameraRef = useRef<any>(null);
 
   if (!permission) {
-    return <ActivityIndicator size={'large'} />;
+    return <ActivityIndicator size="large" />;
   }
 
   if (!permission.granted) {
@@ -39,22 +40,54 @@ export default function Camera({ setImage, setHasPermissions }: CameraProps) {
     if (cameraRef.current && isCameraReady) {
       try {
         const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
-        setImage(photo); // Pass the photo to the parent component
+        setImage(photo);
+        setImageUrl(photo.uri);
       } catch (error) {
-        console.error("Error taking picture:", error);
+        console.error('Error taking picture:', error);
       }
     }
   }
 
+  function resetImage() {
+    setImage(null);
+    setImageUrl('');
+  }
+
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        setContainerDimensions({ width, height });
+      }}
+    >
       {/* Camera View */}
       <CameraView
         ref={cameraRef}
-        style={styles.camera}
+        style={[
+          styles.camera,
+          {
+            width: containerDimensions.width,
+            height: (containerDimensions.width * 4) / 3, // Adjust aspect ratio dynamically
+          },
+        ]}
         facing={facing}
         onCameraReady={() => setIsCameraReady(true)}
       >
+        {/* Image Overlay */}
+        {isSelecting && (
+          <Image
+            style={[
+              styles.camera,
+              {
+                width: containerDimensions.width,
+                height: (containerDimensions.width * 4) / 3,
+                position: 'absolute', // Overlay on top of the camera
+              },
+            ]}
+            source={{ uri: imageUrl }}
+          />
+        )}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
             <Text style={styles.text}>Flip Camera</Text>
@@ -62,9 +95,14 @@ export default function Camera({ setImage, setHasPermissions }: CameraProps) {
         </View>
       </CameraView>
 
-      {/* Take Picture Button */}
-      <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-        <Text style={styles.text}>Take Picture</Text>
+      {/* Capture or Retake Button */}
+      <TouchableOpacity
+        style={styles.captureButton}
+        onPress={() => {
+          isSelecting ? resetImage() : takePicture();
+        }}
+      >
+        <Text style={styles.text}>{isSelecting ? 'Retake' : 'Take Photo'}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -74,15 +112,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  camera: {
+    aspectRatio: 3 / 4,
+    backgroundColor: 'black',
   },
   message: {
     textAlign: 'center',
     paddingBottom: 10,
-  },
-  camera: {
-    flex: 1,
-    width: '100%',
   },
   buttonContainer: {
     flex: 1,
