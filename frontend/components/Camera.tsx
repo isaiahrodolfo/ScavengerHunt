@@ -13,7 +13,6 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
 
   const cameraRef = useRef<any>(null);
 
@@ -54,37 +53,18 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
   }
 
   return (
-    <View
-      style={styles.container}
-      onLayout={(event) => {
-        const { width, height } = event.nativeEvent.layout;
-        setContainerDimensions({ width, height });
-      }}
-    >
+    <View style={styles.container}>
       {/* Camera View */}
       <CameraView
         ref={cameraRef}
-        style={[
-          styles.camera,
-          {
-            width: containerDimensions.width,
-            height: (containerDimensions.width * 4) / 3, // Adjust aspect ratio dynamically
-          },
-        ]}
+        style={styles.camera}
         facing={facing}
         onCameraReady={() => setIsCameraReady(true)}
       >
         {/* Image Overlay */}
         {isSelecting && (
           <Image
-            style={[
-              styles.camera,
-              {
-                width: containerDimensions.width,
-                height: (containerDimensions.width * 4) / 3,
-                position: 'absolute', // Overlay on top of the camera
-              },
-            ]}
+            style={[styles.camera, { position: 'absolute', }]}
             source={{ uri: imageUrl }}
           />
         )}
@@ -112,9 +92,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   camera: {
+    flex: 1,
+    width: '100%',
     aspectRatio: 3 / 4,
     backgroundColor: 'black',
   },
