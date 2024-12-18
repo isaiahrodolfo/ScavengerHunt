@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import Camera from '@/components/game/Camera';
-import CategoryObject from '@/components/game/CategoryObject';
+import Camera from '@/components/game/player/Camera';
+import CategoryObject from '@/components/game/player/CategoryObject';
 import { useGameState } from '@/store/useGameState';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';

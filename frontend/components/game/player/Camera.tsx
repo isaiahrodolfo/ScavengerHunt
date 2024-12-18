@@ -5,6 +5,7 @@ import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
+import { insertPhoto } from '@/handlers/gameHandlers';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -18,9 +19,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
-
   const { roomState, setRoomState } = useRoomState();
-
 
   const cameraRef = useRef<any>(null);
 
@@ -59,7 +58,13 @@ export default function Camera({ setHasPermissions }: CameraProps) {
             console.log('Previous selected image', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
 
             console.log('Retaking photo for category', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
-            setCategoryImages(photo.uri, selectedImage.categoryIndex!, selectedImage.imageIndex); // Put the image where the user wanted to replace it
+            // Put the image where the user wanted to replace it
+            console.log('putting image into category...'); // testing
+            setCategoryImages(roomState.roomCode, {
+              imageUri: photo.uri,
+              categoryIndex: selectedImage.categoryIndex!,
+              imageIndex: selectedImage.imageIndex
+            });
             setGameState('take'); // ...and continue the main game loop
             break;
         }

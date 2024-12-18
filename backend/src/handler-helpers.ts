@@ -1,4 +1,4 @@
-import { AlreadyInSomeRoomError, NotInThisRoomError, NotHostError, RoomAlreadyExistsError, RoomDoesNotExistError } from './errors';
+import { AlreadyInSomeRoomError, NotInThisRoomError, NotHostError, RoomAlreadyExistsError, RoomDoesNotExistError } from './room/roomErrors';
 import { Room, rooms } from './types'; // Import types
 
 /**

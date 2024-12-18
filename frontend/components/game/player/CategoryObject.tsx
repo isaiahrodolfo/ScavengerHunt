@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
-import { ImageAndTargetLocation } from '@/types/game';
+import { ImageAndLocation } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
+import { useRoomState } from '@/store/useRoomState';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -16,6 +17,7 @@ interface CategoryObjectProps {
 
 const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
 
+  const { roomState } = useRoomState();
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
@@ -29,7 +31,7 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
     }
   }, [images]); // This will trigger whenever images change
 
-  function handleImagePressed(target: ImageAndTargetLocation) {
+  function handleImagePressed(target: ImageAndLocation) {
     switch (gameState) {
       case 'take':
       case 'view':
@@ -51,7 +53,11 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
   // Helper function
   const addImageToCategory = (categoryIndex: number, imageIndex?: number) => {
     if (selectedImage) {
-      setCategoryImages(selectedImage.imageUri, categoryIndex, imageIndex);
+      setCategoryImages(roomState.roomCode, {
+        imageUri: selectedImage.imageUri,
+        categoryIndex: categoryIndex!,
+        imageIndex: imageIndex
+      });
       setSelectedImage({ imageUri: '' }); // That image is placed, and now we remove it from the cache
     }
   }
@@ -66,10 +72,11 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
 
   return (
     <View style={[styles.container, { backgroundColor: gameState == 'put' ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
-      <Pressable onPress={() => {
-        handleCategoryPressed(categoryIndex);
-        scrollViewRef.current?.scrollToEnd();
-      }}>
+      <Pressable
+        onPress={() => {
+          handleCategoryPressed(categoryIndex);
+          scrollViewRef.current?.scrollToEnd();
+        }}>
         {/* Top Half: Number and Text */}
         <View style={styles.description}>
           <Text style={styles.number}>{number}</Text>
@@ -88,6 +95,7 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
             >
               {categoryImages[categoryIndex].images.map((imageUri, index) => (
                 <Pressable
+                  key={`${categoryIndex}-${index}`}
                   onPress={() =>
                     handleImagePressed({
                       imageUri,
