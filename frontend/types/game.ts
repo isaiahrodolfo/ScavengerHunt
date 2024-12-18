@@ -1,3 +1,5 @@
+export type State = 'take' | 'put' | 'view' | 'retake';
+
 export type Category = {
   images: string[]; // List of imageUris
 };

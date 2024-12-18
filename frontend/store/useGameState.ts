@@ -1,7 +1,6 @@
+import { State } from '@/types/game';
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-
-type State = 'take' | 'put' | 'view' | 'retake';
 
 interface GameState {
   gameState: State;

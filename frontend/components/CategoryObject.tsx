@@ -3,6 +3,8 @@ import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndTargetLocation } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
+import { useSelectedImageUri } from '@/store/useSelectedImage';
+import { useCategoryImages } from '@/store/useCategoryImages';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -10,14 +12,16 @@ interface CategoryObjectProps {
   number: number;
   text: string;
   images: string[]; // Array of CameraCapturedPicture objects
-  onPress: (index: number) => void;
-  onPressImage: (target: ImageAndTargetLocation) => void;
+  // onPress: (index: number) => void;
+  // onImagePressed: (target: ImageAndTargetLocation) => void;
   isSelecting: boolean;
 }
 
-const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, onPress, onPressImage, isSelecting }: CategoryObjectProps) => {
+const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, isSelecting }: CategoryObjectProps) => {
 
   const { gameState, setGameState } = useGameState();
+  const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
+  const { categoryImages, setCategoryImages } = useCategoryImages();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -28,10 +32,35 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
     }
   }, [images]); // This will trigger whenever images change
 
+  function handleImagePressed(target: ImageAndTargetLocation) {
+    switch (gameState) {
+      case 'put':
+        setSelectedImageUri(target.imageUri);
+        setGameState('take');
+    }
+  }
+
+  function handleCategoryPressed(categoryIndex: number) {
+    switch (gameState) {
+      case 'put': // Put the image the user just took in the selected category
+        addImageToCategory(categoryIndex);
+        setGameState('take');
+      default: break;
+    }
+  }
+
+  // Helper function
+  const addImageToCategory = (categoryIndex: number, imageIndex?: number) => {
+    if (selectedImageUri) {
+      setCategoryImages(selectedImageUri, categoryIndex, imageIndex);
+      setSelectedImageUri(''); // That image is placed, and now we remove it from the cache
+    }
+  }
+
   return (
-    <View style={[styles.container, { backgroundColor: isSelecting ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
+    <View style={[styles.container, { backgroundColor: gameState == 'put' ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
       <Pressable onPress={() => {
-        onPress(categoryIndex);
+        handleCategoryPressed(categoryIndex);
         scrollViewRef.current?.scrollToEnd();
       }}>
         {/* Top Half: Number and Text */}
@@ -51,7 +80,7 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
               ref={scrollViewRef}
             >
               {images.map((imageUri, index) => (
-                <TouchableOpacity key={index} style={styles.image} onPress={() => onPressImage({ imageUri, categoryIndex, imageIndex: index })}>
+                <TouchableOpacity key={index} style={styles.image} onPress={() => handleImagePressed({ imageUri, categoryIndex, imageIndex: index })}>
                   <Image source={{ uri: imageUri }} style={styles.image} />
                 </TouchableOpacity>
               ))}
@@ -125,3 +154,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
+

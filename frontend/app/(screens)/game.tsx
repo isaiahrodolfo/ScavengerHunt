@@ -6,23 +6,20 @@ import CategoryObject from '@/components/CategoryObject';
 import { CameraCapturedPicture } from 'expo-camera';
 import { useGameState } from '@/store/useGameState';
 import { Category, ImageAndTargetLocation } from '@/types/game';
+import { useSelectedImageUri } from '@/store/useSelectedImage';
+import { useCategoryImages } from '@/store/useCategoryImages';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
   const [timer, setTimer] = useState(1000);
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
-  const [image, setImage] = useState<CameraCapturedPicture | null>(null);
-  // TODO: Calculate from a given JSON
-  const [categoryImages, setCategoryImages] = useState<Category[]>([
-    { images: [] },
-    { images: [] },
-    { images: [] },
-    { images: [] },
-  ]);
+  const [imageUri, setImageUri] = useState<string>('');
   const { width } = useWindowDimensions();
 
   const [target, setTarget] = useState<ImageAndTargetLocation>();
   const { gameState, setGameState } = useGameState();
+  const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
+  const { categoryImages, setCategoryImages } = useCategoryImages();
 
   // Timer logic
   useEffect(() => {
@@ -41,50 +38,35 @@ export default function GameScreen() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // Once an image is captured...
-  useEffect(() => {
-    if (image) {
-      switch (gameState) {
-        case 'take':
-          setIsSelecting(true); // Now put the image where it should go
-          setGameState('put');
-        case 'retake':
-          ; // Retake that image
-        default: break;
-      }
-    }
-    // TODO: What is this below for?
-    else {
-      setIsSelecting(false);
-    }
-  }, [image]);
+  // // Once an image is captured...
+  // useEffect(() => {
+  //   if (imageUri) {
+  //     switch (gameState) {
+  //       case 'take':
+  //         setIsSelecting(true); // Now put the image where it should go
+  //         setGameState('put');
+  //       case 'retake':
+  //         ; // Retake that image
+  //       default: break;
+  //     }
+  //   }
+  //   // TODO: What is this below for?
+  //   else {
+  //     setIsSelecting(false);
+  //   }
+  // }, [imageUri]);
 
-  // HELPER FUNCTIONS
-  // Add photo to end of category list
-  const addImageToCategory = (categoryIndex: number) => {
-    if (image) {
-      setCategoryImages((prevCategories) => {
-        const updatedCategories = [...prevCategories];
-        updatedCategories[categoryIndex] = {
-          images: [...updatedCategories[categoryIndex].images, image.uri],
-        };
-        return updatedCategories;
-      });
-      setImage(null); // That image is placed, and now we remove it from the cache
-    }
-  }
-
-  // Place photo at specifc location (overwrite old photo)
-  const placeImageAtLocation = (target: ImageAndTargetLocation) => {
-    // TODO: If longer than the current length, tack to end of current length, not end of entire list
-    setCategoryImages((prevCategories) => {
-      const updatedCategories = [...prevCategories];
-      const updatedImages = updatedCategories[target.categoryIndex].images;
-      updatedImages[target.imageIndex] = target.imageUri;
-      updatedCategories[target.categoryIndex] = { images: updatedImages };
-      return updatedCategories;
-    });
-  }
+  // // Place photo at specifc location (overwrite old photo)
+  // const placeImageAtLocation = (target: ImageAndTargetLocation) => {
+  //   // TODO: If longer than the current length, tack to end of current length, not end of entire list
+  //   setCategoryImages((prevCategories) => {
+  //     const updatedCategories = [...prevCategories];
+  //     const updatedImages = updatedCategories[target.categoryIndex].images;
+  //     updatedImages[target.imageIndex] = target.imageUri;
+  //     updatedCategories[target.categoryIndex] = { images: updatedImages };
+  //     return updatedCategories;
+  //   });
+  // }
 
   // // Once an image is pressed...
   // useEffect(() => {
@@ -98,35 +80,32 @@ export default function GameScreen() {
   //   }
   // }, [target])
 
-  // Once a category is pressed...
-  function handleCategoryPressed(categoryIndex: number) {
-    switch (gameState) {
-      case 'put': // Put the image the user just took in the selected category
-        addImageToCategory(categoryIndex);
-        setGameState('take');
-      default: break;
-    }
-  };
+  // // Once a category is pressed...
+  // function handleCategoryPressed(categoryIndex: number) {
+  //   switch (gameState) {
+  //     case 'put': // Put the image the user just took in the selected category
+  //       addImageToCategory(categoryIndex);
+  //       setGameState('take');
+  //     default: break;
+  //   }
+  // };
 
-  // Once an image is pressed...
-  function handleImagePressed(target: ImageAndTargetLocation): void {
-    switch (gameState) {
-      case 'take': // Selected a image to view
-        // TODO: View the selected image
-        setGameState('view');
-        break;
-      case 'view': // Move the image to a different location
-        // TODO: Move the image to a different location
-        setGameState('take');
-      default: break;
-    }
-  }
+  // // Once an image is pressed...
+  // function handleImagePressed(target: ImageAndTargetLocation): void {
+  //   switch (gameState) {
+  //     case 'take': // Selected an image to view
+  //     case 'view': // View another image
+  //       setImageUri(target.imageUri); // Set the selected image URI
+  //       setTarget(target); // Save the target for further actions
+  //       setGameState('view'); // Stay or switch to view mode
+  //       break;
+  //     // TODO: Move the image to a different location
+  //     default: break;
+  //   }
+  // }
 
   function handlePressCancel(event: GestureResponderEvent): void {
     switch (gameState) {
-      // case 'take':
-      //   setGameState('view'); // testing
-      //   break;
       case 'view': // Canceled viewing an image
         setGameState('take');
       case 'retake': // Canceled retaking an image
@@ -140,7 +119,7 @@ export default function GameScreen() {
 
       {/* Camera View */}
       <View style={styles.camera}>
-        <Camera setHasPermissions={() => { }} setImage={setImage} isSelecting={isSelecting} />
+        <Camera setHasPermissions={() => { }} setImageUri={setImageUri} isSelecting={isSelecting} />
       </View>
 
       <Button title={'Cancel'} onPress={handlePressCancel} />
@@ -151,8 +130,6 @@ export default function GameScreen() {
             key={index}
             categoryIndex={index}
             backgroundColor={getCategoryColor(index)}
-            onPress={() => handleCategoryPressed(index)} // Triggered on press
-            onPressImage={handleImagePressed}
             isSelecting={isSelecting}
             number={getCategoryNumber(index)}
             text={getCategoryName(index)}

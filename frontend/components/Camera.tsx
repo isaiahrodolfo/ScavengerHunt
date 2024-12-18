@@ -2,29 +2,24 @@ import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } f
 import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameState } from '@/store/useGameState';
+import { useSelectedImageUri } from '@/store/useSelectedImage';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
-  setImage: (image: CameraCapturedPicture | null) => void;
+  setImageUri: (image: string) => void;
   isSelecting: boolean;
 }
 
-export default function Camera({ setImage, setHasPermissions, isSelecting }: CameraProps) {
+export default function Camera({ setImageUri, setHasPermissions, isSelecting }: CameraProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
 
   const { gameState, setGameState } = useGameState();
+  const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
 
   const cameraRef = useRef<any>(null);
-
-  // useEffect(() => {
-  //   switch (gameState) {
-  //     case 'put':
-
-  //   }
-  // }, [gameState])
 
   if (!permission) {
     return <ActivityIndicator size="large" />;
@@ -49,8 +44,8 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
     if (cameraRef.current && isCameraReady) {
       try {
         const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
-        setImage(photo);
-        setImageUrl(photo.uri);
+        // setImageUri(photo.uri);
+        setSelectedImageUri(photo.uri);
       } catch (error) {
         console.error('Error taking picture:', error);
       }
@@ -58,8 +53,8 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
   }
 
   function resetImage() {
-    setImage(null);
-    setImageUrl('');
+    // setImageUri('');
+    setSelectedImageUri('');
   }
 
   function handleCaptureButtonPressed() {
@@ -78,7 +73,7 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
         break;
       case 'retake': // Pressed the "Take" button, so retake the picture
         takePicture();
-      // setGameState('take'); // TODO: The parent handles this once they have gotten the image
+        setGameState('take'); // TODO: The parent handles this once they have gotten the image
       default: break;
     }
     // isSelecting ? resetImage() : takePicture();
@@ -99,7 +94,7 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
         {['put', 'view'].includes(gameState) && (
           <Image
             style={StyleSheet.absoluteFillObject}
-            source={{ uri: imageUrl }}
+            source={{ uri: selectedImageUri }}
           />
         )}
         <View style={styles.buttonContainer}>
@@ -114,7 +109,7 @@ export default function Camera({ setImage, setHasPermissions, isSelecting }: Cam
         style={styles.captureButton}
         onPress={handleCaptureButtonPressed}
       >
-        <Text style={styles.text}>{isSelecting ? 'Retake' : 'Take Photo'}</Text>
+        <Text style={styles.text}>{['put', 'view'].includes(gameState) ? 'Retake' : 'Take Photo'}</Text>
       </TouchableOpacity>
     </View>
   );
