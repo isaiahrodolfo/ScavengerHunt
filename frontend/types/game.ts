@@ -6,6 +6,6 @@ export type Category = {
 
 export type ImageAndTargetLocation = {
   imageUri: string
-  categoryIndex: number;
-  imageIndex: number; // 0+ as index, -1 for append to list
+  categoryIndex?: number;
+  imageIndex?: number; // 0+ as index, -1 for append to list
 };

@@ -8,7 +8,8 @@ interface GameState {
 }
 
 export const useGameState = create<GameState>()(
-  devtools((set) => ({
+  // devtools
+  ((set) => ({
     gameState: 'take',
     setGameState: (to) => set((state) => ({ gameState: to })),
   }))

@@ -1,14 +1,15 @@
+import { ImageAndTargetLocation } from '@/types/game';
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 interface SelectedImage {
-  selectedImageUri: string;
-  setSelectedImageUri: (to: string) => void;
+  selectedImage: ImageAndTargetLocation;
+  setSelectedImage: (to: ImageAndTargetLocation) => void;
 }
 
-export const useSelectedImageUri = create<SelectedImage>()(
+export const useSelectedImage = create<SelectedImage>()(
   devtools((set) => ({
-    selectedImageUri: 'take',
-    setSelectedImageUri: (to) => set((state) => ({ selectedImageUri: to })),
+    selectedImage: null,
+    setSelectedImage: (to) => set((state) => ({ selectedImage: to })),
   }))
 );

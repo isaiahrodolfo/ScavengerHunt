@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndTargetLocation } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
-import { useSelectedImageUri } from '@/store/useSelectedImage';
+import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 
 interface CategoryObjectProps {
@@ -12,15 +12,13 @@ interface CategoryObjectProps {
   number: number;
   text: string;
   images: string[]; // Array of CameraCapturedPicture objects
-  // onPress: (index: number) => void;
-  // onImagePressed: (target: ImageAndTargetLocation) => void;
   isSelecting: boolean;
 }
 
 const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, isSelecting }: CategoryObjectProps) => {
 
   const { gameState, setGameState } = useGameState();
-  const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
+  const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -36,8 +34,9 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
     switch (gameState) {
       case 'take':
       case 'view':
-        setSelectedImageUri(target.imageUri);
-        setGameState('view');
+        setSelectedImage({ imageUri: target.imageUri, categoryIndex: target.categoryIndex, imageIndex: target.imageIndex });
+        setGameState('view'); // State is already 'view', if 'view'
+        break;
     }
   }
 
@@ -52,9 +51,9 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
 
   // Helper function
   const addImageToCategory = (categoryIndex: number, imageIndex?: number) => {
-    if (selectedImageUri) {
-      setCategoryImages(selectedImageUri, categoryIndex, imageIndex);
-      setSelectedImageUri(''); // That image is placed, and now we remove it from the cache
+    if (selectedImage) {
+      setCategoryImages(selectedImage.imageUri, categoryIndex, imageIndex);
+      setSelectedImage({ imageUri: '' }); // That image is placed, and now we remove it from the cache
     }
   }
 
@@ -80,8 +79,8 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
               pointerEvents={isSelecting ? 'none' : 'auto'}
               ref={scrollViewRef}
             >
-              {images.map((imageUri, index) => (
-                <TouchableOpacity key={index} style={styles.image} onPress={() => handleImagePressed({ imageUri, categoryIndex, imageIndex: index })}>
+              {categoryImages[categoryIndex].images.map((imageUri, index) => (
+                <TouchableOpacity key={index} style={styles.image} onPress={() => handleImagePressed({ imageUri, categoryIndex: categoryIndex, imageIndex: index })}>
                   <Image source={{ uri: imageUri }} style={styles.image} />
                 </TouchableOpacity>
               ))}
