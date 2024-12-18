@@ -80,9 +80,25 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
               ref={scrollViewRef}
             >
               {categoryImages[categoryIndex].images.map((imageUri, index) => (
-                <TouchableOpacity key={index} style={styles.image} onPress={() => handleImagePressed({ imageUri, categoryIndex: categoryIndex, imageIndex: index })}>
-                  <Image source={{ uri: imageUri }} style={styles.image} />
-                </TouchableOpacity>
+                <View
+                  key={index}
+                  style={[
+                    styles.imageContainer,
+                    ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 10 }, // Add border conditionally
+                  ]}
+                >
+                  <Pressable
+                    onPress={() =>
+                      handleImagePressed({
+                        imageUri,
+                        categoryIndex: categoryIndex,
+                        imageIndex: index,
+                      })
+                    }
+                  >
+                    <Image source={{ uri: imageUri }} style={styles.image} />
+                  </Pressable>
+                </View>
               ))}
             </ScrollView>
           ) : (
@@ -141,13 +157,24 @@ const styles = StyleSheet.create({
   scrollView: {
     height: 60
   },
-  image: {
-    width: 60, // Fixed width for each image
+  imageContainer: {
+    width: 65, // Fixed width for each image
     height: 50, // Fixed height for each image
     marginLeft: 5,
-    marginRight: 10,
+    // marginRight: 5,
     borderRadius: 10,
-    backgroundColor: '#ccc', // Placeholder for images
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center', // Center content horizontally
+    // backgroundColor: '#ccc', // Placeholder for images
+  },
+  image: {
+    width: 60, // Fixed width for each image
+    height: 45, // Fixed height for each image
+    // marginLeft: -5,
+    // marginRight: -15,
+    borderRadius: 10,
+    position: 'relative'
+    // backgroundColor: '#ccc', // Placeholder for images
   },
   emptyImagePlaceholder: {
     height: 50, // Fixed height for placeholder image
