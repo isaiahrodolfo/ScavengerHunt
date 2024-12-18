@@ -34,9 +34,10 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
 
   function handleImagePressed(target: ImageAndTargetLocation) {
     switch (gameState) {
-      case 'put':
+      case 'take':
+      case 'view':
         setSelectedImageUri(target.imageUri);
-        setGameState('take');
+        setGameState('view');
     }
   }
 

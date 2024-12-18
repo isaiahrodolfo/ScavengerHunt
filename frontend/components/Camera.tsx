@@ -3,14 +3,13 @@ import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View, Im
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameState } from '@/store/useGameState';
 import { useSelectedImageUri } from '@/store/useSelectedImage';
+import { useCategoryImages } from '@/store/useCategoryImages';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
-  setImageUri: (image: string) => void;
-  isSelecting: boolean;
 }
 
-export default function Camera({ setImageUri, setHasPermissions, isSelecting }: CameraProps) {
+export default function Camera({ setHasPermissions }: CameraProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
@@ -18,6 +17,7 @@ export default function Camera({ setImageUri, setHasPermissions, isSelecting }: 
 
   const { gameState, setGameState } = useGameState();
   const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
+  const { categoryImages, setCategoryImages } = useCategoryImages();
 
   const cameraRef = useRef<any>(null);
 
@@ -41,10 +41,9 @@ export default function Camera({ setImageUri, setHasPermissions, isSelecting }: 
   }
 
   async function takePicture() {
-    if (cameraRef.current && isCameraReady) {
+    if (cameraRef.current && isCameraReady) { // Check if the camera has been fully loaded in and is ready
       try {
         const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
-        // setImageUri(photo.uri);
         setSelectedImageUri(photo.uri);
       } catch (error) {
         console.error('Error taking picture:', error);
@@ -60,19 +59,20 @@ export default function Camera({ setImageUri, setHasPermissions, isSelecting }: 
   function handleCaptureButtonPressed() {
     console.log('capture button pressed');
     switch (gameState) {
-      case 'take': // Pressed the "Take" button, so take a picture
+      case 'take': // Pressed the "Take" button, so take a picture...
         takePicture();
-        setGameState('put'); // TODO: The parent handles this once they have gotten the image
+        setGameState('put'); // ...and place it in a category
         break;
-      case 'put': // Pressed the "Retake" button, so restart
+      case 'put': // Pressed the "Retake" button, so restart...
         resetImage();
-        setGameState('take');
+        setGameState('take'); // ...and take another picture
+        break;
       case 'view': // Pressed the "Retake" button, so restart
-        // resetImage();
-        setGameState('retake');
+        setGameState('retake'); // ...and retake the picture
         break;
       case 'retake': // Pressed the "Take" button, so retake the picture
         takePicture();
+
         setGameState('take'); // TODO: The parent handles this once they have gotten the image
       default: break;
     }
