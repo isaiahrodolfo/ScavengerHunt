@@ -24,7 +24,8 @@ function handleCreateRoom(roomCode, callback, socket) {
         code: roomCode,
         host: socket.id,
         players: new Set([socket.id]),
-        started: false
+        started: false,
+        hostIsModerator: false // TODO: Fix tests to make rooms have this field
     };
     socket.join(roomCode);
     // console.log(`Room ${roomCode} created by ${socket.id}`);
@@ -49,7 +50,7 @@ function handleJoinRoom(roomCode, callback, socket) {
 /**
  * Handles starting a room.
  */
-function handleStartRoom(roomCode, callback, socket) {
+function handleStartRoom(roomCode, isModerator, callback, socket) {
     // Ensure the room exists
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
@@ -67,10 +68,14 @@ function handleStartRoom(roomCode, callback, socket) {
         callback({ success: false, type: 'GameStarted', error: 'Game has already started' });
         return;
     }
+    if (isModerator) {
+        types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true });
+    }
     // Start the room
     types_1.rooms[roomCode].started = true;
-    // Emit the "startGame" event to all users in the room
-    socket.to(roomCode).emit("startGame");
+    // Emit the "startGame" event to all users in the room,
+    // and tell them if there is a moderator or not
+    socket.to(roomCode).emit("startGame", isModerator);
     // Log the action for debugging
     // console.log(`Room ${roomCode} started by host ${socket.id}`);
     // Callback with success message

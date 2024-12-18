@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
+import { useRoomState } from '@/store/useRoomState';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -17,6 +18,9 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
+
+  const { roomState, setRoomState } = useRoomState();
+
 
   const cameraRef = useRef<any>(null);
 
@@ -36,6 +40,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   setHasPermissions(true);
 
   function toggleCameraFacing() {
+    setRoomState({ ...roomState }); // TODO: Using the flip camera button to check roomState
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
