@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndTargetLocation } from '@/types/game';
@@ -12,10 +12,9 @@ interface CategoryObjectProps {
   number: number;
   text: string;
   images: string[]; // Array of CameraCapturedPicture objects
-  isSelecting: boolean;
 }
 
-const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, isSelecting }: CategoryObjectProps) => {
+const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
 
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
@@ -57,6 +56,14 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
     }
   }
 
+  function handlePressOutside(event: GestureResponderEvent): void {
+    switch (gameState) {
+      case 'view': // When pressed out of an image (the user does not want to look at images anymore)
+        setGameState('take');
+        break;
+    }
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: gameState == 'put' ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
       <Pressable onPress={() => {
@@ -76,7 +83,7 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images, 
             <ScrollView
               style={styles.scrollView}
               horizontal showsHorizontalScrollIndicator={true}
-              pointerEvents={isSelecting ? 'none' : 'auto'}
+              pointerEvents={['put'].includes(gameState) ? 'none' : 'auto'}
               ref={scrollViewRef}
             >
               {categoryImages[categoryIndex].images.map((imageUri, index) => (

@@ -12,13 +12,9 @@ import { useCategoryImages } from '@/store/useCategoryImages';
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
   const [timer, setTimer] = useState(1000);
-  const [isSelecting, setIsSelecting] = useState<boolean>(false);
-  const [imageUri, setImageUri] = useState<string>('');
   const { width } = useWindowDimensions();
 
-  const [target, setTarget] = useState<ImageAndTargetLocation>();
   const { gameState, setGameState } = useGameState();
-  const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
 
   // Timer logic
@@ -122,7 +118,8 @@ export default function GameScreen() {
         <Camera setHasPermissions={() => { }} />
       </View>
 
-      <Button title={'Cancel'} onPress={handlePressCancel} />
+      {/* Cancel Button */}
+      {['view', 'retake'].includes(gameState) && <Button title={'Cancel'} onPress={handlePressCancel} />}
 
       <View style={[styles.categoryObjects, { width: width - 20 }]}>
         {categoryImages.map((category, index) => (
@@ -130,7 +127,6 @@ export default function GameScreen() {
             key={index}
             categoryIndex={index}
             backgroundColor={getCategoryColor(index)}
-            isSelecting={isSelecting}
             number={getCategoryNumber(index)}
             text={getCategoryName(index)}
             images={category.images}

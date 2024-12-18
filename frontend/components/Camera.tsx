@@ -13,7 +13,6 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState<string>('');
 
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
