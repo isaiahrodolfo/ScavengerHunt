@@ -6,9 +6,8 @@ import CategoryObject from '@/components/game/CategoryObject';
 import { useGameState } from '@/store/useGameState';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
-import ModeratorScreen from '@/components/game/moderator/PlayerList';
 
-export default function GameScreen() {
+export default function PlayerGameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
   const [timer, setTimer] = useState(1000);
   const { width } = useWindowDimensions();
@@ -38,10 +37,6 @@ export default function GameScreen() {
       case 'retake': // Canceled retaking an image
         setGameState('take');
     }
-  }
-
-  if (roomState.isModerator) {
-    return <ModeratorScreen />
   }
 
   return (

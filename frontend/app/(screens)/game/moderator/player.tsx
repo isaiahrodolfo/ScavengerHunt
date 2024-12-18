@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { useLocalSearchParams } from 'expo-router'
 
 const Player = () => {
+
+  const { userId } = useLocalSearchParams();
+
   return (
     <View>
-      <Text>Player</Text>
+      <Text>{userId}</Text>
     </View>
   )
 }

@@ -1,6 +1,6 @@
 import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
-import ProgressBar from './ProgressBar'
+import ProgressBar from '../../../../components/game/moderator/ProgressBar'
 import { router } from 'expo-router'
 
 // This is how the backend is formatted
@@ -60,9 +60,7 @@ const dummyUserProgress = {
   },
 }
 
-const ModeratorScreen = () => {
-
-
+const PlayerList = () => {
 
   // Update UI when data changes
   useEffect(() => {
@@ -78,10 +76,10 @@ const ModeratorScreen = () => {
     const sets = user.sets;
 
     function handleItemPressed(event: GestureResponderEvent): void {
-      // router.replace({
-      //   pathname: ''
-      //   params: {}
-      // })
+      router.push({
+        pathname: '/(screens)/game/moderator/player',
+        params: { userId: user.id }
+      })
     }
 
     return (
@@ -114,7 +112,7 @@ const ModeratorScreen = () => {
   );
 };
 
-export default ModeratorScreen;
+export default PlayerList;
 
 const styles = StyleSheet.create({
   container: {
