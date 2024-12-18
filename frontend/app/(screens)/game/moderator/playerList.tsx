@@ -77,8 +77,8 @@ const PlayerList = () => {
 
     function handleItemPressed(event: GestureResponderEvent): void {
       router.push({
-        pathname: '/(screens)/game/moderator/player',
-        params: { userId: user.id }
+        pathname: '/(screens)/game/moderator/[id]',
+        params: { id: user.id }
       })
     }
 
