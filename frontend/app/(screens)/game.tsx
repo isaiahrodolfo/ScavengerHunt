@@ -8,11 +8,14 @@ import { useGameState } from '@/store/useGameState';
 import { Category, ImageAndTargetLocation } from '@/types/game';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
+import { useRoomState } from '@/store/useRoomState';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
   const [timer, setTimer] = useState(1000);
   const { width } = useWindowDimensions();
+
+  const { roomState } = useRoomState();
 
   const { gameState, setGameState } = useGameState();
   const { categoryImages, setCategoryImages } = useCategoryImages();
@@ -25,10 +28,7 @@ export default function GameScreen() {
 
     if (timer === 0) {
       clearInterval(interval);
-      router.replace({
-        pathname: '/(screens)/game-over',
-        params: { roomCode, isHost },
-      });
+      router.replace('/(screens)/game-over');
     }
 
     return () => clearInterval(interval);
@@ -40,6 +40,14 @@ export default function GameScreen() {
       case 'retake': // Canceled retaking an image
         setGameState('take');
     }
+  }
+
+  if (roomState.isModerator) {
+    return (
+      <View>
+        <Text>Hi, I'm the moderator!</Text>
+      </View>
+    )
   }
 
   return (

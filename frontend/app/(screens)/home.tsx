@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Button, Text, StyleSheet, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { createRoom, joinRoom } from '@/handlers/roomHandlers';
+import { useRoomState } from '@/store/useRoomState';
 
 export default function HomeScreen() {
 
   const [inputtedRoomCode, setinputtedRoomCode] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
+
+  const { setRoomState } = useRoomState();
 
   async function handleCreateRoom() {
 
@@ -17,13 +20,8 @@ export default function HomeScreen() {
       setErrorMessage(res);
     } else {
       // Navigate to the game room on success
-      router.replace({
-        pathname: '/(screens)/game-room',
-        params: {
-          roomCode: createdRoomCode,
-          isHost: 'true',
-        },
-      });
+      setRoomState({ roomCode: createdRoomCode, isHost: true, isModerator: false })
+      router.replace('/(screens)/game-room');
     }
   }
 
@@ -36,13 +34,8 @@ export default function HomeScreen() {
         setErrorMessage(res);
       } else {
         // Navigate to the game room on success
-        router.replace({
-          pathname: '/(screens)/game-room',
-          params: {
-            roomCode: inputtedRoomCode,
-            isHost: 'false',
-          },
-        });
+        setRoomState({ roomCode: inputtedRoomCode, isHost: false, isModerator: false })
+        router.replace('/(screens)/game-room');
       }
     } else {
       // No room code submitted
