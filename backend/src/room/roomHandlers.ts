@@ -25,7 +25,8 @@ export function handleCreateRoom(roomCode: string, callback: any, socket: any) {
     host: socket.id,
     players: new Set([socket.id]),
     started: false,
-    hostIsModerator: false // TODO: Fix tests to make rooms have this field
+    hostIsModerator: false, // TODO: Fix tests to make rooms have this field
+    gameData: {} // TODO: Fix tests to make rooms have this field
   };
 
   socket.join(roomCode);
