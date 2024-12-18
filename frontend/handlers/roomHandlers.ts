@@ -50,9 +50,9 @@ export function joinRoom(roomCode: string): Promise<string>{
   });
 }
 
-export function startRoom(roomCode: string): Promise<string>{
+export function startRoom(roomCode: string, isModerator: boolean): Promise<string>{
   return new Promise((resolve, reject) => {
-    socket.emit('startRoom', roomCode, (response: { success: boolean; error?: string; type?: string }) => {
+    socket.emit('startRoom', roomCode, isModerator, (response: { success: boolean; error?: string; type?: string }) => {
       if (response.success) {
         resolve('');
       } else {

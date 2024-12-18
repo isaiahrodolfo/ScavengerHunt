@@ -16,7 +16,7 @@ io.on('connection', (socket) => {
 
   socket.on('createRoom', (roomCode, callback) => { handleCreateRoom(roomCode, callback, socket) });
   socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
-  socket.on('startRoom', (roomCode, callback) => { handleStartRoom(roomCode, callback, socket) });
+  socket.on('startRoom', (roomCode, isModerator, callback) => { handleStartRoom(roomCode, isModerator, callback, socket) });
   socket.on('restartRoom', (roomCode, callback) => { handleRestartRoom(roomCode, callback, socket) });
   socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
   socket.on('exitRoom', (roomCode, roomIsClosed, callback) => { handleExitRoom(roomCode, roomIsClosed, callback, socket) });

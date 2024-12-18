@@ -22,18 +22,26 @@ export default function GameRoomScreen() {
     });
 
     // Receive start room emission, tell server to start the game
-    socket.on('startGame', () => {
+    socket.on('startGame', (hasModerator: boolean) => { // Receive message that there is or is not a moderator here
+      setRoomState({ ...roomState, hasModerator })
       router.replace('/(screens)/countdown');
     });
+
+    // TODO: What is this for?
+    // Clean up socket listeners
+    return () => {
+      socket.off('exitRoom');
+      socket.off('startGame');
+    };
   }, []);
 
   // Methods
   async function handleStartRoom() {
-    const res = await startRoom(roomState.roomCode);
+    const res = await startRoom(roomState.roomCode, isModerator);
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ ...roomState, isModerator });
+      setRoomState({ ...roomState, isModerator, hasModerator: true });
       router.replace('/(screens)/countdown');
     }
   }
@@ -43,7 +51,7 @@ export default function GameRoomScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
       router.replace('/(screens)/home');
     }
   }
@@ -53,7 +61,7 @@ export default function GameRoomScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
       router.replace('/(screens)/home');
     }
   }
