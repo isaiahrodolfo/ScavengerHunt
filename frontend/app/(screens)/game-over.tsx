@@ -1,7 +1,6 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { socket } from '@/utils/socket'
 import { closeRoom, exitRoom, restartRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
 

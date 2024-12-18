@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { Checkbox } from 'expo-checkbox';
 import { socket } from '@/utils/socket'
 import { closeRoom, exitRoom, startRoom } from '@/handlers/roomHandlers';
