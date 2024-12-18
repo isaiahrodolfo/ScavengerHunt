@@ -8,6 +8,7 @@ export type Room = {
   players: Set<string>; // User id
   started: boolean;
   hostIsModerator: boolean;
+  gameData: GameData;
 };
 
 export const rooms: Record<string, Room> = {};
@@ -17,3 +18,19 @@ export type ImageAndLocation = {
   categoryIndex: number;
   imageIndex: number;
 }
+
+export type GameData = Record<
+  string, // User ID
+  { image: string; status: string }[][] // 2D array of objects with image and status
+>;
+
+// gameData: {
+//   user1: [
+//     [{image: '', status: ''}, {image: '', status: ''}],
+//     [{image: '', status: ''}, {image: '', status: ''}]
+//   ],
+//   user2: [
+//     [{image: '', status: ''}, {image: '', status: ''}],
+//     [{image: '', status: ''}, {image: '', status: ''}]
+//   ]
+// }
