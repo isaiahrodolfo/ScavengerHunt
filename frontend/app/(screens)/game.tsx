@@ -1,20 +1,23 @@
-import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, useWindowDimensions, ActivityIndicator, Button, GestureResponderEvent } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ActivityIndicator, Image, FlatList } from 'react-native';
+import Camera from '@/components/Camera';
+import CategoryObject from '@/components/CategoryObject';
+import { CameraCapturedPicture } from 'expo-camera';
+import { useGameState } from '@/store/useGameState';
+import { Category, ImageAndTargetLocation } from '@/types/game';
+import { useSelectedImage } from '@/store/useSelectedImage';
+import { useCategoryImages } from '@/store/useCategoryImages';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(1000);
+  const { width } = useWindowDimensions();
 
-  // State variables for camera
-  const [facing, setFacing] = useState<CameraType>('back');
-  const [permission, requestPermission] = useCameraPermissions();
-  const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
-  const [photos, setPhotos] = useState<string[]>([]); // Store the list of captured photo URIs
+  const { gameState, setGameState } = useGameState();
+  const { categoryImages, setCategoryImages } = useCategoryImages();
 
-  const cameraRef = useRef<any>(null); // Reference to the camera
-
+  // Timer logic
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -24,128 +27,72 @@ export default function GameScreen() {
       clearInterval(interval);
       router.replace({
         pathname: '/(screens)/game-over',
-        params: { roomCode, isHost }
+        params: { roomCode, isHost },
       });
     }
 
     return () => clearInterval(interval);
   }, [timer]);
 
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <ActivityIndicator size={'large'} />;
-  }
-
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
-      </View>
-    );
-  }
-
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
-  async function takePicture() {
-    if (cameraRef.current && isCameraReady) {
-      try {
-        const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
-        setPhotos((prevPhotos) => [...prevPhotos, photo.uri]); // Add the new photo to the list
-      } catch (error) {
-        console.error("Error taking picture:", error);
-      }
+  function handlePressCancel(event: GestureResponderEvent): void {
+    switch (gameState) {
+      case 'view': // Canceled viewing an image
+      case 'retake': // Canceled retaking an image
+        setGameState('take');
     }
   }
 
   return (
     <View style={styles.container}>
-      <Text>{roomCode}</Text>
       <Text style={styles.timer}>{timer}</Text>
 
       {/* Camera View */}
-      <CameraView
-        ref={cameraRef}
-        style={styles.camera}
-        facing={facing}
-        onCameraReady={() => setIsCameraReady(true)}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+      <View style={styles.camera}>
+        <Camera setHasPermissions={() => { }} />
+      </View>
 
-      {/* Take Picture Button */}
-      <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-        <Text style={styles.text}>Take Picture</Text>
-      </TouchableOpacity>
+      {/* Cancel Button */}
+      {['view', 'retake'].includes(gameState) && <Button title={'Cancel'} onPress={handlePressCancel} />}
 
-      {/* Photo List */}
-      <FlatList
-        data={photos}
-        keyExtractor={(item, index) => index.toString()}
-        horizontal
-        renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.thumbnail} />
-        )}
-        contentContainerStyle={styles.photoList}
-      />
+      <View style={[styles.categoryObjects, { width: width - 20 }]}>
+        {categoryImages.map((category, index) => (
+          <CategoryObject
+            key={index}
+            categoryIndex={index}
+            backgroundColor={getCategoryColor(index)}
+            number={getCategoryNumber(index)}
+            text={getCategoryName(index)}
+            images={category.images}
+          />
+        ))}
+      </View>
     </View>
   );
 }
 
+// TODO: Make a JSON object that stores this data
+function getCategoryNumber(index: number) {
+  const numbers = [4, 6, 3, 5];
+  return numbers[index] || 0;
+}
+
+function getCategoryColor(index: number) {
+  const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
+  return colors[index] || '#ccc';
+}
+
+function getCategoryName(index: number) {
+  const colors = ['musical instruments', 'TVs', 'fridges/freezers', 'different types of bibles'];
+  return colors[index] || '#ccc';
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  timer: {
-    fontSize: 50
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
-  },
+  container: { flex: 1, justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white' },
   camera: {
     flex: 1,
-    width: '100%',
+    aspectRatio: 3 / 4,
+    // width: '50%',
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  captureButton: {
-    padding: 10,
-    backgroundColor: 'blue',
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  photoList: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  thumbnail: {
-    width: 100,
-    height: 100,
-    marginHorizontal: 5,
-    borderRadius: 10,
-  },
+  timer: { fontSize: 20 },
+  categoryObjects: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', width: '100%' },
 });
