@@ -119,7 +119,7 @@ export default function GameScreen() {
 
       {/* Camera View */}
       <View style={styles.camera}>
-        <Camera setHasPermissions={() => { }} setImageUri={setImageUri} isSelecting={isSelecting} />
+        <Camera setHasPermissions={() => { }} />
       </View>
 
       <Button title={'Cancel'} onPress={handlePressCancel} />
