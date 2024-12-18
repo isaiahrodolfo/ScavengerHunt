@@ -9,7 +9,7 @@ export default function HomeScreen() {
   const [inputtedRoomCode, setinputtedRoomCode] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
 
-  const { setRoomState } = useRoomState();
+  const { roomState, setRoomState } = useRoomState();
 
   async function handleCreateRoom() {
 
@@ -20,7 +20,7 @@ export default function HomeScreen() {
       setErrorMessage(res);
     } else {
       // Navigate to the game room on success
-      setRoomState({ roomCode: createdRoomCode, isHost: true, isModerator: false })
+      setRoomState({ ...roomState, roomCode: createdRoomCode, isHost: true });
       router.replace('/(screens)/game-room');
     }
   }
@@ -34,7 +34,7 @@ export default function HomeScreen() {
         setErrorMessage(res);
       } else {
         // Navigate to the game room on success
-        setRoomState({ roomCode: inputtedRoomCode, isHost: false, isModerator: false })
+        setRoomState({ ...roomState, roomCode: inputtedRoomCode });
         router.replace('/(screens)/game-room');
       }
     } else {

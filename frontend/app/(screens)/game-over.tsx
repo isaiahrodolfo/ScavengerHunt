@@ -32,7 +32,7 @@ export default function GameOverScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
       router.replace('/(screens)/home');
     }
   }
@@ -42,7 +42,7 @@ export default function GameOverScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
       router.replace('/(screens)/home');
     }
   }

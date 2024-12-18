@@ -1,16 +1,22 @@
 import { State } from '@/types/room';
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { createStore } from 'zustand/vanilla';
+import { devtools } from 'zustand/middleware';
+import { useStore } from 'zustand';
 
 interface RoomState {
   roomState: State;
   setRoomState: (to: State) => void;
 }
 
-export const useRoomState = create<RoomState>()(
-  // devtools
-  ((set) => ({
-    roomState: {roomCode: '', isHost: false, isModerator: false},
-    setRoomState: (to) => set((state) => ({ roomState: to })),
-  }))
-);
+const createRoomStore = () =>
+  createStore<RoomState>()(
+    devtools((set) => ({
+      roomState: { roomCode: '', isHost: false, isModerator: false, hasModerator: false },
+      setRoomState: (to) => set(() => ({ roomState: to })),
+    }))
+  );
+
+// Use a unique store per tab
+const roomStore = createRoomStore();
+
+export const useRoomState = () => useStore(roomStore);
