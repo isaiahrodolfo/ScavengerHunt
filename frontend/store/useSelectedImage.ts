@@ -8,8 +8,9 @@ interface SelectedImage {
 }
 
 export const useSelectedImage = create<SelectedImage>()(
-  devtools((set) => ({
-    selectedImage: null,
+  // devtools
+  ((set) => ({
+    selectedImage: {imageUri: '', categoryIndex: 0, imageIndex: 0},
     setSelectedImage: (to) => set((state) => ({ selectedImage: to })),
   }))
 );

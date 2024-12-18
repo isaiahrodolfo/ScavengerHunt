@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 export default function CountdownScreen() {
-  const { roomCode, isHost } = useLocalSearchParams();
 
   const [countdown, setCountdown] = useState(1);
 
@@ -14,10 +13,7 @@ export default function CountdownScreen() {
 
     if (countdown === 0) {
       clearInterval(interval);
-      router.replace({
-        pathname: '/(screens)/game',
-        params: { roomCode, isHost }
-      });
+      router.replace('/(screens)/game');
     }
 
     return () => clearInterval(interval);
