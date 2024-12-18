@@ -34,76 +34,9 @@ export default function GameScreen() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // // Once an image is captured...
-  // useEffect(() => {
-  //   if (imageUri) {
-  //     switch (gameState) {
-  //       case 'take':
-  //         setIsSelecting(true); // Now put the image where it should go
-  //         setGameState('put');
-  //       case 'retake':
-  //         ; // Retake that image
-  //       default: break;
-  //     }
-  //   }
-  //   // TODO: What is this below for?
-  //   else {
-  //     setIsSelecting(false);
-  //   }
-  // }, [imageUri]);
-
-  // // Place photo at specifc location (overwrite old photo)
-  // const placeImageAtLocation = (target: ImageAndTargetLocation) => {
-  //   // TODO: If longer than the current length, tack to end of current length, not end of entire list
-  //   setCategoryImages((prevCategories) => {
-  //     const updatedCategories = [...prevCategories];
-  //     const updatedImages = updatedCategories[target.categoryIndex].images;
-  //     updatedImages[target.imageIndex] = target.imageUri;
-  //     updatedCategories[target.categoryIndex] = { images: updatedImages };
-  //     return updatedCategories;
-  //   });
-  // }
-
-  // // Once an image is pressed...
-  // useEffect(() => {
-  //   if (target) {
-  //     switch (gameState) {
-  //       case 'take': // Selected a image to view
-  //         setGameState('view');
-  //       case 'retake': ; // Toggle selection mode
-  //       default: break;
-  //     }
-  //   }
-  // }, [target])
-
-  // // Once a category is pressed...
-  // function handleCategoryPressed(categoryIndex: number) {
-  //   switch (gameState) {
-  //     case 'put': // Put the image the user just took in the selected category
-  //       addImageToCategory(categoryIndex);
-  //       setGameState('take');
-  //     default: break;
-  //   }
-  // };
-
-  // // Once an image is pressed...
-  // function handleImagePressed(target: ImageAndTargetLocation): void {
-  //   switch (gameState) {
-  //     case 'take': // Selected an image to view
-  //     case 'view': // View another image
-  //       setImageUri(target.imageUri); // Set the selected image URI
-  //       setTarget(target); // Save the target for further actions
-  //       setGameState('view'); // Stay or switch to view mode
-  //       break;
-  //     // TODO: Move the image to a different location
-  //     default: break;
-  //   }
-  // }
-
   function handlePressCancel(event: GestureResponderEvent): void {
     switch (gameState) {
       case 'view': // Canceled viewing an image
-        setGameState('take');
       case 'retake': // Canceled retaking an image
         setGameState('take');
     }

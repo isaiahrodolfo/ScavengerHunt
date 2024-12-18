@@ -58,7 +58,7 @@ export function startRoom(roomCode: string): Promise<string>{
       } else {
         switch (response.type) {
           case 'RoomDoesNotExist':
-            resolve("Error: The game you're trying to join does not exist.");
+            resolve("Error: The game you're trying to start does not exist.");
             break;
           case 'NotHost':
             resolve('Error: You are not the host. Only the host can start the game.');
@@ -89,10 +89,10 @@ export function restartRoom(roomCode: string): Promise<string>{
       } else {
         switch (response.type) {
           case 'RoomDoesNotExist':
-            resolve("Error: The game you're trying to join does not exist.");
+            resolve("Error: The game you're trying to restart does not exist.");
             break;
           case 'NotHost':
-            resolve('Error: You are not the host. Only the host can start the game.');
+            resolve('Error: You are not the host. Only the host can restart the game.');
             break;
           case 'GameHasNotStarted':
             resolve('You cannot restart this game because the game has not started.');
@@ -142,7 +142,7 @@ export function exitRoom(roomCode: string): Promise<string>{
       } else {
         switch (response.type) {
           case 'RoomDoesNotExist':
-            resolve("Error: The game you're trying to close does not exist.");
+            resolve("Error: The game you're trying to exit does not exist.");
             break;
           case 'Host':
             resolve('Error: You are the host. The host cannot exit the room unless they close it.');
