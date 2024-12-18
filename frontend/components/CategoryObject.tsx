@@ -77,9 +77,9 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
         </View>
 
         {/* Bottom Half: Scrollable Images */}
-        <View style={styles.imagesWrapper} pointerEvents='auto'>
+        {/* Cannot select individual photos when selecting a category */}
+        <View style={styles.imagesList} pointerEvents='auto'>
           {images.length > 0 ? (
-            // Cannot select individual photos when selecting a category
             <ScrollView
               style={styles.scrollView}
               horizontal showsHorizontalScrollIndicator={true}
@@ -87,36 +87,28 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
               ref={scrollViewRef}
             >
               {categoryImages[categoryIndex].images.map((imageUri, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.imageContainer,
-                    ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 10 }, // Add border conditionally
-                  ]}
+                <Pressable
+                  onPress={() =>
+                    handleImagePressed({
+                      imageUri,
+                      categoryIndex: categoryIndex,
+                      imageIndex: index,
+                    })
+                  }
                 >
-                  <Pressable
-                    onPress={() =>
-                      handleImagePressed({
-                        imageUri,
-                        categoryIndex: categoryIndex,
-                        imageIndex: index,
-                      })
-                    }
-                  >
-                    <Image source={{ uri: imageUri }} style={styles.image} />
-                  </Pressable>
-                </View>
+                  <Image source={{ uri: imageUri }} style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]} />
+                </Pressable>
               ))}
             </ScrollView>
           ) : (
-            // Placeholder when there are no images
             <View style={styles.scrollView}>
               <View style={styles.emptyImagePlaceholder} />
             </View>
           )}
+          {/* Placeholder when there are no images */}
         </View>
-      </Pressable>
-    </View>
+      </Pressable >
+    </View >
   );
 };
 
@@ -154,7 +146,7 @@ const styles = StyleSheet.create({
     flexShrink: 1, // Prevent overflow of text
     marginRight: 10
   },
-  imagesWrapper: {
+  imagesList: {
     flex: 1, // Takes the other half
     paddingVertical: 5,
     marginLeft: 5,
@@ -165,23 +157,25 @@ const styles = StyleSheet.create({
     height: 60
   },
   imageContainer: {
+    // width: 65, // Fixed width for each image
+    // height: 50, // Fixed height for each image
+    // marginLeft: 5,
+    // // marginRight: 5,
+    // borderRadius: 10,
+    // justifyContent: 'center', // Center content vertically
+    // alignItems: 'center', // Center content horizontally
+    // // backgroundColor: '#ccc', // Placeholder for images
+  },
+  image: {
     width: 65, // Fixed width for each image
     height: 50, // Fixed height for each image
     marginLeft: 5,
-    // marginRight: 5,
+    marginRight: 5,
     borderRadius: 10,
-    justifyContent: 'center', // Center content vertically
-    alignItems: 'center', // Center content horizontally
+    position: 'relative',
     // backgroundColor: '#ccc', // Placeholder for images
-  },
-  image: {
-    width: 60, // Fixed width for each image
-    height: 45, // Fixed height for each image
-    // marginLeft: -5,
-    // marginRight: -15,
-    borderRadius: 10,
-    position: 'relative'
-    // backgroundColor: '#ccc', // Placeholder for images
+    // borderColor: 'blue',
+    // borderWidth: 3
   },
   emptyImagePlaceholder: {
     height: 50, // Fixed height for placeholder image
