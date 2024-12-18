@@ -8,7 +8,8 @@ interface CategoryImages {
 }
 
 export const useCategoryImages = create<CategoryImages>()(
-  devtools((set) => ({
+  // devtools
+  ((set) => ({
     categoryImages: [
       { images: [] },
       { images: [] },
@@ -25,7 +26,7 @@ export const useCategoryImages = create<CategoryImages>()(
         if (category) {
           const newImageUri = imageUri; // Replace with the actual image URI
           if (typeof toImageIndex === 'number' && toImageIndex >= 0) {
-            category.images.splice(toImageIndex, 0, newImageUri);
+            category.images.splice(toImageIndex, 1, newImageUri);
           } else {
             category.images.push(newImageUri);
           }

@@ -6,7 +6,7 @@ import CategoryObject from '@/components/CategoryObject';
 import { CameraCapturedPicture } from 'expo-camera';
 import { useGameState } from '@/store/useGameState';
 import { Category, ImageAndTargetLocation } from '@/types/game';
-import { useSelectedImageUri } from '@/store/useSelectedImage';
+import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 
 export default function GameScreen() {
@@ -18,7 +18,7 @@ export default function GameScreen() {
 
   const [target, setTarget] = useState<ImageAndTargetLocation>();
   const { gameState, setGameState } = useGameState();
-  const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
+  const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
 
   // Timer logic

@@ -2,7 +2,7 @@ import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } f
 import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameState } from '@/store/useGameState';
-import { useSelectedImageUri } from '@/store/useSelectedImage';
+import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 
 interface CameraProps {
@@ -16,7 +16,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const [imageUrl, setImageUrl] = useState<string>('');
 
   const { gameState, setGameState } = useGameState();
-  const { selectedImageUri, setSelectedImageUri } = useSelectedImageUri();
+  const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
 
   const cameraRef = useRef<any>(null);
@@ -44,7 +44,21 @@ export default function Camera({ setHasPermissions }: CameraProps) {
     if (cameraRef.current && isCameraReady) { // Check if the camera has been fully loaded in and is ready
       try {
         const photo: CameraCapturedPicture = await cameraRef.current.takePictureAsync();
-        setSelectedImageUri(photo.uri);
+
+        switch (gameState) {
+          case 'take':
+            setSelectedImage({ imageUri: photo.uri });
+            setGameState('put');  // ...and place it in a category
+            break;
+          case 'retake':
+            // TODO: Fix exclamation mark in selectedImage.categoryIndex!
+            console.log('Previous selected image', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
+
+            console.log('Retaking photo for category', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
+            setCategoryImages(photo.uri, selectedImage.categoryIndex!, selectedImage.imageIndex); // Put the image where the user wanted to replace it
+            setGameState('take'); // ...and continue the main game loop
+            break;
+        }
       } catch (error) {
         console.error('Error taking picture:', error);
       }
@@ -52,8 +66,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   }
 
   function resetImage() {
-    // setImageUri('');
-    setSelectedImageUri('');
+    setSelectedImage({ imageUri: '' });
   }
 
   function handleCaptureButtonPressed() {
@@ -61,7 +74,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
     switch (gameState) {
       case 'take': // Pressed the "Take" button, so take a picture...
         takePicture();
-        setGameState('put'); // ...and place it in a category
+        // setGameState('put'); // ...and place it in a category
         break;
       case 'put': // Pressed the "Retake" button, so restart...
         resetImage();
@@ -72,8 +85,9 @@ export default function Camera({ setHasPermissions }: CameraProps) {
         break;
       case 'retake': // Pressed the "Take" button, so retake the picture
         takePicture();
-
-        setGameState('take'); // TODO: The parent handles this once they have gotten the image
+        break;
+      // setCategoryImages(selectedImage.imageUri, selectedImage.categoryIndex, selectedImage.imageIndex) // Automatically put the image where the user wanted to replace it
+      // setGameState('take'); // ...and continue the main game loop
       default: break;
     }
     // isSelecting ? resetImage() : takePicture();
@@ -94,7 +108,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
         {['put', 'view'].includes(gameState) && (
           <Image
             style={StyleSheet.absoluteFillObject}
-            source={{ uri: selectedImageUri }}
+            source={{ uri: selectedImage.imageUri }}
           />
         )}
         <View style={styles.buttonContainer}>
