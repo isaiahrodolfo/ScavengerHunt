@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Button, Text, StyleSheet, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { createRoom, joinRoom } from '@/handlers/roomHandlers';

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, ActivityIndicator, Button, GestureResponderEvent } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import Camera from '@/components/Camera';
-import CategoryObject from '@/components/CategoryObject';
-import { CameraCapturedPicture } from 'expo-camera';
+import Camera from '@/components/game/Camera';
+import CategoryObject from '@/components/game/CategoryObject';
 import { useGameState } from '@/store/useGameState';
-import { Category, ImageAndTargetLocation } from '@/types/game';
-import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
+import ModeratorScreen from '@/components/game/moderator/PlayerList';
 
 export default function GameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -43,11 +41,7 @@ export default function GameScreen() {
   }
 
   if (roomState.isModerator) {
-    return (
-      <View>
-        <Text>Hi, I'm the moderator!</Text>
-      </View>
-    )
+    return <ModeratorScreen />
   }
 
   return (
