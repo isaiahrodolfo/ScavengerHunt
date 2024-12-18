@@ -1,4 +1,4 @@
-import { Room, rooms } from './types';
+import { Room, rooms } from '../types';
 import {
   checkIfRoomDoesNotExist,
   checkIfRoomExists,
@@ -7,7 +7,7 @@ import {
   checkIfNotInThisRoom,
   checkIfHost,
   getRoomOfUser,
-} from './handler-helpers';
+} from '../handler-helpers';
 
 /**
  * Handles room creation.

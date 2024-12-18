@@ -9,3 +9,9 @@ export type ImageAndTargetLocation = {
   categoryIndex?: number;
   imageIndex?: number; // 0+ as index, -1 for append to list
 };
+
+export type ImageAndLocation = {
+  imageUri: string
+  categoryIndex: number;
+  imageIndex?: number; // 0+ as index, -1 for append to list
+};

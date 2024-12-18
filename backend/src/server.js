@@ -1,4 +1,5 @@
-const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleRestartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, logState } = require('./handlers');
+const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleRestartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect } = require('./room/roomHandlers');
+const { handleInsertImage } = require('./game/gameHandlers');
 const { Room, rooms } = require('./types');
 
 const http = require('http');
@@ -14,12 +15,16 @@ const io = socketIo(server); // Initialize Socket.IO
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
+  // Room handlers
   socket.on('createRoom', (roomCode, callback) => { handleCreateRoom(roomCode, callback, socket) });
   socket.on('joinRoom', (roomCode, callback) => { handleJoinRoom(roomCode, callback, socket) });
   socket.on('startRoom', (roomCode, isModerator, callback) => { handleStartRoom(roomCode, isModerator, callback, socket) });
   socket.on('restartRoom', (roomCode, callback) => { handleRestartRoom(roomCode, callback, socket) });
   socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
   socket.on('exitRoom', (roomCode, roomIsClosed, callback) => { handleExitRoom(roomCode, roomIsClosed, callback, socket) });
+
+  // Game handlers
+  socket.on('insertImage', (roomCode, imageAndLocation, callback) => { handleInsertImage(roomCode, imageAndLocation, callback, socket) });
 
   // TESTING, print any incoming emits to console
   socket.onAny((eventName, ...args) => {

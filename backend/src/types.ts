@@ -11,3 +11,9 @@ export type Room = {
 };
 
 export const rooms: Record<string, Room> = {};
+
+export type ImageAndLocation = {
+  imageUri: string;
+  categoryIndex: number;
+  imageIndex: number;
+}
