@@ -1,14 +1,21 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { useLocalSearchParams } from 'expo-router'
+import { useNavigation } from "@react-navigation/native";
 
 const Player = () => {
 
-  const { userId } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+
+  // Set header title
+  const navigation = useNavigation();
+  navigation.setOptions({
+    headerTitle: `${id}`
+  });
 
   return (
     <View>
-      <Text>{userId}</Text>
+      <Text>{id}</Text>
     </View>
   )
 }
