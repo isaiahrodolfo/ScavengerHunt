@@ -74,12 +74,11 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         // Moderator joins rooms of players, so they can emit to each one separately
         // TODO: Remove all rooms of all players when room is closed
         for (const playerId of types_1.rooms[roomCode].players) {
-            if (playerId && playerId != types_1.rooms[roomCode].host) {
+            if (playerId && playerId !== types_1.rooms[roomCode].host) {
                 socket.join(playerId);
                 // Initialize the game data for each player based on gameGoals
-                types_1.rooms[roomCode].gameData[playerId] = gameGoals.map(goal => {
-                    // Create a 2D array for each category based on the number in gameGoals
-                    return new Array(goal).fill({ image: '0', status: 'none' }); // Each category gets a 1D array of objects
+                types_1.rooms[roomCode].gameData[playerId] = gameGoals.map(({ imageCount }) => {
+                    return new Array(imageCount).fill({ image: '', status: 'none' });
                 });
             }
         }

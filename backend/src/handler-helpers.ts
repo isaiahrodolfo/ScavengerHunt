@@ -130,5 +130,5 @@ export function logState(roomCode: string, socket: any) {
   console.log(`Players in room:`, [...room.players]); // Convert Set to Array for easier viewing
 
   console.log('Rooms: ', rooms);
-  console.log('Game Data: ', rooms.gameData[socket.id]);
+  console.log('Game Data: ', rooms[roomCode].gameData[socket.id]);
 }

@@ -68,6 +68,7 @@ const PlayerList = () => {
   useEffect(() => {
 
     // Receive exit room emission, tell server to exit the Socket room and go back home
+    // TODO: await?
     socket.on('insertImage', (imageAndLocation: ImageAndLocation, playerId: string) => { // TODO: All three fields must exist in ImageAndLocation
       console.log('received image location (', imageAndLocation.categoryIndex, ", ", imageAndLocation.imageIndex, "), player id is ", playerId); // testing
     });

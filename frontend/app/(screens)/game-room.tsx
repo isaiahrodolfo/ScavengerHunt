@@ -36,7 +36,12 @@ export default function GameRoomScreen() {
     };
   }, []);
 
-  const gameGoals = [2, 1, 2, 1]; // dummy data
+  const gameGoals = [
+    { categoryName: 'a', imageCount: 1 },
+    { categoryName: 'b', imageCount: 2 },
+    { categoryName: 'c', imageCount: 1 },
+    { categoryName: 'd', imageCount: 3 },
+  ]; // dummy data
 
   // Methods
   async function handleStartRoom() {
