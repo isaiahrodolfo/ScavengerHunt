@@ -16,7 +16,7 @@ export const rooms: Record<string, Room> = {};
 export type ImageAndLocation = {
   imageUri: string;
   categoryIndex: number;
-  imageIndex: number;
+  imageIndex?: number;
 }
 
 export type GameData = Record<
@@ -34,3 +34,12 @@ export type GameData = Record<
 //     [{image: '', status: ''}, {image: '', status: ''}]
 //   ]
 // }
+
+export type Callback = (
+  response: { 
+    success: boolean; 
+    type?: string; 
+    error?: string; 
+    roomCode?: string 
+  }
+) => void;

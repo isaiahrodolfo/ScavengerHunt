@@ -25,7 +25,8 @@ function handleCreateRoom(roomCode, callback, socket) {
         host: socket.id,
         players: new Set([socket.id]),
         started: false,
-        hostIsModerator: false // TODO: Fix tests to make rooms have this field
+        hostIsModerator: false, // TODO: Fix tests to make rooms have this field
+        gameData: {} // TODO: Fix tests to make rooms have this field
     };
     socket.join(roomCode);
     // console.log(`Room ${roomCode} created by ${socket.id}`);
@@ -70,6 +71,13 @@ function handleStartRoom(roomCode, isModerator, callback, socket) {
     }
     if (isModerator) {
         types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true });
+        // Moderator joins rooms of players, so they can emit to each one separately
+        // TODO: Remove all rooms of all players when room is closed
+        for (const playerId of types_1.rooms[roomCode].players) {
+            if (playerId) {
+                socket.join(playerId);
+            }
+        }
     }
     // Start the room
     types_1.rooms[roomCode].started = true;

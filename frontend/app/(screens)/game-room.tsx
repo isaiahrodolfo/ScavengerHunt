@@ -21,7 +21,8 @@ export default function GameRoomScreen() {
       router.replace('/(screens)/home');
     });
 
-    // Receive start room emission, tell server to start the game
+    // Receive start game emission
+    // ? tell server to start the game (we're not doing that here)
     socket.on('startGame', (hasModerator: boolean) => { // Receive message that there is or is not a moderator here
       setRoomState({ ...roomState, hasModerator })
       router.replace('/(screens)/countdown');

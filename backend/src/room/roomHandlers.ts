@@ -1,4 +1,4 @@
-import { Room, rooms } from '../types';
+import { Callback, Room, rooms } from '../types';
 import {
   checkIfRoomDoesNotExist,
   checkIfRoomExists,
@@ -12,7 +12,7 @@ import {
 /**
  * Handles room creation.
  */
-export function handleCreateRoom(roomCode: string, callback: any, socket: any) {
+export function handleCreateRoom(roomCode: string, callback: Callback, socket: any) {
   // Check that there is no room with the same code
   if (checkIfRoomExists(roomCode, callback)) return;
 
@@ -38,7 +38,7 @@ export function handleCreateRoom(roomCode: string, callback: any, socket: any) {
 /**
  * Handles joining a room.
  */
-export function handleJoinRoom(roomCode: string, callback: any, socket: any) {
+export function handleJoinRoom(roomCode: string, callback: Callback, socket: any) {
   // Check that the room exists
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
@@ -56,7 +56,7 @@ export function handleJoinRoom(roomCode: string, callback: any, socket: any) {
 /**
  * Handles starting a room.
  */
-export function handleStartRoom(roomCode: string, isModerator: boolean, callback: any, socket: any) {
+export function handleStartRoom(roomCode: string, isModerator: boolean, callback: Callback, socket: any) {
   // Ensure the room exists
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
@@ -81,6 +81,14 @@ export function handleStartRoom(roomCode: string, isModerator: boolean, callback
       ...rooms[roomCode], 
       hostIsModerator: true 
     }
+
+    // Moderator joins rooms of players, so they can emit to each one separately
+    // TODO: Remove all rooms of all players when room is closed
+    for (const playerId of rooms[roomCode].players) {
+      if (playerId) {
+        socket.join(playerId);
+      }
+    }
   }
 
   // Start the room
@@ -101,7 +109,7 @@ export function handleStartRoom(roomCode: string, isModerator: boolean, callback
  * Handles restarting a room.
  */
 // TODO: Write tests for restarting a room
-export function handleRestartRoom(roomCode: string, callback: any, socket: any) {
+export function handleRestartRoom(roomCode: string, callback: Callback, socket: any) {
   // Ensure the room exists
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
@@ -138,7 +146,7 @@ export function handleRestartRoom(roomCode: string, callback: any, socket: any) 
 /**
  * Handles closing a room.
  */
-export function handleCloseRoom(roomCode: string, callback: any, socket: any) {
+export function handleCloseRoom(roomCode: string, callback: Callback, socket: any) {
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
   if (checkIfNotHost(roomCode, callback, socket.id)) return;
@@ -153,7 +161,7 @@ export function handleCloseRoom(roomCode: string, callback: any, socket: any) {
 /**
  * Handles exiting a room.
  */
-export function handleExitRoom(roomCode: string, roomIsClosed: boolean, callback: any, socket: any ) {
+export function handleExitRoom(roomCode: string, roomIsClosed: boolean, callback: Callback, socket: any ) {
 
   // If room is already closed by host, no need to check this
   if (!roomIsClosed) {
