@@ -45,9 +45,9 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
 
   // SEND NEW DATA TO MODERATOR
   // if (room.hostIsModerator) { // testing no moderator
-    // socket.to(room.host).emit('insertImage', imageAndLocation, socket.id);
+    socket.to(room.host).emit('insertImage', imageAndLocation, socket.id);
     // socket.broadcast.emit('insertImage', imageAndLocation, socket.id);
-    socket.to(roomCode).emit('insertImage', imageAndLocation, socket.id);
+    // socket.to(roomCode)emit('insertImage', imageAndLocation, socket.id);
   // }
 
   // Invoke the callback to notify success
