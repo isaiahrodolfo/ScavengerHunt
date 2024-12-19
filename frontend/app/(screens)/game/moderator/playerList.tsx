@@ -2,6 +2,8 @@ import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Tex
 import React, { useEffect } from 'react'
 import ProgressBar from '../../../../components/game/moderator/ProgressBar'
 import { router } from 'expo-router'
+import { socket } from '@/utils/socket'
+import { ImageAndLocation } from '@/types/game'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -65,7 +67,12 @@ const PlayerList = () => {
   // Update UI when data changes
   useEffect(() => {
 
-  }, [dummyUserProgress, dummyGameGoal])
+    // Receive exit room emission, tell server to exit the Socket room and go back home
+    socket.on('insertImage', (imageAndLocation: ImageAndLocation, playerId: string) => { // TODO: All three fields must exist in ImageAndLocation
+      console.log('received image location (', imageAndLocation.categoryIndex, ", ", imageAndLocation.imageIndex, "), player id is ", playerId); // testing
+    });
+
+  }, [])
 
   // Convert object to array for FlatList
   const userArray = Object.values(dummyUserProgress);

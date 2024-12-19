@@ -6,6 +6,7 @@ import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
+import { insertImage } from '@/handlers/gameHandlers';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -51,13 +52,18 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
   }
 
   // Helper function
-  const addImageToCategory = (categoryIndex: number, imageIndex?: number) => {
+  async function addImageToCategory(categoryIndex: number, imageIndex?: number) {
     if (selectedImage) {
-      setCategoryImages(roomState.roomCode, {
+      setCategoryImages({
         imageUri: selectedImage.imageUri,
         categoryIndex: categoryIndex!,
         imageIndex: imageIndex
       });
+      // Now update the server with the new image
+      const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length })
+      if (res) {
+        console.log(res);
+      }
       setSelectedImage({ imageUri: '' }); // That image is placed, and now we remove it from the cache
     }
   }

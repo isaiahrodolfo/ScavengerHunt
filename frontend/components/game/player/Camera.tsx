@@ -5,7 +5,7 @@ import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
-import { insertPhoto } from '@/handlers/gameHandlers';
+import { insertImage } from '@/handlers/gameHandlers';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -60,11 +60,17 @@ export default function Camera({ setHasPermissions }: CameraProps) {
             console.log('Retaking photo for category', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
             // Put the image where the user wanted to replace it
             console.log('putting image into category...'); // testing
-            setCategoryImages(roomState.roomCode, {
-              imageUri: photo.uri,
-              categoryIndex: selectedImage.categoryIndex!,
-              imageIndex: selectedImage.imageIndex
-            });
+
+            const imageUri = photo.uri;
+            const categoryIndex = selectedImage.categoryIndex!;
+            const imageIndex = selectedImage.imageIndex;
+
+            setCategoryImages({ imageUri, categoryIndex, imageIndex });
+            // Now update the server with the new image
+            const res = await insertImage(roomState.roomCode, { imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length })
+            if (res) {
+              console.log(res);
+            }
             setGameState('take'); // ...and continue the main game loop
             break;
         }

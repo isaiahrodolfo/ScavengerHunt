@@ -9,7 +9,7 @@ exports.checkIfHost = checkIfHost;
 exports.getRoomOfUser = getRoomOfUser;
 const types_1 = require("./types"); // Import types
 /**
- * Checks if the room code already exists.
+ * Throws an error if the room code already exists.
  */
 function checkIfRoomExists(roomCode, callback) {
     if (typeof callback !== 'function') {
@@ -23,7 +23,7 @@ function checkIfRoomExists(roomCode, callback) {
     return exists;
 }
 /**
- * Checks if the room does not exist.
+ * Throws an error if the room does not exist.
  */
 function checkIfRoomDoesNotExist(roomCode, callback) {
     if (typeof callback !== 'function') {
@@ -37,7 +37,7 @@ function checkIfRoomDoesNotExist(roomCode, callback) {
     return notExists;
 }
 /**
- * Checks if the user is in any room.
+ * Throws an error if the user is in any room.
  */
 function checkIfInAnyRoom(id, callback) {
     if (typeof callback !== 'function') {
@@ -52,7 +52,7 @@ function checkIfInAnyRoom(id, callback) {
     return false;
 }
 /**
- * Checks if the user is not in this room.
+ * Throws an error if the user is not in this room.
  */
 function checkIfNotInThisRoom(roomCode, callback, id) {
     if (typeof callback !== 'function') {

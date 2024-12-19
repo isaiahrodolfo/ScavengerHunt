@@ -1,10 +1,10 @@
 import { AlreadyInSomeRoomError, NotInThisRoomError, NotHostError, RoomAlreadyExistsError, RoomDoesNotExistError } from './room/roomErrors';
-import { Room, rooms } from './types'; // Import types
+import { Callback, Room, rooms } from './types'; // Import types
 
 /**
- * Checks if the room code already exists.
+ * Throws an error if the room code already exists.
  */
-export function checkIfRoomExists(roomCode: string, callback: any): boolean {
+export function checkIfRoomExists(roomCode: string, callback: Callback): boolean {
   if (typeof callback !== 'function') {
     console.error("Callback is not a function. Received:", callback);
     return true; // or handle this case gracefully
@@ -18,9 +18,9 @@ export function checkIfRoomExists(roomCode: string, callback: any): boolean {
 }
 
 /**
- * Checks if the room does not exist.
+ * Throws an error if the room does not exist.
  */
-export function checkIfRoomDoesNotExist(roomCode: string, callback: any): boolean {
+export function checkIfRoomDoesNotExist(roomCode: string, callback: Callback): boolean {
   if (typeof callback !== 'function') {
     console.error("Callback is not a function. Received:", callback);
     return true; // or handle this case gracefully
@@ -34,9 +34,9 @@ export function checkIfRoomDoesNotExist(roomCode: string, callback: any): boolea
 }
 
 /**
- * Checks if the user is in any room.
+ * Throws an error if the user is in any room.
  */
-export function checkIfInAnyRoom(id: string, callback: any): boolean {
+export function checkIfInAnyRoom(id: string, callback: Callback): boolean {
   if (typeof callback !== 'function') {
     console.error("Callback is not a function. Received:", callback);
     return true; // or handle this case gracefully
@@ -51,9 +51,9 @@ export function checkIfInAnyRoom(id: string, callback: any): boolean {
 }
 
 /**
- * Checks if the user is not in this room.
+ * Throws an error if the user is not in this room.
  */
-export function checkIfNotInThisRoom(roomCode: string, callback: any, id: string): boolean {
+export function checkIfNotInThisRoom(roomCode: string, callback: Callback, id: string): boolean {
   if (typeof callback !== 'function') {
     console.error("Callback is not a function. Received:", callback);
     return true; // or handle this case gracefully
@@ -71,7 +71,7 @@ export function checkIfNotInThisRoom(roomCode: string, callback: any, id: string
 /**
  * Ensures the user is the host of the room.
  */
-export function checkIfNotHost(roomCode: string, callback: any, socketId: string): boolean {
+export function checkIfNotHost(roomCode: string, callback: Callback, socketId: string): boolean {
   if (typeof callback !== 'function') {
     console.error("Callback is not a function. Received:", callback);
     return true; // or handle this case gracefully
@@ -87,7 +87,7 @@ export function checkIfNotHost(roomCode: string, callback: any, socketId: string
 /**
  * Ensures the user is not the host of the room.
  */
-export function checkIfHost(roomCode: string, callback: any, socketId: string): boolean {
+export function checkIfHost(roomCode: string, callback: Callback, socketId: string): boolean {
   if (typeof callback !== 'function') {
     console.error("Callback is not a function. Received:", callback);
     return true; // or handle this case gracefully
