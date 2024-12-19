@@ -50,7 +50,7 @@ export function joinRoom(roomCode: string): Promise<string>{
   });
 }
 
-export function startRoom(roomCode: string, gameGoals: number[], isModerator: boolean): Promise<string>{
+export function startRoom(roomCode: string, gameGoals: {categoryName: string; imageCount: number}[], isModerator: boolean): Promise<string>{
   return new Promise((resolve, reject) => {
     socket.emit('startRoom', roomCode, gameGoals, isModerator, (response: { success: boolean; error?: string; type?: string }) => {
       if (response.success) {

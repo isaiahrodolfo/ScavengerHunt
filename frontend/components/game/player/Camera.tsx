@@ -69,7 +69,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
 
             setCategoryImages({ imageUri, categoryIndex, imageIndex });
             // Now update the server with the new image
-            const res = await insertImage(roomState.roomCode, { imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length })
+            const res = await insertImage(roomState.roomCode, { imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length - 1 })
             if (res) {
               console.log(res);
             }

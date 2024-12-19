@@ -56,7 +56,7 @@ export function handleJoinRoom(roomCode: string, callback: Callback, socket: any
 /**
  * Handles starting a room.
  */
-export function handleStartRoom(roomCode: string, gameGoals: number[], isModerator: boolean, callback: Callback, socket: any) {
+export function handleStartRoom(roomCode: string, gameGoals: {categoryName: string, imageCount: number}[], isModerator: boolean, callback: Callback, socket: any) {
   // Ensure the room exists
   if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
@@ -85,14 +85,13 @@ export function handleStartRoom(roomCode: string, gameGoals: number[], isModerat
     // Moderator joins rooms of players, so they can emit to each one separately
     // TODO: Remove all rooms of all players when room is closed
     for (const playerId of rooms[roomCode].players) {
-      if (playerId && playerId != rooms[roomCode].host) {
+      if (playerId && playerId !== rooms[roomCode].host) {
         socket.join(playerId);
-        
+    
         // Initialize the game data for each player based on gameGoals
-        rooms[roomCode].gameData[playerId] = gameGoals.map(goal => {
-          // Create a 2D array for each category based on the number in gameGoals
-          return new Array(goal).fill({image: '0', status: 'none'}); // Each category gets a 1D array of objects
-        });
+        rooms[roomCode].gameData[playerId] = gameGoals.map(({ imageCount }) => {
+          return new Array(imageCount).fill({ image: '', status: 'none' });
+        });        
       }
     }
   }

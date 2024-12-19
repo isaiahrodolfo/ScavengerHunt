@@ -54,13 +54,14 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
   // Helper function
   async function addImageToCategory(categoryIndex: number, imageIndex?: number) {
     if (selectedImage) {
+
       setCategoryImages({
         imageUri: selectedImage.imageUri,
         categoryIndex: categoryIndex!,
         imageIndex: imageIndex
       });
       // Now update the server with the new image
-      const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length })
+      const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length - 1 })
       if (res) {
         console.log(res);
       }
@@ -68,13 +69,13 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
     }
   }
 
-  function handlePressOutside(event: GestureResponderEvent): void {
-    switch (gameState) {
-      case 'view': // When pressed out of an image (the user does not want to look at images anymore)
-        setGameState('take');
-        break;
-    }
-  }
+  // function handlePressOutside(event: GestureResponderEvent): void {
+  //   switch (gameState) {
+  //     case 'view': // When pressed out of an image (the user does not want to look at images anymore)
+  //       setGameState('take');
+  //       break;
+  //   }
+  // }
 
   return (
     <View style={[styles.container, { backgroundColor: gameState == 'put' ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
