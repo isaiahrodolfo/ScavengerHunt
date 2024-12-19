@@ -26,7 +26,8 @@ function handleCreateRoom(roomCode, callback, socket) {
         players: new Set([socket.id]),
         started: false,
         hostIsModerator: false, // TODO: Fix tests to make rooms have this field
-        gameData: {} // TODO: Fix tests to make rooms have this field
+        gameData: {}, // TODO: Fix tests to make rooms have this field
+        gameProgress: {}, // TODO: Fix tests to make rooms have this field
     };
     socket.join(roomCode);
     // console.log(`Room ${roomCode} created by ${socket.id}`);

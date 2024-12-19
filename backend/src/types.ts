@@ -9,6 +9,7 @@ export type Room = {
   started: boolean;
   hostIsModerator: boolean;
   gameData: GameData;
+  gameProgress: PlayerProgressState;
 };
 
 export const rooms: Record<string, Room> = {};
@@ -45,3 +46,21 @@ export type Callback = (
     roomCode?: string 
   }
 ) => void;
+
+export type PlayerProgressState = Record<string, PlayerProgressValue>;
+
+export type PlayerProgressValue = {
+  id: string, 
+  images: {
+    none: number,
+    unchecked: number, 
+    valid: number, 
+    invalid: number
+  }, 
+  sets: {
+    none: number,
+    unchecked: number, 
+    valid: number, 
+    invalid: number
+  }
+};
