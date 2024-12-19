@@ -6,6 +6,7 @@ import CategoryObject from '@/components/game/player/CategoryObject';
 import { useGameState } from '@/store/useGameState';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
+import { socket } from '@/utils/socket';
 
 export default function PlayerGameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();

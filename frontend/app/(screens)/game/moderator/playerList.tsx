@@ -62,18 +62,23 @@ const dummyUserProgress = {
   },
 }
 
-const PlayerList = () => {
+export default function PlayerList() {
 
   // Update UI when data changes
   useEffect(() => {
 
-    // Receive exit room emission, tell server to exit the Socket room and go back home
-    // TODO: await?
-    socket.on('insertImage', (imageAndLocation: ImageAndLocation, playerId: string) => { // TODO: All three fields must exist in ImageAndLocation
-      console.log('received image location (', imageAndLocation.categoryIndex, ", ", imageAndLocation.imageIndex, "), player id is ", playerId); // testing
+    socket.on('updateProgress', (imageAndLocation: ImageAndLocation, playerId: string) => { // TODO: All three fields must exist in ImageAndLocation
+      // socket.on('updateProgress', (message: string) => { // TODO: All three fields must exist in ImageAndLocation
+      // console.log('updating user progess... ', imageAndLocation);
+      console.log('received image location (', imageAndLocation.categoryIndex, ', ', imageAndLocation.imageIndex, '), player id is ', playerId); // testing
     });
 
-  }, [])
+    // Clean up socket listeners
+    return () => {
+      socket.off('uu');
+    };
+
+  }, []);
 
   // Convert object to array for FlatList
   const userArray = Object.values(dummyUserProgress);
@@ -119,8 +124,6 @@ const PlayerList = () => {
     </ScrollView>
   );
 };
-
-export default PlayerList;
 
 const styles = StyleSheet.create({
   container: {

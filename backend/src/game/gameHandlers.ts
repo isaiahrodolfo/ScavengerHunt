@@ -5,6 +5,7 @@ import { Callback, ImageAndLocation, Room, rooms } from '../types';
  * Handles image insertion.
  */
 export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLocation, callback: Callback, socket: any) {
+
   const { imageUri, categoryIndex, imageIndex } = imageAndLocation;
 
   if(checkIfRoomDoesNotExist(roomCode, callback)) return;
@@ -43,13 +44,14 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
     gameData: updatedGameData,
   };
 
-  // SEND NEW DATA TO MODERATOR
-  // if (room.hostIsModerator) { // testing no moderator
-    socket.to(room.host).emit('insertImage', imageAndLocation, socket.id);
-    // socket.broadcast.emit('insertImage', imageAndLocation, socket.id);
-    // socket.to(roomCode)emit('insertImage', imageAndLocation, socket.id);
-  // }
+  if (room.hostIsModerator) { // testing no moderator
+    const emitTo = room.host;
+    
+    console.log('emit updateUserProgress to room host:', emitTo)
+    socket.to(emitTo).emit('updateProgress', imageAndLocation, socket.id);
+  }
 
   // Invoke the callback to notify success
   callback({ success: true });
+  
 }

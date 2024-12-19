@@ -75,7 +75,7 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         // TODO: Remove all rooms of all players when room is closed
         for (const playerId of types_1.rooms[roomCode].players) {
             if (playerId && playerId !== types_1.rooms[roomCode].host) {
-                socket.join(playerId);
+                // socket.join(playerId); // testing, what if this doesn't do what i want it to, connect player to moderator?
                 // Initialize the game data for each player based on gameGoals
                 types_1.rooms[roomCode].gameData[playerId] = gameGoals.map(({ imageCount }) => {
                     return new Array(imageCount).fill({ image: '', status: 'none' });

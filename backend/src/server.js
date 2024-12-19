@@ -33,12 +33,12 @@ io.on('connection', (socket) => {
 
   // TESTING, print any incoming emits to console
   socket.onAny((eventName, ...args) => {
-    console.log(eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+    console.log(socket.id, eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
   });
 
   // TESTING, print any outgoing emits to console
   socket.onAnyOutgoing((eventName, ...args) => {
-    console.log(eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
+    console.log(socket.id, eventName, args); // 'hello' [ 1, '2', { 3: '4', 5: ArrayBuffer (1) [ 6 ] } ]
   });
 
   // Handle disconnection event
