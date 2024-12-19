@@ -24,11 +24,11 @@ export default function GameRoomScreen() {
     // Receive start game emission
     // ? tell server to start the game (we're not doing that here)
     socket.on('startGame', (hasModerator: boolean) => { // Receive message that there is or is not a moderator here
+      // console.log('starting game...'); // testing
       setRoomState({ ...roomState, hasModerator })
       router.replace('/(screens)/countdown');
     });
 
-    // TODO: What is this for?
     // Clean up socket listeners
     return () => {
       socket.off('exitRoom');

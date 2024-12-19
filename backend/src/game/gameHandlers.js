@@ -32,12 +32,11 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
         ] });
     // Update the room's gameData
     types_1.rooms[roomCode] = Object.assign(Object.assign({}, room), { gameData: updatedGameData });
-    // SEND NEW DATA TO MODERATOR
-    // if (room.hostIsModerator) { // testing no moderator
-    socket.to(room.host).emit('insertImage', imageAndLocation, socket.id);
-    // socket.broadcast.emit('insertImage', imageAndLocation, socket.id);
-    // socket.to(roomCode)emit('insertImage', imageAndLocation, socket.id);
-    // }
+    if (room.hostIsModerator) { // testing no moderator
+        const emitTo = room.host;
+        console.log('emit updateUserProgress to room host:', emitTo);
+        socket.to(emitTo).emit('updateProgress', imageAndLocation, socket.id);
+    }
     // Invoke the callback to notify success
     callback({ success: true });
 }
