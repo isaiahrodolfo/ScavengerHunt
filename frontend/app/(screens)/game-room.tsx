@@ -21,13 +21,14 @@ export default function GameRoomScreen() {
       router.replace('/(screens)/home');
     });
 
-    // Receive start room emission, tell server to start the game
+    // Receive start game emission
+    // ? tell server to start the game (we're not doing that here)
     socket.on('startGame', (hasModerator: boolean) => { // Receive message that there is or is not a moderator here
+      // console.log('starting game...'); // testing
       setRoomState({ ...roomState, hasModerator })
       router.replace('/(screens)/countdown');
     });
 
-    // TODO: What is this for?
     // Clean up socket listeners
     return () => {
       socket.off('exitRoom');
@@ -35,9 +36,16 @@ export default function GameRoomScreen() {
     };
   }, []);
 
+  const gameGoals = [
+    { categoryName: 'a', imageCount: 1 },
+    { categoryName: 'b', imageCount: 2 },
+    { categoryName: 'c', imageCount: 1 },
+    { categoryName: 'd', imageCount: 3 },
+  ]; // dummy data
+
   // Methods
   async function handleStartRoom() {
-    const res = await startRoom(roomState.roomCode, isModerator);
+    const res = await startRoom(roomState.roomCode, gameGoals, isModerator);
     if (res) {
       setErrorMessage(res);
     } else {

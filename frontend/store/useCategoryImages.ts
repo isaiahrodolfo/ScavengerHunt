@@ -1,38 +1,39 @@
-import { Category } from '@/types/game';
+import { insertImage } from '@/handlers/gameHandlers';
+import { Category, ImageAndLocation } from '@/types/game';
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 interface CategoryImages {
   categoryImages: Category[];
-  setCategoryImages: (imageUri: string, toCategoryIndex: number, toImageIndex?: number) => void;
+  setCategoryImages: (imageAndLocation: ImageAndLocation) => void;
 }
 
 export const useCategoryImages = create<CategoryImages>()(
-  // devtools
-  ((set) => ({
+  devtools((set) => ({
     categoryImages: [
       { images: [] },
       { images: [] },
       { images: [] },
       { images: [] },
     ],
-    setCategoryImages: (imageUri, toCategoryIndex, toImageIndex) =>
+    setCategoryImages: ({ imageUri, categoryIndex, imageIndex }) => {
+      // First, update the state synchronously
       set((state) => {
-        // Destructure the relevant category
         const updatedCategories = [...state.categoryImages];
-        const category = updatedCategories[toCategoryIndex];
+        const category = updatedCategories[categoryIndex];
 
-        // Add the new image at the specified index or append if no index provided
         if (category) {
-          const newImageUri = imageUri; // Replace with the actual image URI
-          if (typeof toImageIndex === 'number' && toImageIndex >= 0) {
-            category.images.splice(toImageIndex, 1, newImageUri);
+          const newImageUri = imageUri;
+
+          if (typeof imageIndex === 'number' && imageIndex >= 0) {
+            category.images.splice(imageIndex, 1, newImageUri);
           } else {
             category.images.push(newImageUri);
           }
         }
 
         return { categoryImages: updatedCategories };
-      }),
+      });
+    },
   }))
 );
