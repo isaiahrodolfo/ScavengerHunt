@@ -1,5 +1,6 @@
 import { checkIfRoomDoesNotExist } from '../handler-helpers';
 import { Callback, ImageAndLocation, Room, rooms } from '../types';
+import { calculateProgress } from './gameHandlerHelpers';
 
 /**
  * Handles image insertion.
@@ -44,11 +45,13 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
     gameData: updatedGameData,
   };
 
+  rooms[roomCode].gameProgress[socket.id] = calculateProgress(roomCode, socket.id);
+
   if (room.hostIsModerator) { // testing no moderator
     const emitTo = room.host;
     
-    console.log('emit updateUserProgress to room host:', emitTo)
-    socket.to(emitTo).emit('updateProgress', imageAndLocation, socket.id);
+    console.log('emit updateProgress to room host:', emitTo)
+    socket.to(emitTo).emit('updateProgress', rooms[roomCode].gameProgress);
   }
 
   // Invoke the callback to notify success

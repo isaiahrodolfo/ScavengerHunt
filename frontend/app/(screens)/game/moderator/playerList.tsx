@@ -1,9 +1,9 @@
 import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProgressBar from '../../../../components/game/moderator/ProgressBar'
 import { router } from 'expo-router'
 import { socket } from '@/utils/socket'
-import { ImageAndLocation } from '@/types/game'
+import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -64,48 +64,46 @@ const dummyUserProgress = {
 
 export default function PlayerList() {
 
+  const [playerProgress, setPlayerProgress] = useState<PlayerProgressValue[]>([]); // Multiple player's progresses
+
   // Update UI when data changes
   useEffect(() => {
 
-    socket.on('updateProgress', (imageAndLocation: ImageAndLocation, playerId: string) => { // TODO: All three fields must exist in ImageAndLocation
-      // socket.on('updateProgress', (message: string) => { // TODO: All three fields must exist in ImageAndLocation
-      // console.log('updating user progess... ', imageAndLocation);
-      console.log('received image location (', imageAndLocation.categoryIndex, ', ', imageAndLocation.imageIndex, '), player id is ', playerId); // testing
+    socket.on('updateProgress', (playerProgress: PlayerProgressState) => { // TODO: All three fields must exist in ImageAndLocation
+      setPlayerProgress(Object.values(playerProgress)); // Turn the record into an array
     });
 
     // Clean up socket listeners
     return () => {
-      socket.off('uu');
+      socket.off('updateProgress');
     };
 
   }, []);
 
   // Convert object to array for FlatList
-  const userArray = Object.values(dummyUserProgress);
+  // const userArray = Object.values(dummyUserProgress);
 
   // Render each user's progress item
-  const Item = ({ user }: { user: typeof dummyUserProgress['user1'] }) => { // using one of the dummy's type
-    const images = user.images;
-    const sets = user.sets;
+  const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
     function handleItemPressed(event: GestureResponderEvent): void {
       router.push({
         pathname: '/(screens)/game/moderator/[id]',
-        params: { id: user.id }
+        params: { id }
       })
     }
 
     return (
       // <View>
       <Pressable style={styles.item} onPress={handleItemPressed}>
-        <Text style={styles.title}>{user.id}</Text>
+        <Text style={styles.title}>{id}</Text>
         <View style={styles.progress}>
-          <Text style={styles.imagesProgress}>{Object.values(user.images).reduce((a, b) => a + b, 0) + "/" + dummyGameGoal.images}</Text>
+          <Text style={styles.imagesProgress}>{Object.values(images).reduce((a, b) => a + b, 0) + "/" + dummyGameGoal.images}</Text>
           <View style={styles.progressBar}>
             <ProgressBar type={'unchecked'} count={sets.unchecked} />
             <ProgressBar type={'valid'} count={sets.valid} />
             <ProgressBar type={'invalid'} count={sets.invalid} />
-            <ProgressBar type={'none'} count={dummyGameGoal.sets - Object.values(user.sets).reduce((a, b) => a + b, 0)} />
+            <ProgressBar type={'none'} count={dummyGameGoal.sets - Object.values(sets).reduce((a, b) => a + b, 0)} />
           </View>
         </View>
       </Pressable>
@@ -117,8 +115,8 @@ export default function PlayerList() {
   return (
     <ScrollView style={styles.container}>
       <FlatList
-        data={userArray}
-        renderItem={({ item }) => <Item user={item} />}
+        data={playerProgress}
+        renderItem={({ item }) => <Item {...item} />}
         keyExtractor={(item) => item.id}
       />
     </ScrollView>

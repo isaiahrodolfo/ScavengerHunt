@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleInsertImage = handleInsertImage;
 const handler_helpers_1 = require("../handler-helpers");
 const types_1 = require("../types");
+const gameHandlerHelpers_1 = require("./gameHandlerHelpers");
 /**
  * Handles image insertion.
  */
@@ -32,10 +33,11 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
         ] });
     // Update the room's gameData
     types_1.rooms[roomCode] = Object.assign(Object.assign({}, room), { gameData: updatedGameData });
+    types_1.rooms[roomCode].gameProgress[socket.id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, socket.id);
     if (room.hostIsModerator) { // testing no moderator
         const emitTo = room.host;
-        console.log('emit updateUserProgress to room host:', emitTo);
-        socket.to(emitTo).emit('updateProgress', imageAndLocation, socket.id);
+        console.log('emit updateProgress to room host:', emitTo);
+        socket.to(emitTo).emit('updateProgress', types_1.rooms[roomCode].gameProgress);
     }
     // Invoke the callback to notify success
     callback({ success: true });
