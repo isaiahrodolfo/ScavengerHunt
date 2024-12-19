@@ -6,6 +6,7 @@ import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
+import { socket } from '@/utils/socket';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -39,7 +40,8 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   setHasPermissions(true);
 
   function toggleCameraFacing() {
-    setRoomState({ ...roomState }); // TODO: Using the flip camera button to check roomState
+    // setRoomState({ ...roomState }); // TESTING: Using the flip camera button to check roomState
+    socket.emit('logState', roomState.roomCode);// TESTING: Using the flip camera button to check server state
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 

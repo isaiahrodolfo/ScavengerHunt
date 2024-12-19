@@ -111,3 +111,24 @@ export function getRoomOfUser(id: string): (string | undefined) {
 
   return existingRoom?.code; // Returns the room code or undefined  
 }
+
+/**
+ * Logs state for testing
+ */
+export function logState(roomCode: string, socket: any) {
+  const room = rooms[roomCode];
+
+  if (!room) {
+    console.log(`Room ${roomCode} does not exist.`);
+    return;
+  }
+
+  console.log('\n'); // Newline
+  console.log(`User with id: ${socket.id}`);
+  console.log('Rooms of user: ', socket.rooms);
+  console.log(`Room ${roomCode} state:`);
+  console.log(`Players in room:`, [...room.players]); // Convert Set to Array for easier viewing
+
+  console.log('Rooms: ', rooms);
+  console.log('Game Data: ', rooms.gameData[socket.id]);
+}

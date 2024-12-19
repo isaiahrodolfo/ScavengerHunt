@@ -36,9 +36,11 @@ export default function GameRoomScreen() {
     };
   }, []);
 
+  const gameGoals = [2, 1, 2, 1]; // dummy data
+
   // Methods
   async function handleStartRoom() {
-    const res = await startRoom(roomState.roomCode, isModerator);
+    const res = await startRoom(roomState.roomCode, gameGoals, isModerator);
     if (res) {
       setErrorMessage(res);
     } else {

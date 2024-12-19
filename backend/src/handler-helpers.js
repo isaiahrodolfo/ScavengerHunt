@@ -7,6 +7,7 @@ exports.checkIfNotInThisRoom = checkIfNotInThisRoom;
 exports.checkIfNotHost = checkIfNotHost;
 exports.checkIfHost = checkIfHost;
 exports.getRoomOfUser = getRoomOfUser;
+exports.logState = logState;
 const types_1 = require("./types"); // Import types
 /**
  * Throws an error if the room code already exists.
@@ -103,4 +104,21 @@ function checkIfHost(roomCode, callback, socketId) {
 function getRoomOfUser(id) {
     const existingRoom = Object.values(types_1.rooms).find((room) => room.players.has(id));
     return existingRoom === null || existingRoom === void 0 ? void 0 : existingRoom.code; // Returns the room code or undefined  
+}
+/**
+ * Logs state for testing
+ */
+function logState(roomCode, socket) {
+    const room = types_1.rooms[roomCode];
+    if (!room) {
+        console.log(`Room ${roomCode} does not exist.`);
+        return;
+    }
+    console.log('\n'); // Newline
+    console.log(`User with id: ${socket.id}`);
+    console.log('Rooms of user: ', socket.rooms);
+    console.log(`Room ${roomCode} state:`);
+    console.log(`Players in room:`, [...room.players]); // Convert Set to Array for easier viewing
+    console.log('Rooms: ', types_1.rooms);
+    console.log('Game Data: ', types_1.rooms.gameData);
 }
