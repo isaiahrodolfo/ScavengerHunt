@@ -5,6 +5,8 @@ import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
+import { insertImage } from '@/handlers/gameHandlers';
+import { socket } from '@/utils/socket';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -18,9 +20,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
-
   const { roomState, setRoomState } = useRoomState();
-
 
   const cameraRef = useRef<any>(null);
 
@@ -40,7 +40,8 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   setHasPermissions(true);
 
   function toggleCameraFacing() {
-    setRoomState({ ...roomState }); // TODO: Using the flip camera button to check roomState
+    // setRoomState({ ...roomState }); // TESTING: Using the flip camera button to check roomState
+    socket.emit('logState', roomState.roomCode);// TESTING: Using the flip camera button to check server state
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
@@ -59,7 +60,19 @@ export default function Camera({ setHasPermissions }: CameraProps) {
             console.log('Previous selected image', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
 
             console.log('Retaking photo for category', selectedImage.categoryIndex, 'image', selectedImage.imageIndex);
-            setCategoryImages(photo.uri, selectedImage.categoryIndex!, selectedImage.imageIndex); // Put the image where the user wanted to replace it
+            // Put the image where the user wanted to replace it
+            console.log('putting image into category...'); // testing
+
+            const imageUri = photo.uri;
+            const categoryIndex = selectedImage.categoryIndex!;
+            const imageIndex = selectedImage.imageIndex;
+
+            setCategoryImages({ imageUri, categoryIndex, imageIndex });
+            // Now update the server with the new image
+            const res = await insertImage(roomState.roomCode, { imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length - 1 })
+            if (res) {
+              console.log(res);
+            }
             setGameState('take'); // ...and continue the main game loop
             break;
         }

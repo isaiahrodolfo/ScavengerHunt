@@ -1,7 +1,9 @@
 import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProgressBar from '../../../../components/game/moderator/ProgressBar'
 import { router } from 'expo-router'
+import { socket } from '@/utils/socket'
+import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -22,7 +24,7 @@ const dummyUserCategoryImages = {
 }
 
 const dummyGameGoal = {
-  images: 16,
+  images: 7,
   sets: 4
 }
 
@@ -60,39 +62,51 @@ const dummyUserProgress = {
   },
 }
 
-const PlayerList = () => {
+export default function PlayerList() {
+
+  // TODO: Show all players at onset, even if they don't have photos yet
+  const [playerProgress, setPlayerProgress] = useState<PlayerProgressValue[]>([]); // Multiple player's progresses
 
   // Update UI when data changes
   useEffect(() => {
 
-  }, [dummyUserProgress, dummyGameGoal])
+    socket.on('updateProgress', (playerProgress: PlayerProgressState) => { // TODO: All three fields must exist in ImageAndLocation
+      setPlayerProgress(Object.values(playerProgress)); // Turn the record into an array
+      console.log('playerProgress', playerProgress);
+    });
+
+    // Clean up socket listeners
+    return () => {
+      socket.off('updateProgress');
+    };
+
+  }, []);
 
   // Convert object to array for FlatList
-  const userArray = Object.values(dummyUserProgress);
+  // const userArray = Object.values(dummyUserProgress);
 
   // Render each user's progress item
-  const Item = ({ user }: { user: typeof dummyUserProgress['user1'] }) => { // using one of the dummy's type
-    const images = user.images;
-    const sets = user.sets;
+  const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
     function handleItemPressed(event: GestureResponderEvent): void {
       router.push({
         pathname: '/(screens)/game/moderator/[id]',
-        params: { id: user.id }
+        params: { id }
       })
     }
 
+    // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
     return (
       // <View>
       <Pressable style={styles.item} onPress={handleItemPressed}>
-        <Text style={styles.title}>{user.id}</Text>
+        <Text style={styles.title}>{id}</Text>
         <View style={styles.progress}>
-          <Text style={styles.imagesProgress}>{Object.values(user.images).reduce((a, b) => a + b, 0) + "/" + dummyGameGoal.images}</Text>
+          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + dummyGameGoal.images}</Text>
           <View style={styles.progressBar}>
             <ProgressBar type={'unchecked'} count={sets.unchecked} />
             <ProgressBar type={'valid'} count={sets.valid} />
             <ProgressBar type={'invalid'} count={sets.invalid} />
-            <ProgressBar type={'none'} count={dummyGameGoal.sets - Object.values(user.sets).reduce((a, b) => a + b, 0)} />
+            <ProgressBar type={'none'} count={sets.none} />
           </View>
         </View>
       </Pressable>
@@ -104,15 +118,13 @@ const PlayerList = () => {
   return (
     <ScrollView style={styles.container}>
       <FlatList
-        data={userArray}
-        renderItem={({ item }) => <Item user={item} />}
+        data={playerProgress}
+        renderItem={({ item }) => <Item {...item} />}
         keyExtractor={(item) => item.id}
       />
     </ScrollView>
   );
 };
-
-export default PlayerList;
 
 const styles = StyleSheet.create({
   container: {
