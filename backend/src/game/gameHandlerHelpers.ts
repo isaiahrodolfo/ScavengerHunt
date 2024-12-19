@@ -30,29 +30,36 @@ export function calculateProgress(roomCode: string, id: string) {
           break;
         default:
       }
-
-      // Update total image counts
-      noneImageCount += noneCategoryImageCount;
-      uncheckedImageCount += uncheckedCategoryImageCount;
-      validImageCount += validCategoryImageCount;
-      invalidImageCount += invalidCategoryImageCount;
-
-      // Use category images to determine status of sets
-
-      // If at least one image is invalid, the whole set is
-      if (invalidCategoryImageCount >= 1) {
-        invalidSetCount += 1;
-      // If all images are valid, the whole set is
-      } else if (!(uncheckedCategoryImageCount || invalidCategoryImageCount || noneCategoryImageCount)) {
-        validSetCount += 1;
-      // If all images were taken (no 'none' status), none are invalid, and at least one of them is in review,
-      } else if (!(noneCategoryImageCount || invalidCategoryImageCount) && uncheckedCategoryImageCount) { // not(a) and not(b) = not(a or b)
-        uncheckedSetCount += 1;
-      } else {
-        noneSetCount += 1;
-      }
-
     }
+
+    // testing
+    console.log('noneCategoryImageCount', noneCategoryImageCount);
+    console.log('uncheckedCategoryImageCount', uncheckedCategoryImageCount);
+    console.log('validCategoryImageCount', validCategoryImageCount);
+    console.log('invalidCategoryImageCount', invalidCategoryImageCount);
+
+
+    // Update total image counts
+    noneImageCount += noneCategoryImageCount;
+    uncheckedImageCount += uncheckedCategoryImageCount;
+    validImageCount += validCategoryImageCount;
+    invalidImageCount += invalidCategoryImageCount;
+
+    // Use category images to determine status of sets
+
+    // If at least one image is invalid, the whole set is
+    if (invalidCategoryImageCount) {
+      invalidSetCount += 1;
+    // If all images are valid, the whole set is
+    } else if (!(uncheckedCategoryImageCount || invalidCategoryImageCount || noneCategoryImageCount)) {
+      validSetCount += 1;
+    // If all images were taken (no 'none' status), none are invalid, and at least one of them is in review, the whole set is in review
+    } else if (!(noneCategoryImageCount || invalidCategoryImageCount) && uncheckedCategoryImageCount) { // not(a) and not(b) = not(a or b)
+      uncheckedSetCount += 1;
+    } else {
+      noneSetCount += 1;
+    }
+    
   }
 
   return {

@@ -24,7 +24,7 @@ const dummyUserCategoryImages = {
 }
 
 const dummyGameGoal = {
-  images: 16,
+  images: 7,
   sets: 4
 }
 
@@ -64,6 +64,7 @@ const dummyUserProgress = {
 
 export default function PlayerList() {
 
+  // TODO: Show all players at onset, even if they don't have photos yet
   const [playerProgress, setPlayerProgress] = useState<PlayerProgressValue[]>([]); // Multiple player's progresses
 
   // Update UI when data changes
@@ -71,6 +72,7 @@ export default function PlayerList() {
 
     socket.on('updateProgress', (playerProgress: PlayerProgressState) => { // TODO: All three fields must exist in ImageAndLocation
       setPlayerProgress(Object.values(playerProgress)); // Turn the record into an array
+      console.log('playerProgress', playerProgress);
     });
 
     // Clean up socket listeners
@@ -93,17 +95,18 @@ export default function PlayerList() {
       })
     }
 
+    // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
     return (
       // <View>
       <Pressable style={styles.item} onPress={handleItemPressed}>
         <Text style={styles.title}>{id}</Text>
         <View style={styles.progress}>
-          <Text style={styles.imagesProgress}>{Object.values(images).reduce((a, b) => a + b, 0) + "/" + dummyGameGoal.images}</Text>
+          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + dummyGameGoal.images}</Text>
           <View style={styles.progressBar}>
             <ProgressBar type={'unchecked'} count={sets.unchecked} />
             <ProgressBar type={'valid'} count={sets.valid} />
             <ProgressBar type={'invalid'} count={sets.invalid} />
-            <ProgressBar type={'none'} count={dummyGameGoal.sets - Object.values(sets).reduce((a, b) => a + b, 0)} />
+            <ProgressBar type={'none'} count={sets.none} />
           </View>
         </View>
       </Pressable>
