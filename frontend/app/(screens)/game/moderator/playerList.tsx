@@ -139,10 +139,10 @@ export default function PlayerList() {
         <View style={styles.progress}>
           <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + dummyGameGoal.images}</Text>
           <View style={styles.progressBar}>
-            <ProgressBar type={'unchecked'} count={sets.unchecked} />
-            <ProgressBar type={'valid'} count={sets.valid} />
-            <ProgressBar type={'invalid'} count={sets.invalid} />
             <ProgressBar type={'none'} count={sets.none} />
+            <ProgressBar type={'unchecked'} count={sets.unchecked} />
+            <ProgressBar type={'invalid'} count={sets.invalid} />
+            <ProgressBar type={'valid'} count={sets.valid} />
           </View>
         </View>
       </Pressable>

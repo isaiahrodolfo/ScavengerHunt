@@ -78,7 +78,6 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                         imageIndex: index,
                       })
                     }
-
                   }
                   }
                 >
