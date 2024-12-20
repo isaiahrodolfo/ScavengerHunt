@@ -24,7 +24,7 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
     // Update the specific location
     const updatedCategory = [...playerData[categoryIndex]];
     updatedCategory[imageIndex] = {
-        image: imageUri,
+        imageUri: imageUri,
         status: 'unchecked', // Reset status after update
     };
     // Update the player's gameData

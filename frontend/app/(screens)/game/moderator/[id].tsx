@@ -6,6 +6,8 @@ import { useRoomState } from '@/store/useRoomState';
 import { socket } from '@/utils/socket';
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData';
 import { PlayerData, Status } from '@/types/game';
+import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidButtons';
+import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
 
 const Player = () => {
 
@@ -45,26 +47,35 @@ const Player = () => {
     <View>
       <Text>{id}</Text>
 
+      <ValidInvalidButtons />
+
       {/* Render the grid of images */}
       <View style={styles.gridContainer}>
-        {selectedPlayerData?.map((row: any[], rowIndex: React.Key | null | undefined) => ( // TODO: Fix typing
-          <View key={rowIndex} style={styles.row}>
-            {row.map((player, colIndex) => (
-              <View
-                key={`${rowIndex}-${colIndex}`}
-                style={[
-                  styles.imageContainer,
-                  { borderColor: getBorderColor(player.status) }
-                ]}
-              >
-                <Image
-                  source={{ uri: player.image }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-              </View>
-            ))}
-          </View>
+        {selectedPlayerData.map((categoryImages: { imageUri: string, status: Status }[], index: number) => ( // TODO: Fix typing
+          <ModeratorCategoryObject
+            images={categoryImages}
+            categoryIndex={index}
+            backgroundColor='lavender'
+            number={getCategoryNumber(index)}
+            text={getCategoryName(index)}
+          />
+          // <View key={rowIndex} style={styles.row}>
+          //   {row.map((player, colIndex) => (
+          //     <View
+          //       key={`${rowIndex}-${colIndex}`}
+          //       style={[
+          //         styles.imageContainer,
+          //         { borderColor: getBorderColor(player.status) }
+          //       ]}
+          //     >
+          //       <Image
+          //         source={{ uri: player.image }}
+          //         style={styles.image}
+          //         resizeMode="cover"
+          //       />
+          //     </View>
+          //   ))}
+          // </View>
         ))}
       </View>
 
@@ -73,6 +84,22 @@ const Player = () => {
       } />
     </View>
   )
+
+  // TODO: Make a JSON object that stores this data
+  function getCategoryNumber(index: number) {
+    const numbers = [4, 6, 3, 5];
+    return numbers[index] || 0;
+  }
+
+  function getCategoryColor(index: number) {
+    const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
+    return colors[index] || '#ccc';
+  }
+
+  function getCategoryName(index: number) {
+    const colors = ['musical instruments', 'TVs', 'fridges/freezers', 'different types of bibles'];
+    return colors[index] || '#ccc';
+  }
 }
 
 export default Player

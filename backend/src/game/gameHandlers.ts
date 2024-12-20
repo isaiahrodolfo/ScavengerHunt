@@ -25,7 +25,7 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
   // Update the specific location
   const updatedCategory = [...playerData[categoryIndex]];
   updatedCategory[imageIndex!] = { // Image index should exist here
-    image: imageUri,
+    imageUri: imageUri,
     status: 'unchecked', // Reset status after update
   };
   
