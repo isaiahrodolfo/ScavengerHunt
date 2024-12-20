@@ -20,7 +20,7 @@ export default function HomeScreen() {
       setErrorMessage(res);
     } else {
       // Navigate to the game room on success
-      setRoomState({ ...roomState, roomCode: createdRoomCode, isHost: true });
+      setRoomState({ ...roomState, roomCode: createdRoomCode, isHost: true, isModerator: true, hasModerator: true }); // Host is moderator as default
       router.replace('/(screens)/game-room');
     }
   }

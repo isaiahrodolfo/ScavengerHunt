@@ -16,7 +16,7 @@ interface CategoryObjectProps {
   images: string[]; // Array of CameraCapturedPicture objects
 }
 
-const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
+const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
 
   const { roomState } = useRoomState();
   const { gameState, setGameState } = useGameState();
@@ -32,11 +32,11 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
     }
   }, [images]); // This will trigger whenever images change
 
-  function handleImagePressed(target: ImageAndLocation) {
+  function handleImagePressed({ imageUri, categoryIndex, imageIndex }: ImageAndLocation) {
     switch (gameState) {
       case 'take':
       case 'view':
-        setSelectedImage({ imageUri: target.imageUri, categoryIndex: target.categoryIndex, imageIndex: target.imageIndex });
+        setSelectedImage({ imageUri, categoryIndex, imageIndex });
         setGameState('view'); // State is already 'view', if 'view'
         break;
     }
@@ -127,7 +127,7 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
   );
 };
 
-export default CategoryObject;
+export default PlayerCategoryObject;
 
 const styles = StyleSheet.create({
   container: {

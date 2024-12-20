@@ -1,9 +1,14 @@
 import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import ProgressBar from '../../../../components/game/moderator/ProgressBar'
-import { router } from 'expo-router'
+import React, { useCallback, useEffect, useState } from 'react'
+import ProgressBar from '../../../../components/game/moderator/playerList/ProgressBar'
+import { router, useFocusEffect } from 'expo-router'
 import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
+import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
+import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
+import { useRoomState } from '@/store/useRoomState'
+import { useSelectedImage } from '@/store/useSelectedImage'
+import { usePlayerProgress } from '@/store/usePlayerProgress'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -65,13 +70,15 @@ const dummyUserProgress = {
 export default function PlayerList() {
 
   // TODO: Show all players at onset, even if they don't have photos yet
-  const [playerProgress, setPlayerProgress] = useState<PlayerProgressValue[]>([]); // Multiple player's progresses
+  const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const { setSelectedPlayerData } = useSelectedPlayerData();
+  const { roomState } = useRoomState();
 
   // Update UI when data changes
   useEffect(() => {
 
     socket.on('updateProgress', (playerProgress: PlayerProgressState) => { // TODO: All three fields must exist in ImageAndLocation
-      setPlayerProgress(Object.values(playerProgress)); // Turn the record into an array
+      setPlayerProgress(playerProgress); // Turn the record into an array
       console.log('playerProgress', playerProgress);
     });
 
@@ -88,11 +95,39 @@ export default function PlayerList() {
   // Render each user's progress item
   const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
-    function handleItemPressed(event: GestureResponderEvent): void {
-      router.push({
-        pathname: '/(screens)/game/moderator/[id]',
-        params: { id }
-      })
+    const { setSelectedImage } = useSelectedImage();
+
+    // When navigate back to this page, moderator is not on any player's page
+    useFocusEffect(
+      useCallback(() => {
+
+        // Reset selected image
+        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+
+        // Tell server moderator is back at Player List Page
+        const handleNavigation = async () => {
+          const res = await navigateToPlayerList(roomState.roomCode);
+          if (res) {
+            console.error(res);
+          }
+        };
+
+        handleNavigation();
+      }, [])
+    );
+
+    async function handleItemPressed(event: GestureResponderEvent): Promise<void> { // ? What is Promise<void>?
+      const data = await getPlayerData(roomState.roomCode, id);
+      if (data) {
+        setSelectedPlayerData(data);
+        router.push({
+          pathname: '/(screens)/game/moderator/[id]',
+          params: { id }
+        })
+      } else {
+        console.error('failed getting player data'); // testing
+        return;
+      }
     }
 
     // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
@@ -103,10 +138,10 @@ export default function PlayerList() {
         <View style={styles.progress}>
           <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + dummyGameGoal.images}</Text>
           <View style={styles.progressBar}>
-            <ProgressBar type={'unchecked'} count={sets.unchecked} />
-            <ProgressBar type={'valid'} count={sets.valid} />
-            <ProgressBar type={'invalid'} count={sets.invalid} />
             <ProgressBar type={'none'} count={sets.none} />
+            <ProgressBar type={'unchecked'} count={sets.unchecked} />
+            <ProgressBar type={'invalid'} count={sets.invalid} />
+            <ProgressBar type={'valid'} count={sets.valid} />
           </View>
         </View>
       </Pressable>
@@ -118,7 +153,7 @@ export default function PlayerList() {
   return (
     <ScrollView style={styles.container}>
       <FlatList
-        data={playerProgress}
+        data={Object.values(playerProgress)}
         renderItem={({ item }) => <Item {...item} />}
         keyExtractor={(item) => item.id}
       />
