@@ -54,6 +54,10 @@ const Player = () => {
     }
   };
 
+  function imageIsSelected(): boolean {
+    return (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex == 'number' && typeof selectedImage.imageIndex == 'number');
+  }
+
   return (
     <View style={styles.container}>
       {/* <Text>{id}</Text> */}
@@ -63,8 +67,8 @@ const Player = () => {
 
       {/* Show selected image */}
       <View style={styles.image}>
-        {selectedImage.imageUri ?
-          <Image style={styles.image} source={{ uri: selectedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].image || selectedImage.imageUri }} />
+        {imageIsSelected() ?
+          <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
           :
           <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
             <Text style={{ textAlign: 'center' }}>Select an image</Text>

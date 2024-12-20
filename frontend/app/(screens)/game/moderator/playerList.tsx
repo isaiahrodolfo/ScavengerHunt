@@ -7,7 +7,7 @@ import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/ty
 import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { useRoomState } from '@/store/useRoomState'
-import { useSelectedImage } from '@/store/useSelectedImage'
+import { useSelectedImage } from '@/store/useModeratorSelectedImage'
 import { usePlayerProgress } from '@/store/usePlayerProgress'
 import { useGameGoals } from '@/store/useGameGoals'
 
@@ -97,16 +97,19 @@ export default function PlayerList() {
   // Render each user's progress item
   const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
-    const { setSelectedImage } = useSelectedImage();
+    const { selectedImage, setSelectedImage } = useSelectedImage();
+    const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
 
     // When navigate back to this page, moderator is not on any player's page
     useFocusEffect(
       useCallback(() => {
 
-        // Reset selected image
+        // Reset player-based data
         setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        console.log('selectedImage', selectedImage); // testing
+        // setSelectedPlayerData(null);
 
-        // Tell server moderator is back at Player List Page
+        // Tell the server that the moderator is back at Player List Page
         const handleNavigation = async () => {
           const res = await navigateToPlayerList(roomState.roomCode);
           if (res) {
