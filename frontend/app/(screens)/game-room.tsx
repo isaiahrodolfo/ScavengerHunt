@@ -57,6 +57,7 @@ export default function GameRoomScreen() {
       setErrorMessage(res);
     } else {
       setRoomState({ ...roomState, isModerator, hasModerator: true });
+      setGameGoals(gameGoals);
       router.replace('/(screens)/countdown');
     }
   }

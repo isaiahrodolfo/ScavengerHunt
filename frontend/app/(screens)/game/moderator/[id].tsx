@@ -10,6 +10,7 @@ import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidBu
 import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
 import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
+import { useGameGoals } from '@/store/useGameGoals';
 
 const Player = () => {
 
@@ -18,6 +19,8 @@ const Player = () => {
   const { roomState } = useRoomState();
   const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
   const { selectedImage, setSelectedImage } = useSelectedImage();
+  const { gameGoals } = useGameGoals();
+
 
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
@@ -78,8 +81,8 @@ const Player = () => {
             images={categoryImages}
             categoryIndex={index}
             backgroundColor='lavender'
-            number={getCategoryNumber(index)}
-            text={getCategoryName(index)}
+            number={gameGoals[index].imageCount}
+            text={gameGoals[index].categoryName}
           />
           // <View key={rowIndex} style={styles.row}>
           //   {row.map((player, colIndex) => (
