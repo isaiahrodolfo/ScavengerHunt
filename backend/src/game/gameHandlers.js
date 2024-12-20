@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleInsertImage = handleInsertImage;
 exports.handleGetPlayerData = handleGetPlayerData;
+exports.handleNavigateToPlayerList = handleNavigateToPlayerList;
 const handler_helpers_1 = require("../handler-helpers");
 const types_1 = require("../types");
 const gameHandlerHelpers_1 = require("./gameHandlerHelpers");
@@ -46,7 +47,7 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
 /**
  * Handles getting a player's whole record from the database (images, status, locations).
  */
-function handleGetPlayerData(roomCode, id, callback, socket) {
+function handleGetPlayerData(roomCode, id, callback) {
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
     const room = types_1.rooms[roomCode];
@@ -56,5 +57,18 @@ function handleGetPlayerData(roomCode, id, callback, socket) {
         callback({ success: false, type: 'UserNotFound', error: 'User not found in gameData' });
         return;
     }
+    // Host is on current page
+    types_1.rooms[roomCode].hostOnPlayerPage = id;
     callback({ success: true, data: types_1.rooms[roomCode].gameData[id] }); // Return player data
+}
+/**
+ * Handles setting the host's page it's looking at to the Player List page
+ */
+function handleNavigateToPlayerList(roomCode, callback) {
+    if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
+        return;
+    const room = types_1.rooms[roomCode];
+    // Host is on player page (reset)
+    types_1.rooms[roomCode].hostOnPlayerPage = '';
+    callback({ success: true }); // Return player data
 }

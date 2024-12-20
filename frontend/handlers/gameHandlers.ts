@@ -49,3 +49,26 @@ export function getPlayerData(roomCode: string, id: string) {
   });
 
 }
+
+export function navigateToPlayerList(roomCode: string) {
+  return new Promise((resolve, reject) => {
+    socket.emit('navigateToPlayerList', roomCode, ((response: Callback) => {
+      if (response.success) {
+        resolve('');
+      } else {
+        switch(response.type) {
+          case 'RoomDoesNotExist':
+            resolve('Error: The room you are trying to connect to does not exist.');
+          case 'UserNotFound':
+            resolve('Error: The user was not found in the server.');
+          case 'UnknownError':
+            resolve('An unexpected error occurred. Please try again later.');
+            break;
+          default: 
+            resolve (response.error || 'An unknown error occurred.');
+            break;
+        }
+      }
+    }));
+  })
+}

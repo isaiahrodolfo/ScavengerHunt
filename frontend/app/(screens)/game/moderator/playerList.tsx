@@ -1,10 +1,10 @@
 import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import ProgressBar from '../../../../components/game/moderator/ProgressBar'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
-import { getPlayerData } from '@/handlers/gameHandlers'
+import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { PlayerData } from '@/types/game';
 import { useRoomState } from '@/store/useRoomState'
@@ -93,6 +93,20 @@ export default function PlayerList() {
 
   // Render each user's progress item
   const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
+
+    // When navigate back to this page, moderator is not on any player's page
+    useFocusEffect(
+      useCallback(() => {
+        const handleNavigation = async () => {
+          const res = await navigateToPlayerList(roomState.roomCode);
+          if (res) {
+            console.error(res);
+          }
+        };
+
+        handleNavigation();
+      }, [])
+    );
 
     async function handleItemPressed(event: GestureResponderEvent): Promise<void> { // ? What is Promise<void>?
       const data = await getPlayerData(roomState.roomCode, id);

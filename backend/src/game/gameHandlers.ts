@@ -62,7 +62,7 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
 /**
  * Handles getting a player's whole record from the database (images, status, locations).
  */
-export function handleGetPlayerData(roomCode: string, id: string, callback: Callback, socket: any) {
+export function handleGetPlayerData(roomCode: string, id: string, callback: Callback) {
 
   if(checkIfRoomDoesNotExist(roomCode, callback)) return;
 
@@ -75,5 +75,23 @@ export function handleGetPlayerData(roomCode: string, id: string, callback: Call
     return;
   }
 
+  // Host is on current page
+  rooms[roomCode].hostOnPlayerPage = id;
+
   callback({success: true, data: rooms[roomCode].gameData[id]}); // Return player data
+}
+
+/**
+ * Handles setting the host's page it's looking at to the Player List page
+ */
+export function handleNavigateToPlayerList(roomCode: string, callback: Callback) {
+
+  if(checkIfRoomDoesNotExist(roomCode, callback)) return;
+
+  const room = rooms[roomCode];
+
+  // Host is on player page (reset)
+  rooms[roomCode].hostOnPlayerPage = '';
+
+  callback({success: true}); // Return player data
 }
