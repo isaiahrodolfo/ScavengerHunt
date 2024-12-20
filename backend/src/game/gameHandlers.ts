@@ -47,11 +47,16 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
 
   rooms[roomCode].gameProgress[socket.id] = calculateProgress(roomCode, socket.id);
 
-  if (room.hostIsModerator) { // testing no moderator
-    const emitTo = room.host;
+  if (room.hostIsModerator) { // TODO: Test when there is no moderator, if this still runs
+    const hostId = room.host;
     
-    console.log('emit updateProgress to room host:', emitTo)
-    socket.to(emitTo).emit('updateProgress', rooms[roomCode].gameProgress);
+    console.log('emit updateProgress to room host:', hostId)
+    socket.to(hostId).emit('updateProgress', rooms[roomCode].gameProgress);
+
+    // If the host is on the player's page, update the host's player data so there will be dynamic changes
+    if (rooms[roomCode].hostOnPlayerPage) {
+       socket.to(hostId).emit('getPlayerData', rooms[roomCode].gameData[socket.id]); // TODO: Use the updated const instead of going back into the whole thing
+    }
   }
 
   // Invoke the callback to notify success
