@@ -10,6 +10,7 @@ export type Room = {
   hostIsModerator: boolean;
   gameData: GameData;
   gameProgress: PlayerProgressState;
+  hostOnPlayerPage: string;
 };
 
 export const rooms: Record<string, Room> = {};
