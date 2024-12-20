@@ -1,4 +1,3 @@
-import { PlayerData } from '@/types/game';
 import { create, useStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
