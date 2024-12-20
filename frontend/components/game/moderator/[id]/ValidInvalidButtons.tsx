@@ -1,13 +1,41 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { useImageStatus } from '@/store/useImageStatus'
+import { Status } from '@/types/game'
+import { socket } from '@/utils/socket'
+import { useSelectedImage } from '@/store/useSelectedImage'
+import { setImageStatus } from '@/handlers/gameHandlers'
+import { useRoomState } from '@/store/useRoomState'
 
-const ValidInvalidButtons = () => {
+interface ValidInvalidButtonsProps {
+  id: string
+}
+
+const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
+
+  const { roomState } = useRoomState();
+  const { selectedImage } = useSelectedImage();
+
+  async function handleSetImageStatus(status: Status) {
+    const res = await setImageStatus(
+      roomState.roomCode,
+      id,
+      {
+        categoryIndex: selectedImage.categoryIndex!,
+        imageIndex: selectedImage.imageIndex!
+      },
+      status); // Update status globally
+    if (res) {
+      // Update status locally
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <Pressable style={styles.valid} onPress={() => { console.log('valid') }}>
+      <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
         <Text style={styles.text}>Valid</Text>
       </Pressable>
-      <Pressable style={styles.invalid} onPress={() => { console.log('invalid') }}>
+      <Pressable style={styles.invalid} onPress={() => { handleSetImageStatus('invalid') }}>
         <Text style={styles.text}>Invalid</Text>
       </Pressable>
     </View>

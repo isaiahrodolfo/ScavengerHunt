@@ -1,5 +1,5 @@
 import { checkIfRoomDoesNotExist } from '../handler-helpers';
-import { Callback, ImageAndLocation, Room, rooms } from '../types';
+import { Callback, ImageAndLocation, Room, rooms, Status } from '../types';
 import { calculateProgress } from './gameHandlerHelpers';
 
 /**
@@ -69,7 +69,7 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
  */
 export function handleGetPlayerData(roomCode: string, id: string, callback: Callback) {
 
-  if(checkIfRoomDoesNotExist(roomCode, callback)) return;
+  if (checkIfRoomDoesNotExist(roomCode, callback)) return;
 
   const room = rooms[roomCode];
 
@@ -99,4 +99,51 @@ export function handleNavigateToPlayerList(roomCode: string, callback: Callback)
   rooms[roomCode].hostOnPlayerPage = '';
 
   callback({success: true}); // Return player data
+}
+
+export function handleSetImageStatus(roomCode: string, id: string, location: {categoryIndex: number, imageIndex: number}, status: Status, callback: Callback) {
+
+  const {categoryIndex, imageIndex} = location;
+
+  if(checkIfRoomDoesNotExist(roomCode, callback)) return;
+
+  const room = rooms[roomCode];
+
+  // TODO: Create a handler helper to check if player does not exist
+  // Ensure gameData exists for the given id
+  if (!room.gameData[id]) {
+    callback({ success: false, type: 'UserNotFound', error: 'User not found in gameData' });
+    return;
+  }
+
+  const playerData = room.gameData[id];
+
+  // Update the specific location
+  const updatedCategory = [...playerData[categoryIndex]];
+  updatedCategory[imageIndex!] = { // Image index should exist here
+    ...updatedCategory[imageIndex!],
+    status, // UPDATE THE STATUS
+  };
+  
+  // Update the player's gameData
+  const updatedGameData = {
+    ...room.gameData,
+    [id]: [
+      ...playerData.slice(0, categoryIndex),
+      updatedCategory,
+      ...playerData.slice(categoryIndex + 1),
+    ],
+  };
+
+  // Update the room's gameData
+  rooms[roomCode] = {
+    ...room,
+    gameData: updatedGameData,
+  };
+
+  // ??? I don't have to calculate the progress, do I?
+  // rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, socket.id);
+
+  // Invoke the callback to notify success
+  callback({ success: true });
 }
