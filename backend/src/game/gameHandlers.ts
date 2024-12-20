@@ -142,8 +142,8 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
   };
 
   // ??? I don't have to calculate the progress, do I?
-  // rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, socket.id);
+  rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, id);
 
   // Invoke the callback to notify success
-  callback({ success: true });
+  callback({ success: true, data: rooms[roomCode].gameProgress});
 }

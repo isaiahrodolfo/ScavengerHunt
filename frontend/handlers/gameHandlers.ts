@@ -1,4 +1,4 @@
-import { ImageAndLocation, ImageAndTargetLocation, Status } from '@/types/game';
+import { ImageAndLocation, ImageAndTargetLocation, PlayerProgressState, Status } from '@/types/game';
 import { socket } from '@/utils/socket';
 import { Callback } from '@/types/socket'
 
@@ -73,22 +73,22 @@ export function navigateToPlayerList(roomCode: string) {
   })
 }
 
-export function setImageStatus(roomCode: string, id: string, location: {categoryIndex: number, imageIndex: number}, status: Status) {
+export function setImageStatus(roomCode: string, id: string, location: {categoryIndex: number, imageIndex: number}, status: Status): Promise<PlayerProgressState> {
   return new Promise((resolve, reject) => {
     socket.emit('setImageStatus', roomCode, id, location, status, ((response: Callback) => {
-      if (response.success) {
-        resolve('');
+      if (response.success && response.data) {
+        resolve(response.data);
       } else {
         switch(response.type) {
           case 'RoomDoesNotExist':
-            resolve('Error: The room you are trying to connect to does not exist.');
+            reject('Error: The room you are trying to connect to does not exist.');
           case 'UserNotFound':
-            resolve('Error: The user was not found in the server.');
+            reject('Error: The user was not found in the server.');
           case 'UnknownError':
-            resolve('An unexpected error occurred. Please try again later.');
+            reject('An unexpected error occurred. Please try again later.');
             break;
           default: 
-            resolve (response.error || 'An unknown error occurred.');
+            reject (response.error || 'An unknown error occurred.');
             break;
         }
       }

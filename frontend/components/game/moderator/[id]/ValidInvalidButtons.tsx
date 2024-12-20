@@ -6,6 +6,7 @@ import { socket } from '@/utils/socket'
 import { useSelectedImage } from '@/store/useSelectedImage'
 import { setImageStatus } from '@/handlers/gameHandlers'
 import { useRoomState } from '@/store/useRoomState'
+import { usePlayerProgress } from '@/store/usePlayerProgress'
 
 interface ValidInvalidButtonsProps {
   id: string
@@ -15,19 +16,20 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   const { roomState } = useRoomState();
   const { selectedImage } = useSelectedImage();
+  const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
 
   async function handleSetImageStatus(status: Status) {
-    const res = await setImageStatus(
+    setImageStatus(
       roomState.roomCode,
       id,
       {
         categoryIndex: selectedImage.categoryIndex!,
         imageIndex: selectedImage.imageIndex!
       },
-      status); // Update status globally
-    if (res) {
-      // Update status locally
-    }
+      status) // Update status globally
+      .then((data) => {
+        setPlayerProgress(data);
+      })
   }
 
   return (
