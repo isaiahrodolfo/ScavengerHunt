@@ -2,12 +2,13 @@ import { rooms } from '../types';
 
 export function calculateProgress(roomCode: string, id: string) {
 
-  const player = rooms[roomCode].gameData[id]
+  const gameGoals = rooms[roomCode].gameGoals;
+  const player = rooms[roomCode].gameData[id];
 
   let noneSetCount = 0, uncheckedSetCount = 0, validSetCount = 0, invalidSetCount = 0;
   let noneImageCount = 0, uncheckedImageCount = 0, validImageCount = 0, invalidImageCount = 0;
 
-  for (const category of player) {
+  player.forEach((category, categoryIndex) => {
 
     // Reset image data for next category
     let noneCategoryImageCount = 0, uncheckedCategoryImageCount = 0, validCategoryImageCount = 0, invalidCategoryImageCount = 0;
@@ -51,16 +52,16 @@ export function calculateProgress(roomCode: string, id: string) {
     if (invalidCategoryImageCount) {
       invalidSetCount += 1;
     // If all images are valid, the whole set is
-    } else if (!(uncheckedCategoryImageCount || invalidCategoryImageCount || noneCategoryImageCount)) {
+    } else if (validCategoryImageCount == gameGoals[categoryIndex].imageCount) {
       validSetCount += 1;
-    // If all images were taken (no 'none' status), none are invalid, and at least one of them is in review, the whole set is in review
-    } else if (!(noneCategoryImageCount || invalidCategoryImageCount) && uncheckedCategoryImageCount) { // not(a) and not(b) = not(a or b)
+    // If all images were taken, none are invalid, the whole set is not all valid, and at least one of them is in review, the whole set is in review (i.e. green and yellow only)
+    } else if (category.length >= gameGoals[categoryIndex].imageCount) { // not(a) and not(b) = not(a or b)
       uncheckedSetCount += 1;
     } else {
       noneSetCount += 1;
     }
-    
-  }
+
+  });
 
   return {
     id,
