@@ -44,11 +44,11 @@ export default function GameRoomScreen() {
   }, []);
 
   const gameGoals = [
-    { categoryName: 'a', imageCount: 1 },
-    { categoryName: 'b', imageCount: 2 },
-    { categoryName: 'c', imageCount: 1 },
-    { categoryName: 'd', imageCount: 3 },
-  ]; // dummy data
+    { categoryName: 'musical instruments', imageCount: 5 },
+    { categoryName: 'TVs', imageCount: 8 },
+    { categoryName: 'fridges/freezers', imageCount: 4 },
+    { categoryName: 'different types of bibles', imageCount: 7 }
+  ]; // TODO: using dummy data (gameGoals dummy data)
 
   // Methods
   async function handleStartRoom() {

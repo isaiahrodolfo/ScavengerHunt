@@ -26,12 +26,7 @@ function handleCreateRoom(roomCode, callback, socket) {
         players: new Set([socket.id]),
         started: false,
         hostIsModerator: false, // TODO: Fix tests to make rooms have this field
-        gameGoals: [
-            { categoryName: 'musical instruments', imageCount: 4 },
-            { categoryName: 'TVs', imageCount: 6 },
-            { categoryName: 'fridges/freezers', imageCount: 3 },
-            { categoryName: 'different types of bibles', imageCount: 5 }
-        ],
+        gameGoals: [],
         gameData: {}, // TODO: Fix tests to make rooms have this field
         gameProgress: {}, // TODO: Fix tests to make rooms have this field
         hostOnPlayerPage: '',
@@ -92,6 +87,8 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
             }
         }
     }
+    // Set the game goals
+    types_1.rooms[roomCode].gameGoals = gameGoals;
     // Start the room
     types_1.rooms[roomCode].started = true;
     // Emit the "startGame" event to all users in the room,
