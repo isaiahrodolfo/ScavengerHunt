@@ -77,9 +77,9 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         callback({ success: false, type: 'GameStarted', error: 'Game has already started' });
         return;
     }
-    const emptyPlayerData = gameGoals.map(({ imageCount }) => {
-        return new Array(imageCount).fill({ image: '', status: 'none' });
-    });
+    // const emptyPlayerData = gameGoals.map(({ imageCount }) => {
+    //   return new Array(imageCount).fill({ image: '', status: 'none' });
+    // });  
     if (isModerator) {
         types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true });
         // Moderator joins rooms of players, so they can emit to each one separately
@@ -87,8 +87,8 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         for (const playerId of types_1.rooms[roomCode].players) {
             if (playerId && playerId !== types_1.rooms[roomCode].host) {
                 // socket.join(playerId); // testing, what if this doesn't do what i want it to, connect player to moderator?
-                // Initialize the game data for each player based on gameGoals
-                types_1.rooms[roomCode].gameData[playerId] = emptyPlayerData;
+                // Initialize the game data for each player as empty lists
+                types_1.rooms[roomCode].gameData[playerId] = Array.from({ length: gameGoals.length }, () => ([]));
             }
         }
     }

@@ -20,30 +20,20 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
     return;
   }
 
-  const playerData = room.gameData[socket.id];
-
-  // Update the specific location
-  const updatedCategory = [...playerData[categoryIndex]];
-  updatedCategory[imageIndex!] = { // Image index should exist here
-    imageUri: imageUri,
-    status: 'unchecked', // Reset status after update
-  };
-  
-  // Update the player's gameData
-  const updatedGameData = {
-    ...room.gameData,
-    [socket.id]: [
-      ...playerData.slice(0, categoryIndex),
-      updatedCategory,
-      ...playerData.slice(categoryIndex + 1),
-    ],
-  };
-
-  // Update the room's gameData
-  rooms[roomCode] = {
-    ...room,
-    gameData: updatedGameData,
-  };
+  // If image index is not given, push the image onto the end of the array
+  if (typeof imageIndex == 'undefined') {
+    room.gameData[socket.id][categoryIndex].push({ 
+      imageUri: imageUri, // Image index should exist here
+      status: 'unchecked', // Reset status after update
+    }
+  );
+  // Otherwise, put the image at the exact location specified
+  } else if (typeof imageIndex == 'number') {
+    room.gameData[socket.id][categoryIndex][imageIndex] = {
+      imageUri: imageUri, // Image index should exist here
+      status: 'unchecked', // Reset status after update
+    }
+  }
 
   rooms[roomCode].gameProgress[socket.id] = calculateProgress(roomCode, socket.id);
 
