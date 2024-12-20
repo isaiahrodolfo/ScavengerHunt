@@ -4,7 +4,7 @@ import { devtools } from 'zustand/middleware'
 
 // TODO: Use any type instead of PlayerData, since I am having trouble type guarding
 interface PlayerDataState {
-  selectedPlayerData: any | {}; // TODO: Start as something? But it will be set, anyway...
+  selectedPlayerData: any; // TODO: Start as something? But it will be set, anyway...
   setSelectedPlayerData: (to: any) => void;
 }
  

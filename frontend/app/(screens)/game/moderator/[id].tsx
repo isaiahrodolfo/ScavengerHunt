@@ -1,18 +1,29 @@
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from "@react-navigation/native";
 import { useRoomState } from '@/store/useRoomState';
 import { socket } from '@/utils/socket';
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData';
-import { Status } from '@/types/game';
+import { PlayerData, Status } from '@/types/game';
 
 const Player = () => {
 
   const { id } = useLocalSearchParams();
 
   const { roomState } = useRoomState();
-  const { selectedPlayerData } = useSelectedPlayerData();
+  const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
+
+  useEffect(() => {
+    socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
+      setSelectedPlayerData(updatedPlayerData);
+    });
+
+    // Clean up socket listeners
+    return () => {
+      socket.off('getPlayerData');
+    };
+  })
 
   // Set header title
   const navigation = useNavigation();
