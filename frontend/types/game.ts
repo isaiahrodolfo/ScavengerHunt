@@ -16,6 +16,13 @@ export type ImageAndLocation = {
   imageIndex?: number; // 0+ as index, -1 for append to list
 };
 
+export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
+
+export type PlayerData = { 
+  image: string; 
+  status: Status;
+}[][];
+
 export type PlayerProgressState = Record<string, PlayerProgressValue>;
 
 export type PlayerProgressValue = {

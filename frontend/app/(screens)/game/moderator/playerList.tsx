@@ -4,6 +4,10 @@ import ProgressBar from '../../../../components/game/moderator/ProgressBar'
 import { router } from 'expo-router'
 import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
+import { getPlayerData } from '@/handlers/gameHandlers'
+import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
+import { PlayerData } from '@/types/game';
+import { useRoomState } from '@/store/useRoomState'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -66,6 +70,8 @@ export default function PlayerList() {
 
   // TODO: Show all players at onset, even if they don't have photos yet
   const [playerProgress, setPlayerProgress] = useState<PlayerProgressValue[]>([]); // Multiple player's progresses
+  const { setSelectedPlayerData } = useSelectedPlayerData();
+  const { roomState } = useRoomState();
 
   // Update UI when data changes
   useEffect(() => {
@@ -88,11 +94,18 @@ export default function PlayerList() {
   // Render each user's progress item
   const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
-    function handleItemPressed(event: GestureResponderEvent): void {
-      router.push({
-        pathname: '/(screens)/game/moderator/[id]',
-        params: { id }
-      })
+    async function handleItemPressed(event: GestureResponderEvent): Promise<void> { // ? What is Promise<void>?
+      const data = await getPlayerData(roomState.roomCode, id);
+      if (data) {
+        setSelectedPlayerData(data);
+        router.push({
+          pathname: '/(screens)/game/moderator/[id]',
+          params: { id }
+        })
+      } else {
+        console.error('failed getting player data'); // testing
+        return;
+      }
     }
 
     // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
