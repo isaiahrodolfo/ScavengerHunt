@@ -7,6 +7,7 @@ import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
 import { socket } from '@/utils/socket';
+import { usePlayerData } from '@/store/usePlayerData';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -20,6 +21,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
+  const { playerData, setPlayerData } = usePlayerData();
   const { roomState, setRoomState } = useRoomState();
 
   const cameraRef = useRef<any>(null);
@@ -41,7 +43,8 @@ export default function Camera({ setHasPermissions }: CameraProps) {
 
   function toggleCameraFacing() {
     // setRoomState({ ...roomState }); // TESTING: Using the flip camera button to check roomState
-    socket.emit('logState', roomState.roomCode);// TESTING: Using the flip camera button to check server state
+    // socket.emit('logState', roomState.roomCode);// TESTING: Using the flip camera button to check server state
+    console.log('playerData', playerData);// TESTING: Using the flip camera button to check playerData
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
@@ -65,9 +68,26 @@ export default function Camera({ setHasPermissions }: CameraProps) {
 
             const imageUri = photo.uri;
             const categoryIndex = selectedImage.categoryIndex!;
-            const imageIndex = selectedImage.imageIndex;
+            const imageIndex = selectedImage.imageIndex!;
 
             setCategoryImages({ imageUri, categoryIndex, imageIndex });
+            // setPlayerData([...playerData, playerData[categoryIndex][imageIndex] = {imageUri: '', status: 'unchecked'}])
+
+            // UPDATE PLAYER DATA
+            const updatedData = [...playerData];
+
+            // Ensure the category exists
+            // if (updatedData[categoryIndex]) {
+            updatedData[categoryIndex] = [...updatedData[categoryIndex]];
+
+            // Update the specific image's data
+            updatedData[categoryIndex][imageIndex] = { imageUri: '', status: 'unchecked' };
+            // }
+
+            console.log('playerData', playerData);
+            console.log('updatedPlayerData', updatedData);
+            setPlayerData(updatedData);
+
             // Now update the server with the new image
             const res = await insertImage(roomState.roomCode, { imageUri, categoryIndex, imageIndex: imageIndex })
             if (res) {
@@ -91,7 +111,6 @@ export default function Camera({ setHasPermissions }: CameraProps) {
     switch (gameState) {
       case 'take': // Pressed the "Take" button, so take a picture...
         takePicture();
-        // setGameState('put'); // ...and place it in a category
         break;
       case 'put': // Pressed the "Retake" button, so restart...
         resetImage();
@@ -103,11 +122,8 @@ export default function Camera({ setHasPermissions }: CameraProps) {
       case 'retake': // Pressed the "Take" button, so retake the picture
         takePicture();
         break;
-      // setCategoryImages(selectedImage.imageUri, selectedImage.categoryIndex, selectedImage.imageIndex) // Automatically put the image where the user wanted to replace it
-      // setGameState('take'); // ...and continue the main game loop
       default: break;
     }
-    // isSelecting ? resetImage() : takePicture();
   }
 
   return (

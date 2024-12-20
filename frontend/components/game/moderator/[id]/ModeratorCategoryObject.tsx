@@ -21,7 +21,6 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
   const { roomState } = useRoomState();
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
-  const { categoryImages, setCategoryImages } = useCategoryImages();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 

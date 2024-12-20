@@ -7,6 +7,8 @@ import { useGameState } from '@/store/useGameState';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { socket } from '@/utils/socket';
+import { PlayerData } from '@/types/game';
+import { usePlayerData } from '@/store/usePlayerData';
 
 export default function PlayerGameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -17,6 +19,20 @@ export default function PlayerGameScreen() {
 
   const { gameState, setGameState } = useGameState();
   const { categoryImages, setCategoryImages } = useCategoryImages();
+  const { playerData, setPlayerData } = usePlayerData();
+
+  useEffect(() => {
+    // Initialize player data
+    socket.on('initializePlayerData', (playerData: PlayerData) => {
+      console.log('initializing player data...')
+      setPlayerData(playerData);
+    });
+
+    // Clean up socket listeners
+    return () => {
+      socket.off('initializePlayerData');
+    };
+  }, []);
 
   // Timer logic
   useEffect(() => {

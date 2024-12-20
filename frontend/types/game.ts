@@ -4,6 +4,13 @@ export type Category = {
   images: string[]; // List of imageUris
 };
 
+export type ImageData = {
+  imageUri: string
+  categoryIndex: number;
+  imageIndex: number;
+  status: Status;
+}
+
 export type ImageAndTargetLocation = {
   imageUri: string
   categoryIndex?: number;
