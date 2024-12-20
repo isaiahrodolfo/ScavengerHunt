@@ -30,12 +30,12 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text,
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
-  // Use an effect to scroll to the end after the images have been laid out
-  useEffect(() => {
-    if (playerData[categoryIndex].length > 0 && scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
-    }
-  }, [playerData[categoryIndex]]); // This will trigger whenever images change
+  // // Use an effect to scroll to the end after the images have been laid out
+  // useEffect(() => {
+  //   if (playerData[categoryIndex].length > 0 && scrollViewRef.current) {
+  //     scrollViewRef.current.scrollToEnd({ animated: true });
+  //   }
+  // }, [playerData[categoryIndex]]); // This will trigger whenever images change
 
   function handleImagePressed({ imageUri, categoryIndex, imageIndex }: ImageAndLocation) {
     switch (gameState) {
