@@ -101,7 +101,7 @@ function handleSetImageStatus(roomCode, id, location, status, callback) {
     // Update the room's gameData
     types_1.rooms[roomCode] = Object.assign(Object.assign({}, room), { gameData: updatedGameData });
     // ??? I don't have to calculate the progress, do I?
-    // rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, socket.id);
+    types_1.rooms[roomCode].gameProgress[id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, id);
     // Invoke the callback to notify success
-    callback({ success: true });
+    callback({ success: true, data: types_1.rooms[roomCode].gameProgress });
 }
