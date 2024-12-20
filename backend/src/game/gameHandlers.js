@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleInsertImage = handleInsertImage;
 exports.handleGetPlayerData = handleGetPlayerData;
 exports.handleNavigateToPlayerList = handleNavigateToPlayerList;
+exports.handleSetImageStatus = handleSetImageStatus;
 const handler_helpers_1 = require("../handler-helpers");
 const types_1 = require("../types");
 const gameHandlerHelpers_1 = require("./gameHandlerHelpers");
@@ -75,4 +76,32 @@ function handleNavigateToPlayerList(roomCode, callback) {
     // Host is on player page (reset)
     types_1.rooms[roomCode].hostOnPlayerPage = '';
     callback({ success: true }); // Return player data
+}
+function handleSetImageStatus(roomCode, id, location, status, callback) {
+    const { categoryIndex, imageIndex } = location;
+    if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
+        return;
+    const room = types_1.rooms[roomCode];
+    // TODO: Create a handler helper to check if player does not exist
+    // Ensure gameData exists for the given id
+    if (!room.gameData[id]) {
+        callback({ success: false, type: 'UserNotFound', error: 'User not found in gameData' });
+        return;
+    }
+    const playerData = room.gameData[id];
+    // Update the specific location
+    const updatedCategory = [...playerData[categoryIndex]];
+    updatedCategory[imageIndex] = Object.assign(Object.assign({}, updatedCategory[imageIndex]), { status });
+    // Update the player's gameData
+    const updatedGameData = Object.assign(Object.assign({}, room.gameData), { [id]: [
+            ...playerData.slice(0, categoryIndex),
+            updatedCategory,
+            ...playerData.slice(categoryIndex + 1),
+        ] });
+    // Update the room's gameData
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, room), { gameData: updatedGameData });
+    // ??? I don't have to calculate the progress, do I?
+    // rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, socket.id);
+    // Invoke the callback to notify success
+    callback({ success: true });
 }

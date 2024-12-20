@@ -48,6 +48,9 @@ const Player = () => {
   return (
     <View style={styles.container}>
       {/* <Text>{id}</Text> */}
+      <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() =>
+        socket.emit('logState', roomState.roomCode) // TESTING: Using the flip camera button to check server state
+      } />
 
       {/* Show selected image */}
       <View style={styles.image}>
@@ -60,7 +63,7 @@ const Player = () => {
         }
       </View>
 
-      <ValidInvalidButtons />
+      <ValidInvalidButtons id={id.toString()} />
 
       {/* Render the grid of images */}
       <View style={styles.categoryObjects}>
@@ -91,10 +94,6 @@ const Player = () => {
           // </View>
         ))}
       </View>
-
-      {/* <Pressable style={{ width: 300, height: 300, backgroundColor: 'gray' }} onPress={() =>
-        socket.emit('logState', roomState.roomCode) // TESTING: Using the flip camera button to check server state
-      } /> */}
     </View>
   )
 
