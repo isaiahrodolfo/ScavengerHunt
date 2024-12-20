@@ -9,6 +9,7 @@ import { PlayerData, Status } from '@/types/game';
 import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidButtons';
 import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
 import { useSelectedImage } from '@/store/useSelectedImage';
+import { usePlayerProgress } from '@/store/usePlayerProgress';
 
 const Player = () => {
 
