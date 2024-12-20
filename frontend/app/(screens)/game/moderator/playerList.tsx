@@ -1,6 +1,6 @@
 import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import ProgressBar from '../../../../components/game/moderator/ProgressBar'
+import ProgressBar from '../../../../components/game/moderator/playerList/ProgressBar'
 import { router, useFocusEffect } from 'expo-router'
 import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
@@ -8,6 +8,7 @@ import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { PlayerData } from '@/types/game';
 import { useRoomState } from '@/store/useRoomState'
+import { useSelectedImage } from '@/store/useSelectedImage'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -94,9 +95,16 @@ export default function PlayerList() {
   // Render each user's progress item
   const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
+    const { setSelectedImage } = useSelectedImage();
+
     // When navigate back to this page, moderator is not on any player's page
     useFocusEffect(
       useCallback(() => {
+
+        // Reset selected image
+        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+
+        // Tell server moderator is back at Player List Page
         const handleNavigation = async () => {
           const res = await navigateToPlayerList(roomState.roomCode);
           if (res) {

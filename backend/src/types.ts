@@ -25,7 +25,7 @@ export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
 
 export type GameData = Record<
   string, // User ID
-  { image: string; status: Status }[][] // 2D array of objects with image and status
+  { imageUri: string; status: Status }[][] // 2D array of objects with image and status
 >;
 
 // gameData: {

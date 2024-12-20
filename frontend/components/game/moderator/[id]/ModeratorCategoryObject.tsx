@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
-import { ImageAndLocation } from '@/types/game';
+import { ImageAndLocation, Status } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
@@ -13,10 +13,10 @@ interface CategoryObjectProps {
   backgroundColor: string;
   number: number;
   text: string;
-  images: string[]; // Array of CameraCapturedPicture objects
+  images: { imageUri: string, status: Status }[];
 }
 
-const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
+const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
 
   const { roomState } = useRoomState();
   const { gameState, setGameState } = useGameState();
@@ -32,58 +32,18 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
     }
   }, [images]); // This will trigger whenever images change
 
-  function handleImagePressed(target: ImageAndLocation) {
-    switch (gameState) {
-      case 'take':
-      case 'view':
-        setSelectedImage({ imageUri: target.imageUri, categoryIndex: target.categoryIndex, imageIndex: target.imageIndex });
-        setGameState('view'); // State is already 'view', if 'view'
-        break;
-    }
-  }
-
-  function handleCategoryPressed(categoryIndex: number) {
-    switch (gameState) {
-      case 'put': // Put the image the user just took in the selected category
-        addImageToCategory(categoryIndex);
-        setGameState('take');
-      default: break;
-    }
+  function handleImagePressed({ imageUri, categoryIndex, imageIndex }: ImageAndLocation) {
+    setSelectedImage({ imageUri, categoryIndex, imageIndex });
   }
 
   // Helper function
-  async function addImageToCategory(categoryIndex: number, imageIndex?: number) {
-    if (selectedImage) {
+  async function setStatus(categoryIndex: number, imageIndex: number, status: Status) {
 
-      setCategoryImages({
-        imageUri: selectedImage.imageUri,
-        categoryIndex: categoryIndex!,
-        imageIndex: imageIndex
-      });
-      // Now update the server with the new image
-      const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length - 1 })
-      if (res) {
-        console.log(res);
-      }
-      setSelectedImage({ imageUri: '' }); // That image is placed, and now we remove it from the cache
-    }
   }
 
-  // function handlePressOutside(event: GestureResponderEvent): void {
-  //   switch (gameState) {
-  //     case 'view': // When pressed out of an image (the user does not want to look at images anymore)
-  //       setGameState('take');
-  //       break;
-  //   }
-  // }
-
   return (
-    <View style={[styles.container, { backgroundColor: gameState == 'put' ? 'thistle' : 'lavender' }]} pointerEvents={gameState == 'put' ? 'auto' : 'none'}>
-      <Pressable
-        onPress={() => {
-          handleCategoryPressed(categoryIndex);
-          scrollViewRef.current?.scrollToEnd();
-        }}>
+    <View style={[styles.container, { backgroundColor }]}>
+      <View>
         {/* Top Half: Number and Text */}
         <View style={styles.description}>
           <Text style={styles.number}>{number}</Text>
@@ -91,27 +51,25 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
         </View>
 
         {/* Bottom Half: Scrollable Images */}
-        {/* Cannot select individual photos when selecting a category */}
-        <View style={styles.imagesList} pointerEvents='auto'>
+        <View style={styles.imagesList}>
           {images.length > 0 ? (
             <ScrollView
               style={styles.scrollView}
               horizontal showsHorizontalScrollIndicator={true}
-              pointerEvents={['put'].includes(gameState) ? 'none' : 'auto'}
               ref={scrollViewRef}
             >
-              {categoryImages[categoryIndex].images.map((imageUri, index) => (
+              {images.map((image, index) => (
                 <Pressable
                   key={`${categoryIndex}-${index}`}
                   onPress={() =>
                     handleImagePressed({
-                      imageUri,
+                      imageUri: image.imageUri,
                       categoryIndex: categoryIndex,
                       imageIndex: index,
                     })
                   }
                 >
-                  <Image source={{ uri: imageUri }} style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]} />
+                  <Image source={{ uri: image.imageUri }} style={[styles.image, selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]} />
                 </Pressable>
               ))}
             </ScrollView>
@@ -122,12 +80,12 @@ const CategoryObject = ({ categoryIndex, backgroundColor, number, text, images }
           )}
           {/* Placeholder when there are no images */}
         </View>
-      </Pressable >
+      </View >
     </View >
   );
 };
 
-export default CategoryObject;
+export default ModeratorCategoryObject;
 
 const styles = StyleSheet.create({
   container: {
