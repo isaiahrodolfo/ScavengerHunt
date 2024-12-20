@@ -25,6 +25,11 @@ export type ImageAndLocation = {
 
 export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
 
+export type GameGoals = {
+  categoryName: string;
+  imageCount: number;
+}[]
+
 export type PlayerData = { 
   imageUri: string; 
   status: Status;

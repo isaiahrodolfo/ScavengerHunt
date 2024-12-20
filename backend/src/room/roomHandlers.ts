@@ -26,6 +26,12 @@ export function handleCreateRoom(roomCode: string, callback: Callback, socket: a
     players: new Set([socket.id]),
     started: false,
     hostIsModerator: false, // TODO: Fix tests to make rooms have this field
+    gameGoals: [ // TODO: Using dummy data
+      {categoryName: 'musical instruments', imageCount: 4},
+      {categoryName: 'TVs', imageCount: 6},
+      {categoryName: 'fridges/freezers', imageCount: 3},
+      {categoryName: 'different types of bibles', imageCount: 5}
+    ],
     gameData: {}, // TODO: Fix tests to make rooms have this field
     gameProgress: {}, // TODO: Fix tests to make rooms have this field
     hostOnPlayerPage: '',
@@ -105,8 +111,8 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
 
   // Emit the "startGame" event to all users in the room,
   // and tell them if there is a moderator or not
-  socket.to(roomCode).emit("startGame", isModerator, emptyPlayerData);
-  
+  socket.to(roomCode).emit("startGame", isModerator, rooms[roomCode].gameGoals);
+
   // Log the action for debugging
   // console.log(`Room ${roomCode} started by host ${socket.id}`);
 

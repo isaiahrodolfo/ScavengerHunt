@@ -73,20 +73,12 @@ export default function Camera({ setHasPermissions }: CameraProps) {
             setCategoryImages({ imageUri, categoryIndex, imageIndex });
             // setPlayerData([...playerData, playerData[categoryIndex][imageIndex] = {imageUri: '', status: 'unchecked'}])
 
-            // UPDATE PLAYER DATA
-            const updatedData = [...playerData];
+            // UPDATE PLAYER DATA LOCALLY
+            const updatedPlayerData = playerData;
+            updatedPlayerData[categoryIndex][imageIndex] = { imageUri, status: 'unchecked' }
 
-            // Ensure the category exists
-            // if (updatedData[categoryIndex]) {
-            updatedData[categoryIndex] = [...updatedData[categoryIndex]];
-
-            // Update the specific image's data
-            updatedData[categoryIndex][imageIndex] = { imageUri: '', status: 'unchecked' };
-            // }
-
-            console.log('playerData', playerData);
-            console.log('updatedPlayerData', updatedData);
-            setPlayerData(updatedData);
+            console.log('updatedPlayerData', updatedPlayerData);
+            setPlayerData(updatedPlayerData);
 
             // Now update the server with the new image
             const res = await insertImage(roomState.roomCode, { imageUri, categoryIndex, imageIndex: imageIndex })
