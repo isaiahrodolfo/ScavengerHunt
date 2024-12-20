@@ -36,9 +36,18 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
     setSelectedImage({ imageUri, categoryIndex, imageIndex });
   }
 
-  // Helper function
-  async function setStatus(categoryIndex: number, imageIndex: number, status: Status) {
-
+  function getStatusColor(status: Status): string {
+    switch (status) {
+      case 'unchecked':
+        return 'yellow';
+      case 'valid':
+        return 'green';
+      case 'invalid':
+        return 'red';
+      case 'none':
+      default:
+        return 'gray'; // Fallback color
+    }
   }
 
   return (
@@ -69,7 +78,21 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                     })
                   }
                 >
-                  <Image source={{ uri: image.imageUri }} style={[styles.image, selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]} />
+                  <Image
+                    source={{ uri: image.imageUri }}
+                    style={[styles.image, selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
+                  />
+                  {/* Transparent overlay */}
+                  <View
+                    style={[
+                      styles.overlay,
+                      selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
+                      {
+                        backgroundColor: image.status == 'unchecked' ? 'yellow' : image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
+                        opacity: 0.2, // Adjust the transparency
+                      },
+                    ]}
+                  />
                 </Pressable>
               ))}
             </ScrollView>
@@ -149,6 +172,17 @@ const styles = StyleSheet.create({
     // backgroundColor: '#ccc', // Placeholder for images
     // borderColor: 'blue',
     // borderWidth: 3
+  },
+  overlay: {
+    width: 65, // Fixed width for each image
+    height: 50,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    marginLeft: 5,
+    borderRadius: 10,
   },
   emptyImagePlaceholder: {
     height: 50, // Fixed height for placeholder image

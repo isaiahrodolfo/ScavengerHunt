@@ -16,7 +16,7 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   const { roomState } = useRoomState();
   const { selectedImage } = useSelectedImage();
-  const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
 
   async function handleSetImageStatus(status: Status) {
     setImageStatus(
@@ -28,7 +28,7 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
       },
       status) // Update status globally
       .then((data) => {
-        setPlayerProgress(data);
+        setPlayerProgress(data); // Update status locally
       })
   }
 

@@ -77,7 +77,7 @@ function handleNavigateToPlayerList(roomCode, callback) {
     types_1.rooms[roomCode].hostOnPlayerPage = '';
     callback({ success: true }); // Return player data
 }
-function handleSetImageStatus(roomCode, id, location, status, callback) {
+function handleSetImageStatus(roomCode, id, location, status, callback, socket) {
     const { categoryIndex, imageIndex } = location;
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
@@ -102,6 +102,10 @@ function handleSetImageStatus(roomCode, id, location, status, callback) {
     types_1.rooms[roomCode] = Object.assign(Object.assign({}, room), { gameData: updatedGameData });
     // ??? I don't have to calculate the progress, do I?
     types_1.rooms[roomCode].gameProgress[id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, id);
+    // If the host is on the player's page, update the host's player data so there will be dynamic changes
+    if (types_1.rooms[roomCode].hostOnPlayerPage) {
+        socket.emit('getPlayerData', types_1.rooms[roomCode].gameData[id]); // TODO: Use the updated const instead of going back into the whole thing
+    }
     // Invoke the callback to notify success
     callback({ success: true, data: types_1.rooms[roomCode].gameProgress });
 }

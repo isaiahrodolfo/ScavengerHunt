@@ -101,7 +101,7 @@ export function handleNavigateToPlayerList(roomCode: string, callback: Callback)
   callback({success: true}); // Return player data
 }
 
-export function handleSetImageStatus(roomCode: string, id: string, location: {categoryIndex: number, imageIndex: number}, status: Status, callback: Callback) {
+export function handleSetImageStatus(roomCode: string, id: string, location: {categoryIndex: number, imageIndex: number}, status: Status, callback: Callback, socket: any) {
 
   const {categoryIndex, imageIndex} = location;
 
@@ -143,6 +143,12 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
 
   // ??? I don't have to calculate the progress, do I?
   rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, id);
+
+  // If the host is on the player's page, update the host's player data so there will be dynamic changes
+  if (rooms[roomCode].hostOnPlayerPage) {
+    socket.emit('getPlayerData', rooms[roomCode].gameData[id]); // TODO: Use the updated const instead of going back into the whole thing
+  }
+ 
 
   // Invoke the callback to notify success
   callback({ success: true, data: rooms[roomCode].gameProgress});
