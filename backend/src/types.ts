@@ -10,6 +10,7 @@ export type Room = {
   hostIsModerator: boolean;
   gameData: GameData;
   gameProgress: PlayerProgressState;
+  hostOnPlayerPage: string;
 };
 
 export const rooms: Record<string, Room> = {};
@@ -24,7 +25,7 @@ export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
 
 export type GameData = Record<
   string, // User ID
-  { image: string; status: Status }[][] // 2D array of objects with image and status
+  { imageUri: string; status: Status }[][] // 2D array of objects with image and status
 >;
 
 // gameData: {
@@ -43,7 +44,8 @@ export type Callback = (
     success: boolean; 
     type?: string; 
     error?: string; 
-    roomCode?: string 
+    roomCode?: string;
+    data?: any; // Any data you want to return
   }
 ) => void;
 

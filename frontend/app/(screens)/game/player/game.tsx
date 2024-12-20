@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Camera from '@/components/game/player/Camera';
-import CategoryObject from '@/components/game/player/CategoryObject';
+import PlayerCategoryObject from '@/components/game/player/PlayerCategoryObject';
 import { useGameState } from '@/store/useGameState';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
@@ -54,7 +54,7 @@ export default function PlayerGameScreen() {
 
       <View style={[styles.categoryObjects, { width: width - 20 }]}>
         {categoryImages.map((category, index) => (
-          <CategoryObject
+          <PlayerCategoryObject
             key={index}
             categoryIndex={index}
             backgroundColor={getCategoryColor(index)}

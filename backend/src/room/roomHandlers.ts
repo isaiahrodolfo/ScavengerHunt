@@ -28,6 +28,7 @@ export function handleCreateRoom(roomCode: string, callback: Callback, socket: a
     hostIsModerator: false, // TODO: Fix tests to make rooms have this field
     gameData: {}, // TODO: Fix tests to make rooms have this field
     gameProgress: {}, // TODO: Fix tests to make rooms have this field
+    hostOnPlayerPage: '',
   };
 
   socket.join(roomCode);
