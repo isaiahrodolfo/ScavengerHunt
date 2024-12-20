@@ -70,12 +70,16 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
               {images.map((image, index) => (
                 <Pressable
                   key={`${categoryIndex}-${index}`}
-                  onPress={() =>
-                    handleImagePressed({
-                      imageUri: image.imageUri,
-                      categoryIndex: categoryIndex,
-                      imageIndex: index,
-                    })
+                  onPress={() => {
+                    if (image.status != 'none') {
+                      handleImagePressed({
+                        imageUri: image.imageUri,
+                        categoryIndex: categoryIndex,
+                        imageIndex: index,
+                      })
+                    }
+
+                  }
                   }
                 >
                   <Image
