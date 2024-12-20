@@ -9,6 +9,7 @@ import { useRoomState } from '@/store/useRoomState';
 import { socket } from '@/utils/socket';
 import { PlayerData } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
+import { useGameGoals } from '@/store/useGameGoals';
 
 export default function PlayerGameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -20,6 +21,7 @@ export default function PlayerGameScreen() {
   const { gameState, setGameState } = useGameState();
   const { categoryImages, setCategoryImages } = useCategoryImages();
   const { playerData, setPlayerData } = usePlayerData();
+  const { gameGoals } = useGameGoals();
 
   // Timer logic
   useEffect(() => {
@@ -61,30 +63,20 @@ export default function PlayerGameScreen() {
             key={index}
             categoryIndex={index}
             backgroundColor={getCategoryColor(index)}
-            number={getCategoryNumber(index)}
-            text={getCategoryName(index)}
+            number={gameGoals[index].imageCount || 0}
+            text={gameGoals[index].categoryName || ''}
             images={category.images}
           />
         ))}
       </View>
     </View>
   );
-}
 
-// TODO: Make a JSON object that stores this data
-function getCategoryNumber(index: number) {
-  const numbers = [4, 6, 3, 5];
-  return numbers[index] || 0;
-}
-
-function getCategoryColor(index: number) {
-  const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
-  return colors[index] || '#ccc';
-}
-
-function getCategoryName(index: number) {
-  const colors = ['musical instruments', 'TVs', 'fridges/freezers', 'different types of bibles'];
-  return colors[index] || '#ccc';
+  // TODO: Make a JSON object that stores gameGoals
+  function getCategoryColor(index: number) { // TODO: I have no use for this for now
+    const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
+    return colors[index] || '#ccc';
+  }
 }
 
 const styles = StyleSheet.create({

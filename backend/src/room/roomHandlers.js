@@ -27,7 +27,7 @@ function handleCreateRoom(roomCode, callback, socket) {
         started: false,
         hostIsModerator: false, // TODO: Fix tests to make rooms have this field
         gameGoals: [
-            { categoryName: 'musical instruments', imageCount: 4 },
+            { categoryName: 'musical instrumentss', imageCount: 4 },
             { categoryName: 'TVs', imageCount: 6 },
             { categoryName: 'fridges/freezers', imageCount: 3 },
             { categoryName: 'different types of bibles', imageCount: 5 }
