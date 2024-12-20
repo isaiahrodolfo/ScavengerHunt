@@ -4,6 +4,13 @@ export type Category = {
   images: string[]; // List of imageUris
 };
 
+export type ImageData = {
+  imageUri: string
+  categoryIndex: number;
+  imageIndex: number;
+  status: Status;
+}
+
 export type ImageAndTargetLocation = {
   imageUri: string
   categoryIndex?: number;
@@ -17,6 +24,11 @@ export type ImageAndLocation = {
 };
 
 export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
+
+export type GameGoals = {
+  categoryName: string;
+  imageCount: number;
+}[]
 
 export type PlayerData = { 
   imageUri: string; 

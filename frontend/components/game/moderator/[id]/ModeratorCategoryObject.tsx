@@ -21,16 +21,15 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
   const { roomState } = useRoomState();
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
-  const { categoryImages, setCategoryImages } = useCategoryImages();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
-  // Use an effect to scroll to the end after the images have been laid out
-  useEffect(() => {
-    if (images.length > 0 && scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
-    }
-  }, [images]); // This will trigger whenever images change
+  // // Use an effect to scroll to the end after the images have been laid out
+  // useEffect(() => {
+  //   if (images.length > 0 && scrollViewRef.current) {
+  //     scrollViewRef.current.scrollToEnd({ animated: true });
+  //   }
+  // }, [images]); // This will trigger whenever images change
 
   function handleImagePressed({ imageUri, categoryIndex, imageIndex }: { imageUri: string, categoryIndex: number, imageIndex: number }) {
     setSelectedImage({ imageUri, categoryIndex, imageIndex });

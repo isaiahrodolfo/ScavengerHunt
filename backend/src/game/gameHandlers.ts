@@ -20,30 +20,20 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
     return;
   }
 
-  const playerData = room.gameData[socket.id];
-
-  // Update the specific location
-  const updatedCategory = [...playerData[categoryIndex]];
-  updatedCategory[imageIndex!] = { // Image index should exist here
-    imageUri: imageUri,
-    status: 'unchecked', // Reset status after update
-  };
-  
-  // Update the player's gameData
-  const updatedGameData = {
-    ...room.gameData,
-    [socket.id]: [
-      ...playerData.slice(0, categoryIndex),
-      updatedCategory,
-      ...playerData.slice(categoryIndex + 1),
-    ],
-  };
-
-  // Update the room's gameData
-  rooms[roomCode] = {
-    ...room,
-    gameData: updatedGameData,
-  };
+  // If image index is not given, push the image onto the end of the array
+  if (typeof imageIndex == 'undefined') {
+    room.gameData[socket.id][categoryIndex].push({ 
+      imageUri: imageUri, // Image index should exist here
+      status: 'unchecked', // Reset status after update
+    }
+  );
+  // Otherwise, put the image at the exact location specified
+  } else if (typeof imageIndex == 'number') {
+    room.gameData[socket.id][categoryIndex][imageIndex] = {
+      imageUri: imageUri, // Image index should exist here
+      status: 'unchecked', // Reset status after update
+    }
+  }
 
   rooms[roomCode].gameProgress[socket.id] = calculateProgress(roomCode, socket.id);
 
@@ -144,11 +134,15 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
   // ??? I don't have to calculate the progress, do I?
   rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, id);
 
+  const playerProgress = rooms[roomCode].gameData[id];
+
   // If the host is on the player's page, update the host's player data so there will be dynamic changes
   if (rooms[roomCode].hostOnPlayerPage) {
-    socket.emit('getPlayerData', rooms[roomCode].gameData[id]); // TODO: Use the updated const instead of going back into the whole thing
+    socket.emit('getPlayerData', playerProgress); // TODO: Use the updated const instead of going back into the whole thing
   }
- 
+
+  // Update the player with the new statuses of their images
+  socket.to(id).emit('getPlayerData', playerProgress);
 
   // Invoke the callback to notify success
   callback({ success: true, data: rooms[roomCode].gameProgress});

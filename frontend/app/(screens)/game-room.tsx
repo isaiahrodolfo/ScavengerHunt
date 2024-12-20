@@ -5,10 +5,15 @@ import { Checkbox } from 'expo-checkbox';
 import { socket } from '@/utils/socket'
 import { closeRoom, exitRoom, startRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
+import { PlayerData } from '@/types/game';
+import { usePlayerData } from '@/store/usePlayerData';
+import { useGameGoals } from '@/store/useGameGoals';
 
 export default function GameRoomScreen() {
 
   const { roomState, setRoomState } = useRoomState();
+  const { setPlayerData } = usePlayerData();
+  const { setGameGoals } = useGameGoals();
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -23,9 +28,11 @@ export default function GameRoomScreen() {
 
     // Receive start game emission
     // ? tell server to start the game (we're not doing that here)
-    socket.on('startGame', (hasModerator: boolean) => { // Receive message that there is or is not a moderator here
+    socket.on('startGame', (hasModerator: boolean, gameGoals: { categoryName: string, imageCount: number }[]) => { // Receive message that there is or is not a moderator here
       // console.log('starting game...'); // testing
-      setRoomState({ ...roomState, hasModerator })
+      setRoomState({ ...roomState, hasModerator });
+      setGameGoals(gameGoals);
+      setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
       router.replace('/(screens)/countdown');
     });
 
@@ -37,11 +44,11 @@ export default function GameRoomScreen() {
   }, []);
 
   const gameGoals = [
-    { categoryName: 'a', imageCount: 1 },
-    { categoryName: 'b', imageCount: 2 },
-    { categoryName: 'c', imageCount: 1 },
-    { categoryName: 'd', imageCount: 3 },
-  ]; // dummy data
+    { categoryName: 'musical instruments', imageCount: 5 },
+    { categoryName: 'TVs', imageCount: 8 },
+    { categoryName: 'fridges/freezers', imageCount: 4 },
+    { categoryName: 'different types of bibles', imageCount: 7 }
+  ]; // TODO: using dummy data (gameGoals dummy data)
 
   // Methods
   async function handleStartRoom() {
@@ -50,6 +57,7 @@ export default function GameRoomScreen() {
       setErrorMessage(res);
     } else {
       setRoomState({ ...roomState, isModerator, hasModerator: true });
+      setGameGoals(gameGoals);
       router.replace('/(screens)/countdown');
     }
   }

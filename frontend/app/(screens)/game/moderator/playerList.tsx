@@ -7,8 +7,9 @@ import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/ty
 import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { useRoomState } from '@/store/useRoomState'
-import { useSelectedImage } from '@/store/useSelectedImage'
+import { useSelectedImage } from '@/store/useModeratorSelectedImage'
 import { usePlayerProgress } from '@/store/usePlayerProgress'
+import { useGameGoals } from '@/store/useGameGoals'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -73,6 +74,7 @@ export default function PlayerList() {
   const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const { roomState } = useRoomState();
+  const { gameGoals } = useGameGoals();
 
   // Update UI when data changes
   useEffect(() => {
@@ -95,16 +97,19 @@ export default function PlayerList() {
   // Render each user's progress item
   const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
 
-    const { setSelectedImage } = useSelectedImage();
+    const { selectedImage, setSelectedImage } = useSelectedImage();
+    const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
 
     // When navigate back to this page, moderator is not on any player's page
     useFocusEffect(
       useCallback(() => {
 
-        // Reset selected image
+        // Reset player-based data
         setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        console.log('selectedImage', selectedImage); // testing
+        // setSelectedPlayerData(null);
 
-        // Tell server moderator is back at Player List Page
+        // Tell the server that the moderator is back at Player List Page
         const handleNavigation = async () => {
           const res = await navigateToPlayerList(roomState.roomCode);
           if (res) {
@@ -130,17 +135,25 @@ export default function PlayerList() {
       }
     }
 
+    function calculateTotalImages(): number {
+      let totalImages = 0;
+      for (const category of gameGoals) {
+        totalImages += category.imageCount;
+      }
+      return totalImages;
+    }
+
     // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
     return (
       // <View>
       <Pressable style={styles.item} onPress={handleItemPressed}>
         <Text style={styles.title}>{id}</Text>
         <View style={styles.progress}>
-          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + dummyGameGoal.images}</Text>
+          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + calculateTotalImages()}</Text>
           <View style={styles.progressBar}>
             <ProgressBar type={'none'} count={sets.none} />
-            <ProgressBar type={'unchecked'} count={sets.unchecked} />
             <ProgressBar type={'invalid'} count={sets.invalid} />
+            <ProgressBar type={'unchecked'} count={sets.unchecked} />
             <ProgressBar type={'valid'} count={sets.valid} />
           </View>
         </View>

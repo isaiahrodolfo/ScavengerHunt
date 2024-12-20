@@ -26,6 +26,7 @@ function handleCreateRoom(roomCode, callback, socket) {
         players: new Set([socket.id]),
         started: false,
         hostIsModerator: false, // TODO: Fix tests to make rooms have this field
+        gameGoals: [],
         gameData: {}, // TODO: Fix tests to make rooms have this field
         gameProgress: {}, // TODO: Fix tests to make rooms have this field
         hostOnPlayerPage: '',
@@ -71,6 +72,9 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         callback({ success: false, type: 'GameStarted', error: 'Game has already started' });
         return;
     }
+    // const emptyPlayerData = gameGoals.map(({ imageCount }) => {
+    //   return new Array(imageCount).fill({ image: '', status: 'none' });
+    // });  
     if (isModerator) {
         types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true });
         // Moderator joins rooms of players, so they can emit to each one separately
@@ -78,18 +82,18 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         for (const playerId of types_1.rooms[roomCode].players) {
             if (playerId && playerId !== types_1.rooms[roomCode].host) {
                 // socket.join(playerId); // testing, what if this doesn't do what i want it to, connect player to moderator?
-                // Initialize the game data for each player based on gameGoals
-                types_1.rooms[roomCode].gameData[playerId] = gameGoals.map(({ imageCount }) => {
-                    return new Array(imageCount).fill({ image: '', status: 'none' });
-                });
+                // Initialize the game data for each player as empty lists
+                types_1.rooms[roomCode].gameData[playerId] = Array.from({ length: gameGoals.length }, () => ([]));
             }
         }
     }
+    // Set the game goals
+    types_1.rooms[roomCode].gameGoals = gameGoals;
     // Start the room
     types_1.rooms[roomCode].started = true;
     // Emit the "startGame" event to all users in the room,
     // and tell them if there is a moderator or not
-    socket.to(roomCode).emit("startGame", isModerator);
+    socket.to(roomCode).emit("startGame", isModerator, types_1.rooms[roomCode].gameGoals);
     // Log the action for debugging
     // console.log(`Room ${roomCode} started by host ${socket.id}`);
     // Callback with success message

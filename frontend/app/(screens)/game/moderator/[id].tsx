@@ -10,6 +10,7 @@ import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidBu
 import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
 import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
+import { useGameGoals } from '@/store/useGameGoals';
 
 const Player = () => {
 
@@ -18,6 +19,8 @@ const Player = () => {
   const { roomState } = useRoomState();
   const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
   const { selectedImage, setSelectedImage } = useSelectedImage();
+  const { gameGoals } = useGameGoals();
+
 
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
@@ -51,6 +54,10 @@ const Player = () => {
     }
   };
 
+  function imageIsSelected(): boolean {
+    return (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex == 'number' && typeof selectedImage.imageIndex == 'number');
+  }
+
   return (
     <View style={styles.container}>
       {/* <Text>{id}</Text> */}
@@ -60,8 +67,8 @@ const Player = () => {
 
       {/* Show selected image */}
       <View style={styles.image}>
-        {selectedImage.imageUri ?
-          <Image style={styles.image} source={{ uri: selectedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].image || selectedImage.imageUri }} />
+        {imageIsSelected() ?
+          <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
           :
           <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
             <Text style={{ textAlign: 'center' }}>Select an image</Text>
@@ -78,8 +85,8 @@ const Player = () => {
             images={categoryImages}
             categoryIndex={index}
             backgroundColor='lavender'
-            number={getCategoryNumber(index)}
-            text={getCategoryName(index)}
+            number={gameGoals[index].imageCount}
+            text={gameGoals[index].categoryName}
           />
           // <View key={rowIndex} style={styles.row}>
           //   {row.map((player, colIndex) => (
