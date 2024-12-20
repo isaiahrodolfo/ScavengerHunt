@@ -9,6 +9,7 @@ import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { PlayerData } from '@/types/game';
 import { useRoomState } from '@/store/useRoomState'
 import { useSelectedImage } from '@/store/useSelectedImage'
+import { usePlayerProgress } from '@/store/usePlayerProgress'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -70,7 +71,7 @@ const dummyUserProgress = {
 export default function PlayerList() {
 
   // TODO: Show all players at onset, even if they don't have photos yet
-  const [playerProgress, setPlayerProgress] = useState<PlayerProgressValue[]>([]); // Multiple player's progresses
+  const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const { roomState } = useRoomState();
 
@@ -78,7 +79,7 @@ export default function PlayerList() {
   useEffect(() => {
 
     socket.on('updateProgress', (playerProgress: PlayerProgressState) => { // TODO: All three fields must exist in ImageAndLocation
-      setPlayerProgress(Object.values(playerProgress)); // Turn the record into an array
+      setPlayerProgress(playerProgress); // Turn the record into an array
       console.log('playerProgress', playerProgress);
     });
 
@@ -153,7 +154,7 @@ export default function PlayerList() {
   return (
     <ScrollView style={styles.container}>
       <FlatList
-        data={playerProgress}
+        data={Object.values(playerProgress)}
         renderItem={({ item }) => <Item {...item} />}
         keyExtractor={(item) => item.id}
       />
