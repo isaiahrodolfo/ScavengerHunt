@@ -78,6 +78,10 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
     return;
   }
 
+  const emptyPlayerData = gameGoals.map(({ imageCount }) => {
+    return new Array(imageCount).fill({ image: '', status: 'none' });
+  });  
+
   if (isModerator) {
     rooms[roomCode] = {
       ...rooms[roomCode], 
@@ -91,9 +95,7 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
         // socket.join(playerId); // testing, what if this doesn't do what i want it to, connect player to moderator?
     
         // Initialize the game data for each player based on gameGoals
-        rooms[roomCode].gameData[playerId] = gameGoals.map(({ imageCount }) => {
-          return new Array(imageCount).fill({ image: '', status: 'none' });
-        });        
+        rooms[roomCode].gameData[playerId] = emptyPlayerData;
       }
     }
   }
@@ -103,8 +105,8 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
 
   // Emit the "startGame" event to all users in the room,
   // and tell them if there is a moderator or not
-  socket.to(roomCode).emit("startGame", isModerator);
-
+  socket.to(roomCode).emit("startGame", isModerator, emptyPlayerData);
+  
   // Log the action for debugging
   // console.log(`Room ${roomCode} started by host ${socket.id}`);
 

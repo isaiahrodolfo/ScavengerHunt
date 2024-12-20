@@ -9,7 +9,8 @@ interface CategoryImages {
 }
 
 export const useCategoryImages = create<CategoryImages>()(
-  devtools((set) => ({
+  // devtools
+  ((set) => ({
     categoryImages: [
       { images: [] },
       { images: [] },

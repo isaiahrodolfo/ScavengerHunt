@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View, ScrollView, Image, Pressable, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
-import { ImageAndLocation } from '@/types/game';
+import { ImageAndLocation, PlayerData } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
+import { socket } from '@/utils/socket';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -111,7 +112,21 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
                     })
                   }
                 >
-                  <Image source={{ uri: imageUri }} style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]} />
+                  <Image
+                    source={{ uri: imageUri }}
+                    style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
+                  />
+                  {/* Transparent overlay */}
+                  <View
+                    style={[
+                      styles.overlay,
+                      selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
+                      {
+                        // backgroundColor: image.status == 'unchecked' ? 'yellow' : image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
+                        opacity: 0.2, // Adjust the transparency
+                      },
+                    ]}
+                  />
                 </Pressable>
               ))}
             </ScrollView>
@@ -191,6 +206,17 @@ const styles = StyleSheet.create({
     // backgroundColor: '#ccc', // Placeholder for images
     // borderColor: 'blue',
     // borderWidth: 3
+  },
+  overlay: {
+    width: 65, // Fixed width for each image
+    height: 50,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    marginLeft: 5,
+    borderRadius: 10,
   },
   emptyImagePlaceholder: {
     height: 50, // Fixed height for placeholder image
