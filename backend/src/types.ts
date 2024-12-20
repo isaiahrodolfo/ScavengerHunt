@@ -8,6 +8,7 @@ export type Room = {
   players: Set<string>; // User id
   started: boolean;
   hostIsModerator: boolean;
+  gameGoals: GameGoals;
   gameData: GameData;
   gameProgress: PlayerProgressState;
   hostOnPlayerPage: string;
@@ -22,6 +23,11 @@ export type ImageAndLocation = {
 }
 
 export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
+
+export type GameGoals = {
+  categoryName: string;
+  imageCount: number;
+}[]
 
 export type GameData = Record<
   string, // User ID

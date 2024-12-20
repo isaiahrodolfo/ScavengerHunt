@@ -21,19 +21,6 @@ export default function PlayerGameScreen() {
   const { categoryImages, setCategoryImages } = useCategoryImages();
   const { playerData, setPlayerData } = usePlayerData();
 
-  useEffect(() => {
-    // Initialize player data
-    socket.on('initializePlayerData', (playerData: PlayerData) => {
-      console.log('initializing player data...')
-      setPlayerData(playerData);
-    });
-
-    // Clean up socket listeners
-    return () => {
-      socket.off('initializePlayerData');
-    };
-  }, []);
-
   // Timer logic
   useEffect(() => {
     const interval = setInterval(() => {

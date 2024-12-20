@@ -8,6 +8,7 @@ import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
 import { socket } from '@/utils/socket';
+import { usePlayerData } from '@/store/usePlayerData';
 
 interface CategoryObjectProps {
   categoryIndex: number;
@@ -23,6 +24,7 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
   const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
+  const { playerData, setPlayerData } = usePlayerData();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -61,6 +63,14 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
         categoryIndex: categoryIndex!,
         imageIndex: imageIndex
       });
+
+      // UPDATE PLAYER DATA LOCALLY
+      const updatedPlayerData = playerData;
+      updatedPlayerData[categoryIndex].push({ imageUri: selectedImage.imageUri, status: 'unchecked' });
+
+      console.log('updatedPlayerData', updatedPlayerData);
+      setPlayerData(updatedPlayerData);
+
       // Now update the server with the new image
       const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length - 1 })
       if (res) {

@@ -7,11 +7,13 @@ import { closeRoom, exitRoom, startRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
 import { PlayerData } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
+import { useGameGoals } from '@/store/useGameGoals';
 
 export default function GameRoomScreen() {
 
   const { roomState, setRoomState } = useRoomState();
-  const { playerData, setPlayerData } = usePlayerData();
+  const { setPlayerData } = usePlayerData();
+  const { setGameGoals } = useGameGoals();
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -26,11 +28,11 @@ export default function GameRoomScreen() {
 
     // Receive start game emission
     // ? tell server to start the game (we're not doing that here)
-    socket.on('startGame', (hasModerator: boolean, playerData: PlayerData) => { // Receive message that there is or is not a moderator here
-      console.log('starting game...'); // testing
-      console.log(playerData); // testing
+    socket.on('startGame', (hasModerator: boolean, gameGoals: { categoryName: string, imageCount: number }[]) => { // Receive message that there is or is not a moderator here
+      // console.log('starting game...'); // testing
       setRoomState({ ...roomState, hasModerator });
-      setPlayerData(playerData);
+      setGameGoals(gameGoals);
+      setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
       router.replace('/(screens)/countdown');
     });
 
