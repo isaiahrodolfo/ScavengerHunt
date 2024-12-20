@@ -13,13 +13,13 @@ export type ImageAndTargetLocation = {
 export type ImageAndLocation = {
   imageUri: string
   categoryIndex: number;
-  imageIndex?: number; // 0+ as index, -1 for append to list
+  imageIndex?: number;
 };
 
 export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
 
 export type PlayerData = { 
-  image: string; 
+  imageUri: string; 
   status: Status;
 }[][];
 

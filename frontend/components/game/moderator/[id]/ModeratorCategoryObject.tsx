@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndLocation, Status } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
-import { useSelectedImage } from '@/store/useSelectedImage';
+import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
@@ -32,8 +32,10 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
     }
   }, [images]); // This will trigger whenever images change
 
-  function handleImagePressed({ imageUri, categoryIndex, imageIndex }: ImageAndLocation) {
+  function handleImagePressed({ imageUri, categoryIndex, imageIndex }: { imageUri: string, categoryIndex: number, imageIndex: number }) {
     setSelectedImage({ imageUri, categoryIndex, imageIndex });
+    console.log("categoryIndex, imageIndex", categoryIndex, imageIndex); // testing
+    console.log("categoryIndex, imageIndex", selectedImage.categoryIndex, selectedImage.imageIndex); // testing
   }
 
   function getStatusColor(status: Status): string {

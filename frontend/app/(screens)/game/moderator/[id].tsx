@@ -8,7 +8,7 @@ import { useSelectedPlayerData } from '@/store/useSelectedPlayerData';
 import { PlayerData, Status } from '@/types/game';
 import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidButtons';
 import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
-import { useSelectedImage } from '@/store/useSelectedImage';
+import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
 
 const Player = () => {
@@ -22,13 +22,18 @@ const Player = () => {
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
       setSelectedPlayerData(updatedPlayerData);
+      console.log('updatedPlayerData', updatedPlayerData);
+      console.log('selectedImage', selectedImage);
+      const updatedSelectedImage = updatedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].imageUri;
+      setSelectedImage({ ...selectedImage, imageUri: updatedSelectedImage });
+      console.log('selectedImage', selectedImage);
     });
 
     // Clean up socket listeners
     return () => {
       socket.off('getPlayerData');
     };
-  })
+  }, [selectedImage])
 
   // Set header title
   const navigation = useNavigation();
@@ -56,7 +61,7 @@ const Player = () => {
       {/* Show selected image */}
       <View style={styles.image}>
         {selectedImage.imageUri ?
-          <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+          <Image style={styles.image} source={{ uri: selectedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].image || selectedImage.imageUri }} />
           :
           <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
             <Text style={{ textAlign: 'center' }}>Select an image</Text>
@@ -68,7 +73,7 @@ const Player = () => {
 
       {/* Render the grid of images */}
       <View style={styles.categoryObjects}>
-        {selectedPlayerData?.map((categoryImages: { imageUri: string, status: Status }[], index: number) => ( // TODO: Fix typing
+        {selectedPlayerData?.map((categoryImages: { imageUri: string, status: Status }[], index: number) => (
           <ModeratorCategoryObject
             images={categoryImages}
             categoryIndex={index}

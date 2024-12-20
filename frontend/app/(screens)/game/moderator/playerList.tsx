@@ -6,7 +6,6 @@ import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
 import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
-import { PlayerData } from '@/types/game';
 import { useRoomState } from '@/store/useRoomState'
 import { useSelectedImage } from '@/store/useSelectedImage'
 import { usePlayerProgress } from '@/store/usePlayerProgress'
