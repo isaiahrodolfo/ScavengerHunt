@@ -8,6 +8,7 @@ import { useSelectedPlayerData } from '@/store/useSelectedPlayerData';
 import { PlayerData, Status } from '@/types/game';
 import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidButtons';
 import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
+import { useSelectedImage } from '@/store/useSelectedImage';
 
 const Player = () => {
 
@@ -15,6 +16,7 @@ const Player = () => {
 
   const { roomState } = useRoomState();
   const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
+  const { selectedImage, setSelectedImage } = useSelectedImage();
 
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
@@ -44,13 +46,18 @@ const Player = () => {
   };
 
   return (
-    <View>
-      <Text>{id}</Text>
+    <View style={styles.container}>
+      {/* <Text>{id}</Text> */}
+
+      {/* Show selected image */}
+      <View style={styles.image}>
+        <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+      </View>
 
       <ValidInvalidButtons />
 
       {/* Render the grid of images */}
-      <View style={styles.gridContainer}>
+      <View style={styles.categoryObjects}>
         {selectedPlayerData.map((categoryImages: { imageUri: string, status: Status }[], index: number) => ( // TODO: Fix typing
           <ModeratorCategoryObject
             images={categoryImages}
@@ -79,9 +86,9 @@ const Player = () => {
         ))}
       </View>
 
-      <Pressable style={{ width: 300, height: 300, backgroundColor: 'gray' }} onPress={() =>
+      {/* <Pressable style={{ width: 300, height: 300, backgroundColor: 'gray' }} onPress={() =>
         socket.emit('logState', roomState.roomCode) // TESTING: Using the flip camera button to check server state
-      } />
+      } /> */}
     </View>
   )
 
@@ -107,16 +114,29 @@ export default Player
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: 'white',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'white'
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  gridContainer: {
+  image: {
     flex: 1,
+    aspectRatio: 3 / 4,
+    // width: '50%',
+    // height: 100,
+    // borderRadius: 8,
+  },
+  categoryObjects: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%'
   },
   row: {
     flexDirection: 'row',
@@ -127,11 +147,6 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderRadius: 8,
     padding: 4,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
   },
   testButton: {
     width: 300,
