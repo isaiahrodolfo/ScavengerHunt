@@ -26,12 +26,7 @@ export function handleCreateRoom(roomCode: string, callback: Callback, socket: a
     players: new Set([socket.id]),
     started: false,
     hostIsModerator: false, // TODO: Fix tests to make rooms have this field
-    gameGoals: [ // TODO: Using dummy data
-      {categoryName: 'musical instruments', imageCount: 4},
-      {categoryName: 'TVs', imageCount: 6},
-      {categoryName: 'fridges/freezers', imageCount: 3},
-      {categoryName: 'different types of bibles', imageCount: 5}
-    ],
+    gameGoals: [],
     gameData: {}, // TODO: Fix tests to make rooms have this field
     gameProgress: {}, // TODO: Fix tests to make rooms have this field
     hostOnPlayerPage: '',
@@ -105,6 +100,9 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
       }
     }
   }
+
+  // Set the game goals
+  rooms[roomCode].gameGoals = gameGoals;
 
   // Start the room
   rooms[roomCode].started = true;
