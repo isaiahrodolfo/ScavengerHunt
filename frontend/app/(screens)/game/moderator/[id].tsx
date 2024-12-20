@@ -51,14 +51,20 @@ const Player = () => {
 
       {/* Show selected image */}
       <View style={styles.image}>
-        <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+        {selectedImage.imageUri ?
+          <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+          :
+          <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
+            <Text style={{ textAlign: 'center' }}>Select an image</Text>
+          </View>
+        }
       </View>
 
       <ValidInvalidButtons />
 
       {/* Render the grid of images */}
       <View style={styles.categoryObjects}>
-        {selectedPlayerData.map((categoryImages: { imageUri: string, status: Status }[], index: number) => ( // TODO: Fix typing
+        {selectedPlayerData?.map((categoryImages: { imageUri: string, status: Status }[], index: number) => ( // TODO: Fix typing
           <ModeratorCategoryObject
             images={categoryImages}
             categoryIndex={index}
