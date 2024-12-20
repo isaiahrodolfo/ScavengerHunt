@@ -3,8 +3,8 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 interface SelectedImage {
-  selectedImage: {imageUri: string; categoryIndex: number; imageIndex: number};
-  setSelectedImage: (to: {imageUri: string; categoryIndex: number; imageIndex: number}) => void;
+  selectedImage: {imageUri: string; categoryIndex: number | undefined; imageIndex: number | undefined};
+  setSelectedImage: (to: {imageUri: string; categoryIndex: number | undefined; imageIndex: number | undefined}) => void;
 }
 
 export const useSelectedImage = create<SelectedImage>()(
