@@ -43,7 +43,8 @@ export type Callback = (
     success: boolean; 
     type?: string; 
     error?: string; 
-    roomCode?: string 
+    roomCode?: string;
+    data?: any; // Any data you want to return
   }
 ) => void;
 

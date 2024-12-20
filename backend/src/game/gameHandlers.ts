@@ -58,3 +58,22 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
   callback({ success: true });
   
 }
+
+/**
+ * Handles getting a player's whole record from the database (images, status, locations).
+ */
+export function handleGetPlayerData(roomCode: string, id: string, callback: Callback, socket: any) {
+
+  if(checkIfRoomDoesNotExist(roomCode, callback)) return;
+
+  const room = rooms[roomCode];
+
+  // TODO: Create a handler helper to check if player does not exist
+  // Ensure gameData exists for the given id 
+  if (!room.gameData[id]) {
+    callback({ success: false, type: 'UserNotFound', error: 'User not found in gameData' });
+    return;
+  }
+
+  callback({success: true, data: rooms[roomCode].gameData[id]}); // Return player data
+}
