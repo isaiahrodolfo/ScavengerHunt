@@ -15,10 +15,12 @@ interface CategoryObjectProps {
   backgroundColor: string;
   number: number;
   text: string;
-  images: string[]; // Array of CameraCapturedPicture objects
+  // images: string[]; // Array of CameraCapturedPicture objects
 }
 
-const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
+const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text,
+  // images 
+}: CategoryObjectProps) => {
 
   const { roomState } = useRoomState();
   const { gameState, setGameState } = useGameState();
@@ -30,10 +32,10 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
 
   // Use an effect to scroll to the end after the images have been laid out
   useEffect(() => {
-    if (images.length > 0 && scrollViewRef.current) {
+    if (playerData[categoryIndex].length > 0 && scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
-  }, [images]); // This will trigger whenever images change
+  }, [playerData[categoryIndex]]); // This will trigger whenever images change
 
   function handleImagePressed({ imageUri, categoryIndex, imageIndex }: ImageAndLocation) {
     switch (gameState) {
@@ -58,11 +60,11 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
   async function addImageToCategory(categoryIndex: number, imageIndex?: number) {
     if (selectedImage) {
 
-      setCategoryImages({
-        imageUri: selectedImage.imageUri,
-        categoryIndex: categoryIndex!,
-        imageIndex: imageIndex
-      });
+      // setCategoryImages({
+      //   imageUri: selectedImage.imageUri,
+      //   categoryIndex: categoryIndex!,
+      //   imageIndex: imageIndex
+      // });
 
       // UPDATE PLAYER DATA LOCALLY
       const updatedPlayerData = playerData;
@@ -72,7 +74,7 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
       setPlayerData(updatedPlayerData);
 
       // Now update the server with the new image
-      const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : categoryImages[categoryIndex].images.length - 1 })
+      const res = await insertImage(roomState.roomCode, { imageUri: selectedImage.imageUri, categoryIndex, imageIndex: imageIndex ? imageIndex : playerData[categoryIndex].length - 1 })
       if (res) {
         console.log(res);
       }
@@ -104,26 +106,26 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
         {/* Bottom Half: Scrollable Images */}
         {/* Cannot select individual photos when selecting a category */}
         <View style={styles.imagesList} pointerEvents='auto'>
-          {images.length > 0 ? (
+          {playerData[categoryIndex].length > 0 ? (
             <ScrollView
               style={styles.scrollView}
               horizontal showsHorizontalScrollIndicator={true}
               pointerEvents={['put'].includes(gameState) ? 'none' : 'auto'}
               ref={scrollViewRef}
             >
-              {categoryImages[categoryIndex].images.map((imageUri, index) => (
+              {playerData[categoryIndex].map((image, index) => (
                 <Pressable
                   key={`${categoryIndex}-${index}`}
                   onPress={() =>
                     handleImagePressed({
-                      imageUri,
+                      imageUri: image.imageUri,
                       categoryIndex: categoryIndex,
                       imageIndex: index,
                     })
                   }
                 >
                   <Image
-                    source={{ uri: imageUri }}
+                    source={{ uri: image.imageUri }}
                     style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
                   />
                   {/* Transparent overlay */}
@@ -132,7 +134,7 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text, im
                       styles.overlay,
                       selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
                       {
-                        // backgroundColor: image.status == 'unchecked' ? 'yellow' : image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
+                        backgroundColor: image.status == 'unchecked' ? 'yellow' : image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
                         opacity: 0.2, // Adjust the transparency
                       },
                     ]}

@@ -37,6 +37,17 @@ export default function PlayerGameScreen() {
     return () => clearInterval(interval);
   }, [timer]);
 
+  // Receive updated statuses on my images
+  useEffect(() => {
+    socket.on('getPlayerData', (data: PlayerData) => {
+      setPlayerData(data);
+    });
+
+    return () => {
+      socket.off('getPlayerData');
+    }
+  }, []);
+
   function handlePressCancel(event: GestureResponderEvent): void {
     switch (gameState) {
       case 'view': // Canceled viewing an image
@@ -65,7 +76,7 @@ export default function PlayerGameScreen() {
             backgroundColor={getCategoryColor(index)}
             number={gameGoals[index].imageCount || 0}
             text={gameGoals[index].categoryName || ''}
-            images={category.images}
+          // images={category.images}
           />
         ))}
       </View>
