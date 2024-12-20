@@ -144,11 +144,15 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
   // ??? I don't have to calculate the progress, do I?
   rooms[roomCode].gameProgress[id] = calculateProgress(roomCode, id);
 
+  const playerProgress = rooms[roomCode].gameData[id];
+
   // If the host is on the player's page, update the host's player data so there will be dynamic changes
   if (rooms[roomCode].hostOnPlayerPage) {
-    socket.emit('getPlayerData', rooms[roomCode].gameData[id]); // TODO: Use the updated const instead of going back into the whole thing
+    socket.emit('getPlayerData', playerProgress); // TODO: Use the updated const instead of going back into the whole thing
   }
- 
+
+  // Update the player with the new statuses of their images
+  socket.to(id).emit('getPlayerData', playerProgress);
 
   // Invoke the callback to notify success
   callback({ success: true, data: rooms[roomCode].gameProgress});
