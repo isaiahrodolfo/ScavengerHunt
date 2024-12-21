@@ -11,6 +11,7 @@ import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorC
 import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
 import { useGameGoals } from '@/store/useGameGoals';
+import { usePlayerProfiles } from '@/store/usePlayerProfiles';
 
 const Player = () => {
 
@@ -20,7 +21,7 @@ const Player = () => {
   const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { gameGoals } = useGameGoals();
-
+  const { playerProfiles } = usePlayerProfiles();
 
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
@@ -41,7 +42,7 @@ const Player = () => {
   // Set header title
   const navigation = useNavigation();
   navigation.setOptions({
-    headerTitle: `${id}`
+    headerTitle: `${playerProfiles[id.toString()].name}`
   });
 
   const getBorderColor = (status: Status) => {
@@ -61,8 +62,10 @@ const Player = () => {
   return (
     <View style={styles.container}>
       {/* <Text>{id}</Text> */}
-      <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() =>
-        socket.emit('logState', roomState.roomCode) // TESTING: Using the flip camera button to check server state
+      <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() => {
+        console.log('playerProfiles', playerProfiles); // testing
+        socket.emit('logState', roomState.roomCode);
+      } // TESTING: Using the flip camera button to check server state
       } />
 
       {/* Show selected image */}

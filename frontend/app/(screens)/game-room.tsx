@@ -5,34 +5,38 @@ import { Checkbox } from 'expo-checkbox';
 import { socket } from '@/utils/socket'
 import { closeRoom, exitRoom, startRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
-import { PlayerData } from '@/types/game';
+import { PlayerData, PlayerProfiles } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
+import { usePlayerProfiles } from '@/store/usePlayerProfiles';
 
 export default function GameRoomScreen() {
 
   const { roomState, setRoomState } = useRoomState();
   const { setPlayerData } = usePlayerData();
   const { setGameGoals } = useGameGoals();
+  const { setPlayerProfiles } = usePlayerProfiles();
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
   const [isModerator, setModerator] = useState<boolean>(roomState.isModerator);
 
   useEffect(() => {
-    // Receive exit room emission, tell server to exit the Socket room and go back home
+    // (Player) receive exit room emission, tell server to exit the Socket room and go back home
     socket.on('exitRoom', () => {
       socket.emit('exitRoom', { roomCode: roomState.roomCode, roomIsClosed: true });
       router.replace('/(screens)/home');
     });
 
-    // Receive start game emission
+    // (Player) receive start game emission
     // ? tell server to start the game (we're not doing that here)
     socket.on('startGame', (hasModerator: boolean, gameGoals: { categoryName: string, imageCount: number }[]) => { // Receive message that there is or is not a moderator here
-      // console.log('starting game...'); // testing
+      console.log('starting game...'); // testing
+      // console.log(playerProfiles); // testing
       setRoomState({ ...roomState, hasModerator });
       setGameGoals(gameGoals);
       setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
+      // setPlayerProfiles(playerProfiles);
       router.replace('/(screens)/countdown');
     });
 
@@ -52,14 +56,18 @@ export default function GameRoomScreen() {
 
   // Methods
   async function handleStartRoom() {
-    const res = await startRoom(roomState.roomCode, gameGoals, isModerator);
-    if (res) {
-      setErrorMessage(res);
-    } else {
-      setRoomState({ ...roomState, isModerator, hasModerator: true });
-      setGameGoals(gameGoals);
-      router.replace('/(screens)/countdown');
-    }
+    // TODO: If host is not moderator, they don't need the player names
+    await startRoom(roomState.roomCode, gameGoals, isModerator)
+      .then((data) => {
+        setRoomState({ ...roomState, isModerator, hasModerator: true });
+        setGameGoals(gameGoals);
+        setPlayerProfiles(data);
+        console.log('player profiles', data);
+        router.replace('/(screens)/countdown');
+      })
+      .catch((error: Error) => {
+        setErrorMessage(error.message);
+      });
   }
 
   async function handleCloseRoom() {

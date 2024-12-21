@@ -7,6 +7,7 @@ exports.handleRestartRoom = handleRestartRoom;
 exports.handleCloseRoom = handleCloseRoom;
 exports.handleExitRoom = handleExitRoom;
 exports.handleExitRoomOnDisconnect = handleExitRoomOnDisconnect;
+exports.handleSetupProfile = handleSetupProfile;
 const types_1 = require("../types");
 const handler_helpers_1 = require("../handler-helpers");
 /**
@@ -23,7 +24,7 @@ function handleCreateRoom(roomCode, callback, socket) {
     types_1.rooms[roomCode] = {
         code: roomCode,
         host: socket.id,
-        players: new Set([socket.id]),
+        players: {},
         started: false,
         hostIsModerator: false, // TODO: Fix tests to make rooms have this field
         gameGoals: [],
@@ -46,7 +47,10 @@ function handleJoinRoom(roomCode, callback, socket) {
     if ((0, handler_helpers_1.checkIfInAnyRoom)(socket.id, callback))
         return;
     // Add the user to the room
-    types_1.rooms[roomCode].players.add(socket.id);
+    types_1.rooms[roomCode].players[socket.id] = {
+        id: socket.id,
+        name: ''
+    };
     socket.join(roomCode);
     // console.log(`User ${socket.id} joined room ${roomCode}`);
     callback({ success: true });
@@ -63,7 +67,7 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         return;
     // TODO: Write tests for these new types
     // Ensure the room has players (excluding the host)
-    if (types_1.rooms[roomCode].players.size <= 1) {
+    if (Object.keys(types_1.rooms[roomCode].players).length <= 1) {
         callback({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
         return;
     }
@@ -79,9 +83,11 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
         types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true });
         // Moderator joins rooms of players, so they can emit to each one separately
         // TODO: Remove all rooms of all players when room is closed
-        for (const playerId of types_1.rooms[roomCode].players) {
-            if (playerId && playerId !== types_1.rooms[roomCode].host) {
-                // socket.join(playerId); // testing, what if this doesn't do what i want it to, connect player to moderator?
+        const playersKeys = Object.keys(types_1.rooms[roomCode].players);
+        for (const playerId of playersKeys) {
+            if (playerId && playerId != types_1.rooms[roomCode].host) {
+                // Optionally, join the player to a specific room
+                // socket.join(playerId);
                 // Initialize the game data for each player as empty lists
                 types_1.rooms[roomCode].gameData[playerId] = Array.from({ length: gameGoals.length }, () => ([]));
             }
@@ -97,7 +103,7 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
     // Log the action for debugging
     // console.log(`Room ${roomCode} started by host ${socket.id}`);
     // Callback with success message
-    callback({ success: true });
+    callback({ success: true, data: types_1.rooms[roomCode].players });
 }
 /**
  * Handles restarting a room.
@@ -168,7 +174,8 @@ function handleExitRoom(roomCode, roomIsClosed, callback, socket) {
     if ((0, handler_helpers_1.checkIfNotInThisRoom)(roomCode, callback, socket.id))
         return;
     // Remove from rooms list as player
-    types_1.rooms[roomCode].players.delete(socket.id);
+    delete types_1.rooms[roomCode].players[socket.id];
+    // rooms[roomCode].players.delete(socket.id);
     // Exit socket room
     socket.leave(roomCode);
     // Message
@@ -187,4 +194,12 @@ function handleExitRoomOnDisconnect(socket) {
         // Call handleExitRoom for cleanup on disconnect
         handleExitRoom(roomCode, false, dummyCallback, socket); // TODO: If user is host, the room is to be closed.
     }
+}
+/**
+ * Handles setting up a profile
+ */
+function handleSetupProfile(roomCode, name, id, callback) {
+    // TODO: Add error handlers here
+    types_1.rooms[roomCode].players[id] = { id, name };
+    callback({ success: true });
 }

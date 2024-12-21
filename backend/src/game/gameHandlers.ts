@@ -83,7 +83,7 @@ export function handleNavigateToPlayerList(roomCode: string, callback: Callback)
 
   if(checkIfRoomDoesNotExist(roomCode, callback)) return;
 
-  const room = rooms[roomCode];
+  // const room = rooms[roomCode];
 
   // Host is on player page (reset)
   rooms[roomCode].hostOnPlayerPage = '';

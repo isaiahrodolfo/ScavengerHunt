@@ -25,10 +25,17 @@ export type ImageAndLocation = {
 
 export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
 
+export type PlayerProfiles = Record<string, Profile>;
+
+export type Profile = {
+  id: string;
+  name: string;
+};
+
 export type GameGoals = {
   categoryName: string;
   imageCount: number;
-}[]
+}[];
 
 export type PlayerData = { 
   imageUri: string; 

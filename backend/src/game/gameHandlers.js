@@ -71,7 +71,7 @@ function handleGetPlayerData(roomCode, id, callback) {
 function handleNavigateToPlayerList(roomCode, callback) {
     if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
         return;
-    const room = types_1.rooms[roomCode];
+    // const room = rooms[roomCode];
     // Host is on player page (reset)
     types_1.rooms[roomCode].hostOnPlayerPage = '';
     callback({ success: true }); // Return player data
