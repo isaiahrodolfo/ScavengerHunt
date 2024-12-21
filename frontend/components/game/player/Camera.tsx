@@ -140,7 +140,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
             />
           )}
           {/* Flip Camera Button */}
-          <View>
+          <View style={styles.flipCameraButtonContainer}>
             <FlipCameraButton onPress={toggleCameraFacing} />
           </View>
         </CameraView>
@@ -168,10 +168,9 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   flipCameraButtonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    // margin: 64,
+    top: 240,
+    left: 170,
+    position: 'relative'
   },
   button: {
     flex: 1,

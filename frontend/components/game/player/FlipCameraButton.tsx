@@ -13,12 +13,9 @@ const FlipCameraButton = ({ onPress }: FlipCameraButtonProps) => {
 
   return (
     <TouchableOpacity style={styles.flipcameraButton} onPress={() => { onPress() }}>
-      {['put', 'view'].includes(gameState) ?
-        <View>
-        </View>
-        :
-        <View>
-          <Icon name="camera-reverse" size={40} color="black" />
+      {['take', 'retake'].includes(gameState) &&
+        <View style={{ opacity: 0.5 }}>
+          <Icon name="camera-reverse" size={36} color="black" />
         </View>
       }
     </TouchableOpacity>
