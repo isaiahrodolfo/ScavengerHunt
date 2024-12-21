@@ -36,7 +36,7 @@ const ProfileSetup = () => {
 
   return (
     <View style={styles.container}>
-      <Text>profile-setup</Text>
+      {/* <Text>profile-setup</Text> */}
       <TextInput
         style={styles.input}
         placeholder="Enter Name"

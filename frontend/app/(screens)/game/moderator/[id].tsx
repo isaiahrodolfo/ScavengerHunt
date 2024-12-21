@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View, Image } from 'react-native'
+import { Pressable, StyleSheet, Text, View, Image, ScrollView, useWindowDimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from "@react-navigation/native";
@@ -17,6 +17,8 @@ import DeclareWinnerButton from '@/components/game/moderator/[id]/DeclareWinnerB
 const Player = () => {
 
   const { id } = useLocalSearchParams();
+
+  const { width } = useWindowDimensions();
 
   const { roomState } = useRoomState();
   const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
@@ -104,34 +106,22 @@ const Player = () => {
       <ValidInvalidButtons id={id.toString()} />
 
       {/* Render the grid of images */}
-      <View style={styles.categoryObjects}>
+      <ScrollView
+        style={[styles.scrollContainer, { width: width - 20 }]}
+        contentContainerStyle={styles.categoryGrid}
+      >
         {selectedPlayerData?.map((categoryImages: { imageUri: string, status: Status }[], index: number) => (
-          <ModeratorCategoryObject
-            images={categoryImages}
-            categoryIndex={index}
-            backgroundColor='lavender'
-            number={gameGoals[index].imageCount}
-            text={gameGoals[index].categoryName}
-          />
-          // <View key={rowIndex} style={styles.row}>
-          //   {row.map((player, colIndex) => (
-          //     <View
-          //       key={`${rowIndex}-${colIndex}`}
-          //       style={[
-          //         styles.imageContainer,
-          //         { borderColor: getBorderColor(player.status) }
-          //       ]}
-          //     >
-          //       <Image
-          //         source={{ uri: player.image }}
-          //         style={styles.image}
-          //         resizeMode="cover"
-          //       />
-          //     </View>
-          //   ))}
-          // </View>
+          <View key={index} style={[styles.categoryWrapper]}>
+            <ModeratorCategoryObject
+              images={categoryImages}
+              categoryIndex={index}
+              backgroundColor='lavender'
+              number={gameGoals[index].imageCount}
+              text={gameGoals[index].categoryName}
+            />
+          </View>
         ))}
-      </View>
+      </ScrollView>
     </View>
   )
 
@@ -195,5 +185,23 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  scrollContainer: {
+    flex: 1,
+    marginTop: 10,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  categoryWrapper: {
+    width: '45%', // Two per row with some spacing
+    height: 130,
+    marginHorizontal: 10, // Horizontal spacing
+    marginVertical: 10, // Fixed vertical spacing
+    aspectRatio: 1.5, // Rectangle shape
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });

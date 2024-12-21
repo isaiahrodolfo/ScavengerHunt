@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Camera from '@/components/game/player/Camera';
 import PlayerCategoryObject from '@/components/game/player/PlayerCategoryObject';
@@ -82,18 +82,22 @@ export default function PlayerGameScreen() {
       {/* Cancel Button */}
       {['view', 'retake'].includes(gameState) && <Button title={'Cancel'} onPress={handlePressCancel} />}
 
-      <View style={[styles.categoryObjects, { width: width - 20 }]}>
-        {categoryImages.map((category, index) => (
-          <PlayerCategoryObject
-            key={index}
-            categoryIndex={index}
-            backgroundColor={getCategoryColor(index)}
-            number={gameGoals[index].imageCount || 0}
-            text={gameGoals[index].categoryName || ''}
-          // images={category.images}
-          />
+      <ScrollView
+        style={[styles.scrollContainer, { width: width - 20 }]}
+        contentContainerStyle={styles.categoryGrid}
+      >
+        {playerData.map((category, index) => (
+          <View key={index} style={[styles.categoryWrapper]}>
+            <PlayerCategoryObject
+              key={index}
+              categoryIndex={index}
+              backgroundColor={getCategoryColor(index)}
+              number={gameGoals[index].imageCount || 0}
+              text={gameGoals[index].categoryName || ''}
+            />
+          </View>
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 
@@ -105,12 +109,33 @@ export default function PlayerGameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white' },
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'white',
+  },
   camera: {
     flex: 1,
     aspectRatio: 3 / 4,
-    // width: '50%',
   },
-  timer: { fontSize: 20 },
-  categoryObjects: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', width: '100%' },
+  scrollContainer: {
+    flex: 1,
+    marginTop: 10,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  categoryWrapper: {
+    width: '45%', // Two per row with some spacing
+    height: 130,
+    marginHorizontal: 10, // Horizontal spacing
+    marginVertical: 10, // Fixed vertical spacing
+    aspectRatio: 1.5, // Rectangle shape
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
 });

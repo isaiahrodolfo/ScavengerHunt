@@ -23,7 +23,7 @@ export type ImageAndLocation = {
   imageIndex?: number;
 };
 
-export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
+export type Status = 'unchecked' | 'valid' | 'invalid' | 'none' | 'completed';
 
 export type PlayerProfiles = Record<string, Profile>;
 
@@ -50,7 +50,8 @@ export type PlayerProgressValue = {
     none: number,
     unchecked: number, 
     valid: number, 
-    invalid: number
+    invalid: number,
+    completed: number
   }, 
   sets: {
     none: number,

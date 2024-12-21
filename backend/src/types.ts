@@ -17,7 +17,7 @@ export type Room = {
 export type Profile = {
   id: string;
   name: string;
-}
+};
 
 export const rooms: Record<string, Room> = {};
 
@@ -25,14 +25,14 @@ export type ImageAndLocation = {
   imageUri: string;
   categoryIndex: number;
   imageIndex?: number;
-}
+};
 
 export type Status = 'unchecked' | 'valid' | 'invalid' | 'none';
 
 export type GameGoals = {
   categoryName: string;
   imageCount: number;
-}[]
+}[];
 
 export type GameData = Record<
   string, // User ID
@@ -68,8 +68,9 @@ export type PlayerProgressValue = {
     none: number,
     unchecked: number, 
     valid: number, 
-    invalid: number
-  }, 
+    invalid: number,
+    completed: number
+  },
   sets: {
     none: number,
     unchecked: number, 
@@ -77,3 +78,19 @@ export type PlayerProgressValue = {
     invalid: number
   }
 };
+
+// export type PlayerProgressValue = {
+//   id: string, 
+//   images: {
+//     none: number,
+//     unchecked: number, 
+//     valid: number, 
+//     invalid: number
+//   }, 
+//   sets: {
+//     none: number,
+//     unchecked: number, 
+//     valid: number, 
+//     invalid: number
+//   }
+// };
