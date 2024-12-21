@@ -10,6 +10,7 @@ import { socket } from '@/utils/socket';
 import { PlayerData, PlayerProfiles, Profile } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
+import { useSelectedImage } from '@/store/useSelectedImage';
 
 export default function PlayerGameScreen() {
   const { roomCode, isHost } = useLocalSearchParams();
@@ -20,6 +21,7 @@ export default function PlayerGameScreen() {
 
   const { gameState, setGameState } = useGameState();
   const { categoryImages, setCategoryImages } = useCategoryImages();
+  const { setSelectedImage } = useSelectedImage();
   const { playerData, setPlayerData } = usePlayerData();
   const { gameGoals } = useGameGoals();
 
@@ -44,6 +46,11 @@ export default function PlayerGameScreen() {
     });
 
     socket.on('declareWinner', (data: Profile) => {
+      // Reset game data
+      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      setPlayerData([]);
+      setGameState('take');
+      setCategoryImages({ imageUri: '', categoryIndex: 0, imageIndex: undefined }) // set to 0?
       router.replace({
         pathname: '/(screens)/game-over',
         params: { winnerName: data.name }

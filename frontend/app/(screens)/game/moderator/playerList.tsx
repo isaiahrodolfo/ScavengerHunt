@@ -73,7 +73,6 @@ export default function PlayerList() {
 
   // TODO: Show all players at onset, even if they don't have photos yet
   const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
-  const { setSelectedPlayerData } = useSelectedPlayerData();
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();

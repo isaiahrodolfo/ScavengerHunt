@@ -16,7 +16,7 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   const { roomState } = useRoomState();
   const { selectedImage } = useSelectedImage();
-  const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const { setPlayerProgress } = usePlayerProgress(); // Multiple players' progresses
 
   async function handleSetImageStatus(status: Status) {
     if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {

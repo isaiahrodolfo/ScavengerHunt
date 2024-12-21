@@ -140,16 +140,6 @@ const Player = () => {
     const numbers = [4, 6, 3, 5];
     return numbers[index] || 0;
   }
-
-  function getCategoryColor(index: number) {
-    const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
-    return colors[index] || '#ccc';
-  }
-
-  function getCategoryName(index: number) {
-    const colors = ['musical instruments', 'TVs', 'fridges/freezers', 'different types of bibles'];
-    return colors[index] || '#ccc';
-  }
 }
 
 export default Player
