@@ -49,7 +49,7 @@ export default function GameRoomScreen() {
 
   const gameGoals = [
     { categoryName: 'musical instruments', imageCount: 1 },
-    { categoryName: 'TVs', imageCount: 0 },
+    { categoryName: 'TVs', imageCount: 2 },
     { categoryName: 'fridges/freezers', imageCount: 0 },
     { categoryName: 'different types of bibles', imageCount: 0 }
   ]; // TODO: using dummy data (gameGoals dummy data)

@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from "@react-navigation/native";
 import { useRoomState } from '@/store/useRoomState';
@@ -23,6 +23,8 @@ const Player = () => {
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
+  const { playerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const [areAllImagesValid, setAreAllImagesValid] = useState<boolean>(false);
 
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
@@ -39,6 +41,21 @@ const Player = () => {
       socket.off('getPlayerData');
     };
   }, [selectedImage])
+
+  // TODO: Make this global
+  function calculateTotalImages(): number {
+    let totalImages = 0;
+    for (const category of gameGoals) {
+      totalImages += category.imageCount;
+    }
+    return totalImages;
+  }
+
+  useEffect(() => {
+    setAreAllImagesValid(
+      playerProgress[id.toString()].images.valid == calculateTotalImages()
+    );
+  }, [playerProgress]);
 
   // Set header title
   const navigation = useNavigation();
@@ -70,7 +87,7 @@ const Player = () => {
       } /> */}
 
 
-      <DeclareWinnerButton id={id.toString()} />
+      {areAllImagesValid && <DeclareWinnerButton id={id.toString()} />}
 
       {/* Show selected image */}
       <View style={styles.image}>
