@@ -8,6 +8,7 @@ import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
 import { socket } from '@/utils/socket';
 import { usePlayerData } from '@/store/usePlayerData';
+import CaptureButton from './CaptureButton';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -144,12 +145,15 @@ export default function Camera({ setHasPermissions }: CameraProps) {
       </CameraView>
 
       {/* Capture or Retake Button */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.captureButton}
         onPress={handleCaptureButtonPressed}
       >
         <Text style={styles.text}>{['put', 'view'].includes(gameState) ? 'Retake' : 'Take Photo'}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <CaptureButton
+        onPress={handleCaptureButtonPressed}
+      />
     </View>
   );
 }
