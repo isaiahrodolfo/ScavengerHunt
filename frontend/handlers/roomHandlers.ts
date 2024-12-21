@@ -173,6 +173,9 @@ export function setupProfile(roomCode: string, name: string): Promise<string[]> 
           case 'RoomDoesNotExist':
             reject(new Error("The game you're trying to join does not exist."));
             break;
+          case 'RoomStarted':
+            reject(new Error("The game has already started."));
+            break;
           case 'AlreadyInRoom':
             reject(new Error('Error: You are already in a game room. Leave the current room before joining a new one.'));
             break;
