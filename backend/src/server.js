@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
   socket.on('restartRoom', (roomCode, callback) => { handleRestartRoom(roomCode, callback, socket) });
   socket.on('closeRoom', (roomCode, callback) => { handleCloseRoom(roomCode, callback, socket) });
   socket.on('exitRoom', (roomCode, roomIsClosed, callback) => { handleExitRoom(roomCode, roomIsClosed, callback, socket) });
-  socket.on('setupProfile', (roomCode, name, callback) => { handleSetupProfile(roomCode, name, socket.id, callback) });
+  socket.on('setupProfile', (roomCode, name, callback) => { handleSetupProfile(roomCode, name, socket.id, callback, socket) });
 
   // Game handlers
   socket.on('insertImage', (roomCode, imageAndLocation, callback) => { handleInsertImage(roomCode, imageAndLocation, callback, socket) });

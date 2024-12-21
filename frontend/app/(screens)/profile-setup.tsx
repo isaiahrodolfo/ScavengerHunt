@@ -4,11 +4,13 @@ import { router } from 'expo-router';
 import { useRoomState } from '@/store/useRoomState';
 import { setupProfile } from '@/handlers/roomHandlers';
 import { socket } from '@/utils/socket';
+import { useJoinedPlayers } from '@/store/useJoinedPlayers';
 
 const ProfileSetup = () => {
 
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
+  const { setJoinedPlayers } = useJoinedPlayers();
 
   const { roomState } = useRoomState();
 
@@ -31,11 +33,15 @@ const ProfileSetup = () => {
       setErrorMessage('Please enter a name before proceeding.');
       return;
     }
-    const res = await setupProfile(roomState.roomCode, name);
-    if (res) {
-      setErrorMessage(res);
-      return;
-    }
+    setupProfile(roomState.roomCode, name)
+      .then((data) => {
+        setJoinedPlayers(data);
+      })
+      .catch((error) => {
+        setErrorMessage(error);
+        return;
+
+      })
     router.replace('/(screens)/game-room');
   }
 

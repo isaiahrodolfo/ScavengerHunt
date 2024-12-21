@@ -236,10 +236,16 @@ export function handleExitRoomOnDisconnect(socket: any) {
 /**
  * Handles setting up a profile
  */
-export function handleSetupProfile(roomCode: string, name: string, id: string, callback: Callback) {
+export function handleSetupProfile(roomCode: string, name: string, id: string, callback: Callback, socket: any) {
   // TODO: Add error handlers here
 
+  // Set name
   rooms[roomCode].players[id] = { id, name };
 
-  callback({ success: true });
+  // Tell others this player has joined (and add their name to the others' joined players lists)
+  const playerNames = Object.values(rooms[roomCode].players).map((profile) => profile.name);
+
+  socket.to(roomCode).emit('getPlayers', playerNames); // Send player names to others
+
+  callback({ success: true, data: playerNames }); // Send player names to yourself
 }

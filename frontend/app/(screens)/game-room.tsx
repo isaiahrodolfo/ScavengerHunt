@@ -10,6 +10,7 @@ import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
 import { TextInput } from 'react-native-gesture-handler';
+import { useJoinedPlayers } from '@/store/useJoinedPlayers';
 
 export default function GameRoomScreen() {
 
@@ -20,6 +21,7 @@ export default function GameRoomScreen() {
   const [editableGameGoals, setEditableGameGoals] = useState<GameGoals>(gameGoals);
   const [categoryNameInput, setCategoryNameInput] = useState<string>('');
   const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
+  const { joinedPlayers, setJoinedPlayers } = useJoinedPlayers();
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -44,10 +46,18 @@ export default function GameRoomScreen() {
       router.replace('/(screens)/countdown');
     });
 
+    // Get the players who have joined
+    // TODO: Remove player if they disconnect
+    socket.on('getPlayers', (joinedPlayers: string[]) => {
+      console.log('joinedPlayers', joinedPlayers); // testing
+      setJoinedPlayers(joinedPlayers);
+    });
+
     // Clean up socket listeners
     return () => {
       socket.off('exitRoom');
       socket.off('startGame');
+      socket.off('getPlayers');
     };
   }, []);
 
@@ -131,6 +141,15 @@ export default function GameRoomScreen() {
     </View>
   };
 
+  const JoinedPlayer = ({ name, index }: { name: string, index: number }) => {
+    return <View style={{
+      flexDirection: 'row', alignContent: 'center',
+      display: index == 0 && isModerator ? 'none' : 'flex' // If host is moderator, they are not playing
+    }}>
+      <Text>{name}</Text>
+    </View>
+  };
+
   return (
     <View style={styles.container}>
       <Text>Game Code: {roomState.roomCode}</Text>
@@ -172,6 +191,15 @@ export default function GameRoomScreen() {
       ) : (
         <Button title="Exit Game" onPress={handleExitRoom} />
       )}
+      {/* Joined Players List */}
+      <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Joined Players</Text>
+        <FlatList
+          data={joinedPlayers}
+          renderItem={({ item, index }) => <JoinedPlayer name={item} index={index} />}
+          keyExtractor={item => item}
+        />
+      </View>
       {errorMessage && <Text style={[styles.errorText, { marginTop: 50 }]}>{errorMessage}</Text>} {/* Display error message */}
     </View>
   );

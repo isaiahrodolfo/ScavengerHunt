@@ -23,7 +23,7 @@ export default function HomeScreen() {
       // { categoryName: 'TVs', imageCount: 5 },
       // { categoryName: 'fridges/freezers', imageCount: 6 },
       // { categoryName: 'different types of bibles', imageCount: 8 }
-    ]); // TODO: Dummy data, host should start out with a blank slate
+    ]); // TODO: Dummy data, host should start out with a blank slate, remove when not testing this
 
     const res = await createRoom(createdRoomCode);
     if (res) {
