@@ -9,6 +9,7 @@ import { insertImage } from '@/handlers/gameHandlers';
 import { socket } from '@/utils/socket';
 import { usePlayerData } from '@/store/usePlayerData';
 import CaptureButton from './CaptureButton';
+import FlipCameraButton from './FlipCameraButton';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -138,24 +139,15 @@ export default function Camera({ setHasPermissions }: CameraProps) {
               source={{ uri: selectedImage.imageUri }}
             />
           )}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-              <Text style={styles.text}>Flip Camera</Text>
-            </TouchableOpacity>
+          {/* Flip Camera Button */}
+          <View>
+            <FlipCameraButton onPress={toggleCameraFacing} />
           </View>
         </CameraView>
 
         {/* Capture or Retake Button */}
-        {/* <TouchableOpacity
-        style={styles.captureButton}
-        onPress={handleCaptureButtonPressed}
-      >
-        <Text style={styles.text}>{['put', 'view'].includes(gameState) ? 'Retake' : 'Take Photo'}</Text>
-      </TouchableOpacity> */}
       </View>
-      <CaptureButton
-        onPress={handleCaptureButtonPressed}
-      />
+      <CaptureButton onPress={handleCaptureButtonPressed} />
     </View>
   );
 }
@@ -175,7 +167,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingBottom: 10,
   },
-  buttonContainer: {
+  flipCameraButtonContainer: {
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
