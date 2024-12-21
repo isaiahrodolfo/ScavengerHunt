@@ -57,7 +57,7 @@ const Player = () => {
 
   useEffect(() => {
     setAreAllImagesValid(
-      playerProgress[id.toString()].images.valid >= calculateTotalImages()
+      playerProgress[id.toString()].images.completed >= calculateTotalImages()
     );
   }, [playerProgress]);
 
