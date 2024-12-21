@@ -97,8 +97,10 @@ export default function GameRoomScreen() {
         <>
           <Button title="Start Game" onPress={handleStartRoom} />
           <Button title="Close Room" onPress={handleCloseRoom} />
-          <Text>Moderator</Text>
-          <Checkbox style={styles.checkbox} value={isModerator} onValueChange={setModerator} />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text>Moderator</Text>
+            <Checkbox style={styles.checkbox} value={isModerator} onValueChange={setModerator} />
+          </View>
         </>
       ) : (
         <Button title="Exit Game" onPress={handleExitRoom} />
