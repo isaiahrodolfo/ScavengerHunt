@@ -17,8 +17,7 @@ const ProfileSetup = () => {
       setErrorMessage(res);
       return;
     }
-
-    router.push('/(screens)/game-room');
+    router.replace('/(screens)/game-room');
   }
 
   return (
