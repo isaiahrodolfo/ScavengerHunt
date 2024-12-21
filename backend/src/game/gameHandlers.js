@@ -114,6 +114,8 @@ function handleSetImageStatus(roomCode, id, location, status, callback, socket) 
 }
 function handleDeclareWinner(roomCode, id, callback, socket) {
     // TODO: Add error handlers here
+    // Reset game
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { gameData: {}, gameProgress: {}, hostOnPlayerPage: '' });
     // Get profile of winner
     types_1.rooms[roomCode].players[id];
     // TODO: Return the progress for all players

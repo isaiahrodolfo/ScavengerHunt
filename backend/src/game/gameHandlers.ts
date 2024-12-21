@@ -151,6 +151,14 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
 export function handleDeclareWinner(roomCode: string, id: string, callback: Callback, socket: any) {
   // TODO: Add error handlers here
 
+  // Reset game
+  rooms[roomCode] = {
+    ...rooms[roomCode], // Keep the same game goals
+    gameData: {}, // Reset all game data and progress
+    gameProgress: {},
+    hostOnPlayerPage: '', // Moderator starts back on player list page // TODO: Rename this "moderatorOnPlayerPage"
+  }
+
   // Get profile of winner
   rooms[roomCode].players[id]
     
