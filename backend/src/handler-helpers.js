@@ -62,7 +62,8 @@ function checkIfNotInThisRoom(roomCode, callback, id) {
     }
     // Check if the user is a player (or host) in the room
     const room = types_1.rooms[roomCode];
-    if (room.host !== id && !room.players.has(id)) {
+    const roomKeys = Object.keys(room.players);
+    if (room.host !== id && !roomKeys.includes(id)) {
         callback({ success: false, type: 'NotInThisRoom', roomCode });
         return true;
     }
@@ -102,7 +103,7 @@ function checkIfHost(roomCode, callback, socketId) {
  * @returns string if room exists, undefined otherwise
  */
 function getRoomOfUser(id) {
-    const existingRoom = Object.values(types_1.rooms).find((room) => room.players.has(id));
+    const existingRoom = Object.values(types_1.rooms).find((room) => Object.keys(room.players).includes(id));
     return existingRoom === null || existingRoom === void 0 ? void 0 : existingRoom.code; // Returns the room code or undefined  
 }
 /**
@@ -118,7 +119,9 @@ function logState(roomCode, socket) {
     console.log(`User with id: ${socket.id}`);
     console.log('Rooms of user: ', socket.rooms);
     console.log(`Room ${roomCode} state:`);
-    console.log(`Players in room:`, [...room.players]); // Convert Set to Array for easier viewing
+    for (const player of Object.keys(room.players)) {
+        console.log(`Player in room:`, room.players[player]);
+    }
     console.log('Rooms: ', types_1.rooms);
     console.log('Game Data: ', types_1.rooms[roomCode].gameData[socket.id]);
 }

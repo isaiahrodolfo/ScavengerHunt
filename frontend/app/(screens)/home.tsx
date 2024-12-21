@@ -19,9 +19,9 @@ export default function HomeScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      // Navigate to the game room on success
+      // Navigate to profile setup on success
       setRoomState({ ...roomState, roomCode: createdRoomCode, isHost: true, isModerator: true, hasModerator: true }); // Host is moderator as default
-      router.replace('/(screens)/game-room');
+      router.replace('/(screens)/profile-setup');
     }
   }
 
@@ -33,9 +33,9 @@ export default function HomeScreen() {
       if (res) {
         setErrorMessage(res);
       } else {
-        // Navigate to the game room on success
+        // Navigate to profile setup on success
         setRoomState({ ...roomState, roomCode: inputtedRoomCode });
-        router.replace('/(screens)/game-room');
+        router.replace('/(screens)/profile-setup');
       }
     } else {
       // No room code submitted

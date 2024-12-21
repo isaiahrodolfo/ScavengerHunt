@@ -5,7 +5,7 @@
 export type Room = {
   code: string;
   host: string; // User id
-  players: Set<string>; // User id
+  players: Record<string, Profile>; // User id, name
   started: boolean;
   hostIsModerator: boolean;
   gameGoals: GameGoals;
@@ -13,6 +13,11 @@ export type Room = {
   gameProgress: PlayerProgressState;
   hostOnPlayerPage: string;
 };
+
+export type Profile = {
+  id: string;
+  name: string;
+}
 
 export const rooms: Record<string, Room> = {};
 

@@ -23,7 +23,7 @@ export function handleCreateRoom(roomCode: string, callback: Callback, socket: a
   rooms[roomCode] = {
     code: roomCode,
     host: socket.id,
-    players: new Set([socket.id]),
+    players: {},
     started: false,
     hostIsModerator: false, // TODO: Fix tests to make rooms have this field
     gameGoals: [],
@@ -49,7 +49,10 @@ export function handleJoinRoom(roomCode: string, callback: Callback, socket: any
   if (checkIfInAnyRoom(socket.id, callback)) return;
 
   // Add the user to the room
-  rooms[roomCode].players.add(socket.id);
+  rooms[roomCode].players[socket.id] = {
+    id: socket.id,
+    name: ''
+  };
   socket.join(roomCode);
   // console.log(`User ${socket.id} joined room ${roomCode}`);
 
@@ -68,7 +71,7 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
 
   // TODO: Write tests for these new types
   // Ensure the room has players (excluding the host)
-  if (rooms[roomCode].players.size <= 1) {
+  if (Object.keys(rooms[roomCode].players).length <= 1) {
     callback({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
     return;
   }
@@ -91,14 +94,18 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
 
     // Moderator joins rooms of players, so they can emit to each one separately
     // TODO: Remove all rooms of all players when room is closed
-    for (const playerId of rooms[roomCode].players) {
-      if (playerId && playerId !== rooms[roomCode].host) {
-        // socket.join(playerId); // testing, what if this doesn't do what i want it to, connect player to moderator?
+    const playersKeys = Object.keys(rooms[roomCode].players);
+    for (const playerId of playersKeys) {
+    
+      if (playerId && playerId != rooms[roomCode].host) {
+        // Optionally, join the player to a specific room
+        // socket.join(playerId);
     
         // Initialize the game data for each player as empty lists
-        rooms[roomCode].gameData[playerId] = Array.from({ length: gameGoals.length }, () => ([]))
+        rooms[roomCode].gameData[playerId] = Array.from({ length: gameGoals.length }, () => ([]));
       }
     }
+    
   }
 
   // Set the game goals
@@ -197,7 +204,8 @@ export function handleExitRoom(roomCode: string, roomIsClosed: boolean, callback
   if (checkIfNotInThisRoom(roomCode, callback, socket.id)) return;
 
   // Remove from rooms list as player
-  rooms[roomCode].players.delete(socket.id);
+  delete rooms[roomCode].players[socket.id]
+  // rooms[roomCode].players.delete(socket.id);
 
   // Exit socket room
   socket.leave(roomCode);
@@ -223,4 +231,15 @@ export function handleExitRoomOnDisconnect(socket: any) {
     // Call handleExitRoom for cleanup on disconnect
     handleExitRoom(roomCode, false, dummyCallback, socket); // TODO: If user is host, the room is to be closed.
   }
+}
+
+/**
+ * Handles setting up a profile
+ */
+export function handleSetupProfile(roomCode: string, name: string, id: string, callback: Callback) {
+  // TODO: Add error handlers here
+
+  rooms[roomCode].players[id] = { id, name };
+
+  callback({ success: true });
 }
