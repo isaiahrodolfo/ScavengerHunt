@@ -15,11 +15,11 @@ const CaptureButton = ({ onPress }: CaptureButtonProps) => {
     <TouchableOpacity style={styles.captureButton} onPress={() => { onPress() }}>
       {['put', 'view'].includes(gameState) ?
         <View>
-          <Icon name="camera" size={30} color="black" />
+          <Icon name="arrow-undo-circle" size={60} color="gray" />
         </View>
         :
         <View>
-          <Icon name="camera" size={30} color="black" />
+          <Icon name="radio-button-on-outline" size={60} color="gray" />
         </View>
       }
     </TouchableOpacity>
@@ -30,8 +30,8 @@ export default CaptureButton
 
 const styles = StyleSheet.create({
   captureButton: {
-    padding: 10,
-    backgroundColor: 'blue',
+    // padding: 10,
+    // backgroundColor: 'blue',
     borderRadius: 10,
     marginVertical: 10,
   },
