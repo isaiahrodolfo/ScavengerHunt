@@ -7,6 +7,7 @@ export function calculateProgress(roomCode: string, id: string) {
 
   let noneSetCount = 0, uncheckedSetCount = 0, validSetCount = 0, invalidSetCount = 0;
   let noneImageCount = 0, uncheckedImageCount = 0, validImageCount = 0, invalidImageCount = 0;
+  let completedImageCount = 0;
 
   player.forEach((category, categoryIndex) => {
 
@@ -27,9 +28,8 @@ export function calculateProgress(roomCode: string, id: string) {
           invalidCategoryImageCount += 1;
           break;
         case 'none':
-          noneCategoryImageCount += 1;
-          break;
         default:
+          noneCategoryImageCount += 1;
       }
     }
 
@@ -39,13 +39,6 @@ export function calculateProgress(roomCode: string, id: string) {
     console.log('validCategoryImageCount', validCategoryImageCount);
     console.log('invalidCategoryImageCount', invalidCategoryImageCount);
 
-
-    // Update total image counts
-    noneImageCount += noneCategoryImageCount;
-    uncheckedImageCount += uncheckedCategoryImageCount;
-    validImageCount += validCategoryImageCount;
-    invalidImageCount += invalidCategoryImageCount;
-
     // Use category images to determine status of sets
 
     // If at least one image is invalid, the whole set is
@@ -54,12 +47,21 @@ export function calculateProgress(roomCode: string, id: string) {
     // If all images are valid, the whole set is
     } else if (validCategoryImageCount == gameGoals[categoryIndex].imageCount) {
       validSetCount += 1;
+      // All counted valid images are actually completed
+      completedImageCount += validCategoryImageCount;
+      validCategoryImageCount = 0;
     // If all images were taken, none are invalid, the whole set is not all valid, and at least one of them is in review, the whole set is in review (i.e. green and yellow only)
     } else if (category.length >= gameGoals[categoryIndex].imageCount) { // not(a) and not(b) = not(a or b)
       uncheckedSetCount += 1;
     } else {
       noneSetCount += 1;
     }
+
+    // Update total image counts
+    noneImageCount += noneCategoryImageCount;
+    uncheckedImageCount += uncheckedCategoryImageCount;
+    validImageCount += validCategoryImageCount;
+    invalidImageCount += invalidCategoryImageCount;
 
   });
 
@@ -69,7 +71,8 @@ export function calculateProgress(roomCode: string, id: string) {
       none: noneImageCount,
       unchecked: uncheckedImageCount,
       valid: validImageCount,
-      invalid: invalidImageCount
+      invalid: invalidImageCount,
+      completed: completedImageCount // Images whose sets are also completed
     },
     sets: {
       none: noneSetCount,

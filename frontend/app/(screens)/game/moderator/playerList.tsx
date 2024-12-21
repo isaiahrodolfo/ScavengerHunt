@@ -181,17 +181,18 @@ export default function PlayerList() {
       return totalImages;
     }
 
-    // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
+    // TODO: Why is images.none returning nothing?
     return (
       <Pressable style={styles.item} onPress={handleItemPressed}>
         <Text style={styles.title}>{playerProfiles[id].name}</Text>
         <View style={styles.progress}>
           <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + calculateTotalImages()}</Text>
           <View style={styles.progressBar}>
-            <ProgressBar type={'none'} count={sets.none} />
-            <ProgressBar type={'invalid'} count={sets.invalid} />
-            <ProgressBar type={'unchecked'} count={sets.unchecked} />
-            <ProgressBar type={'valid'} count={sets.valid} />
+            <ProgressBar type={'none'} count={calculateTotalImages() - images.invalid - images.unchecked - images.valid - images.completed} totalImages={calculateTotalImages()} />
+            <ProgressBar type={'invalid'} count={images.invalid} totalImages={calculateTotalImages()} />
+            <ProgressBar type={'unchecked'} count={images.unchecked} totalImages={calculateTotalImages()} />
+            <ProgressBar type={'valid'} count={images.valid} totalImages={calculateTotalImages()} />
+            <ProgressBar type={'completed'} count={images.completed} totalImages={calculateTotalImages()} />
           </View>
         </View>
       </Pressable>

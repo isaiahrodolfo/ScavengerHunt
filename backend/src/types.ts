@@ -68,8 +68,9 @@ export type PlayerProgressValue = {
     none: number,
     unchecked: number, 
     valid: number, 
-    invalid: number
-  }, 
+    invalid: number,
+    completed: number
+  },
   sets: {
     none: number,
     unchecked: number, 
@@ -77,3 +78,19 @@ export type PlayerProgressValue = {
     invalid: number
   }
 };
+
+// export type PlayerProgressValue = {
+//   id: string, 
+//   images: {
+//     none: number,
+//     unchecked: number, 
+//     valid: number, 
+//     invalid: number
+//   }, 
+//   sets: {
+//     none: number,
+//     unchecked: number, 
+//     valid: number, 
+//     invalid: number
+//   }
+// };
