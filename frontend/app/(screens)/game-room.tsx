@@ -142,7 +142,10 @@ export default function GameRoomScreen() {
   };
 
   const JoinedPlayer = ({ name, index }: { name: string, index: number }) => {
-    return <View style={{ flexDirection: 'row', alignContent: 'center' }}>
+    return <View style={{
+      flexDirection: 'row', alignContent: 'center',
+      display: index == 0 && isModerator ? 'none' : 'flex' // If host is moderator, they are not playing
+    }}>
       <Text>{name}</Text>
     </View>
   };
