@@ -4,6 +4,7 @@ exports.handleInsertImage = handleInsertImage;
 exports.handleGetPlayerData = handleGetPlayerData;
 exports.handleNavigateToPlayerList = handleNavigateToPlayerList;
 exports.handleSetImageStatus = handleSetImageStatus;
+exports.handleDeclareWinner = handleDeclareWinner;
 const handler_helpers_1 = require("../handler-helpers");
 const types_1 = require("../types");
 const gameHandlerHelpers_1 = require("./gameHandlerHelpers");
@@ -41,7 +42,7 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
         console.log('emit updateProgress to room host:', hostId);
         socket.to(hostId).emit('updateProgress', types_1.rooms[roomCode].gameProgress);
         // If the host is on the player's page, update the host's player data so there will be dynamic changes
-        if (types_1.rooms[roomCode].hostOnPlayerPage) {
+        if (types_1.rooms[roomCode].hostOnPlayerPage == socket.id) {
             socket.to(hostId).emit('getPlayerData', types_1.rooms[roomCode].gameData[socket.id]); // TODO: Use the updated const instead of going back into the whole thing
         }
     }
@@ -103,11 +104,21 @@ function handleSetImageStatus(roomCode, id, location, status, callback, socket) 
     types_1.rooms[roomCode].gameProgress[id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, id);
     const playerProgress = types_1.rooms[roomCode].gameData[id];
     // If the host is on the player's page, update the host's player data so there will be dynamic changes
-    if (types_1.rooms[roomCode].hostOnPlayerPage) {
+    if (types_1.rooms[roomCode].hostOnPlayerPage == id) {
         socket.emit('getPlayerData', playerProgress); // TODO: Use the updated const instead of going back into the whole thing
     }
     // Update the player with the new statuses of their images
     socket.to(id).emit('getPlayerData', playerProgress);
     // Invoke the callback to notify success
     callback({ success: true, data: types_1.rooms[roomCode].gameProgress });
+}
+function handleDeclareWinner(roomCode, id, callback, socket) {
+    // TODO: Add error handlers here
+    // Reset game
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { gameData: {}, gameProgress: {}, hostOnPlayerPage: '' });
+    // Get profile of winner
+    types_1.rooms[roomCode].players[id];
+    // TODO: Return the progress for all players
+    socket.to(roomCode).emit('declareWinner', types_1.rooms[roomCode].players[id]); // Return with the winner
+    callback({ success: true });
 }

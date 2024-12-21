@@ -9,7 +9,7 @@ interface GameState {
  
 const createGameStore = () => 
   create<GameState>()(
-  // devtools
+  devtools
   ((set) => ({
     gameState: 'take',
     setGameState: (to) => set((state) => ({ gameState: to })),

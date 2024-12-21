@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from "@react-navigation/native";
 import { useRoomState } from '@/store/useRoomState';
@@ -12,6 +12,7 @@ import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
+import DeclareWinnerButton from '@/components/game/moderator/[id]/DeclareWinnerButton';
 
 const Player = () => {
 
@@ -22,14 +23,18 @@ const Player = () => {
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
+  const { playerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const [areAllImagesValid, setAreAllImagesValid] = useState<boolean>(false);
 
   useEffect(() => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
       setSelectedPlayerData(updatedPlayerData);
       console.log('updatedPlayerData', updatedPlayerData);
-      console.log('selectedImage', selectedImage);
-      const updatedSelectedImage = updatedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].imageUri;
-      setSelectedImage({ ...selectedImage, imageUri: updatedSelectedImage });
+      console.log('currentSelectedImage', selectedImage);
+      if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {
+        const updatedSelectedImage = updatedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].imageUri;
+        setSelectedImage({ ...selectedImage, imageUri: updatedSelectedImage });
+      }
       console.log('selectedImage', selectedImage);
     });
 
@@ -38,6 +43,21 @@ const Player = () => {
       socket.off('getPlayerData');
     };
   }, [selectedImage])
+
+  // TODO: Make this global
+  function calculateTotalImages(): number {
+    let totalImages = 0;
+    for (const category of gameGoals) {
+      totalImages += category.imageCount;
+    }
+    return totalImages;
+  }
+
+  useEffect(() => {
+    setAreAllImagesValid(
+      playerProgress[id.toString()].images.valid >= calculateTotalImages()
+    );
+  }, [playerProgress]);
 
   // Set header title
   const navigation = useNavigation();
@@ -62,11 +82,13 @@ const Player = () => {
   return (
     <View style={styles.container}>
       {/* <Text>{id}</Text> */}
-      <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() => {
+      {/* <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() => {
         console.log('playerProfiles', playerProfiles); // testing
         socket.emit('logState', roomState.roomCode);
       } // TESTING: Using the flip camera button to check server state
-      } />
+      } /> */}
+
+      {areAllImagesValid && <DeclareWinnerButton id={id.toString()} />}
 
       {/* Show selected image */}
       <View style={styles.image}>
@@ -117,16 +139,6 @@ const Player = () => {
   function getCategoryNumber(index: number) {
     const numbers = [4, 6, 3, 5];
     return numbers[index] || 0;
-  }
-
-  function getCategoryColor(index: number) {
-    const colors = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4'];
-    return colors[index] || '#ccc';
-  }
-
-  function getCategoryName(index: number) {
-    const colors = ['musical instruments', 'TVs', 'fridges/freezers', 'different types of bibles'];
-    return colors[index] || '#ccc';
   }
 }
 

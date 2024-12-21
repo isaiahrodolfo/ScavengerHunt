@@ -73,7 +73,6 @@ export default function PlayerList() {
 
   // TODO: Show all players at onset, even if they don't have photos yet
   const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
-  const { setSelectedPlayerData } = useSelectedPlayerData();
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
@@ -94,6 +93,7 @@ export default function PlayerList() {
 
   }, []);
 
+  // Sort the leaderboard, those most ahead are on top
   useEffect(() => {
     setSortedPlayerProgress(
       Object.values(playerProgress).sort((a, b) => {
@@ -132,7 +132,7 @@ export default function PlayerList() {
   // const userArray = Object.values(dummyUserProgress);
 
   // Render each user's progress item
-  const Item = ({ id, images, sets }: PlayerProgressValue) => { // TODO: Fix any typing
+  const Item = ({ id, images, sets }: PlayerProgressValue) => {
 
     const { selectedImage, setSelectedImage } = useSelectedImage();
     const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
@@ -172,6 +172,7 @@ export default function PlayerList() {
       }
     }
 
+    // TODO: Make this global
     function calculateTotalImages(): number {
       let totalImages = 0;
       for (const category of gameGoals) {

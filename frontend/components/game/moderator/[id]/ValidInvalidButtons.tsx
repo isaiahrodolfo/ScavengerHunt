@@ -16,30 +16,35 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   const { roomState } = useRoomState();
   const { selectedImage } = useSelectedImage();
-  const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const { setPlayerProgress } = usePlayerProgress(); // Multiple players' progresses
 
   async function handleSetImageStatus(status: Status) {
-    setImageStatus(
-      roomState.roomCode,
-      id,
-      {
-        categoryIndex: selectedImage.categoryIndex!,
-        imageIndex: selectedImage.imageIndex!
-      },
-      status) // Update status globally
-      .then((data) => {
-        setPlayerProgress(data); // Update status locally
-      })
+    if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {
+      setImageStatus(
+        roomState.roomCode,
+        id,
+        {
+          categoryIndex: selectedImage.categoryIndex!,
+          imageIndex: selectedImage.imageIndex!
+        },
+        status) // Update status globally
+        .then((data) => {
+          setPlayerProgress(data); // Update status locally
+        })
+    }
+
   }
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
-        <Text style={styles.text}>Valid</Text>
-      </Pressable>
-      <Pressable style={styles.invalid} onPress={() => { handleSetImageStatus('invalid') }}>
-        <Text style={styles.text}>Invalid</Text>
-      </Pressable>
+      {selectedImage.imageUri != '' && <>
+        <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
+          <Text style={styles.text}>Valid</Text>
+        </Pressable>
+        <Pressable style={styles.invalid} onPress={() => { handleSetImageStatus('invalid') }}>
+          <Text style={styles.text}>Invalid</Text>
+        </Pressable>
+      </>}
     </View>
   )
 }

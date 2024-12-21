@@ -4,7 +4,6 @@ import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndLocation, Status } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useModeratorSelectedImage';
-import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
 
@@ -18,8 +17,6 @@ interface CategoryObjectProps {
 
 const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
 
-  const { roomState } = useRoomState();
-  const { gameState, setGameState } = useGameState();
   const { selectedImage, setSelectedImage } = useSelectedImage();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -93,7 +90,7 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                       selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
                       {
                         backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
-                        opacity: image.status == 'unchecked' ? 0 : 0.2, // Adjust the transparency
+                        opacity: image.status == 'unchecked' ? 0 : 0.5, // Adjust the transparency
                       },
                     ]}
                   />
