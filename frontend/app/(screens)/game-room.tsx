@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
 import { router } from 'expo-router';
 import { Checkbox } from 'expo-checkbox';
 import { socket } from '@/utils/socket'
 import { closeRoom, exitRoom, startRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
-import { PlayerData, PlayerProfiles } from '@/types/game';
+import { GameGoals, PlayerData, PlayerProfiles } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
@@ -16,6 +16,14 @@ export default function GameRoomScreen() {
   const { setPlayerData } = usePlayerData();
   const { setGameGoals } = useGameGoals();
   const { setPlayerProfiles } = usePlayerProfiles();
+  const [editableGameGoals, setEditableGameGoals] = useState<GameGoals>(
+    [
+      { categoryName: 'musical instruments', imageCount: 2 },
+      { categoryName: 'TVs', imageCount: 5 },
+      { categoryName: 'fridges/freezers', imageCount: 6 },
+      { categoryName: 'different types of bibles', imageCount: 8 }
+    ]
+  );
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -47,20 +55,13 @@ export default function GameRoomScreen() {
     };
   }, []);
 
-  const gameGoals = [
-    { categoryName: 'musical instruments', imageCount: 2 },
-    { categoryName: 'TVs', imageCount: 5 },
-    { categoryName: 'fridges/freezers', imageCount: 6 },
-    { categoryName: 'different types of bibles', imageCount: 8 }
-  ]; // TODO: using dummy data (gameGoals dummy data)
-
   // Methods
   async function handleStartRoom() {
     // TODO: If host is not moderator, they don't need the player names
-    await startRoom(roomState.roomCode, gameGoals, isModerator)
+    await startRoom(roomState.roomCode, editableGameGoals, isModerator)
       .then((data) => {
         setRoomState({ ...roomState, isModerator, hasModerator: true });
-        setGameGoals(gameGoals);
+        setGameGoals(editableGameGoals);
         setPlayerProfiles(data);
         console.log('player profiles', data);
         router.replace('/(screens)/countdown');
@@ -90,6 +91,12 @@ export default function GameRoomScreen() {
     }
   }
 
+  const GameGoal = ({ categoryName, imageCount }: { categoryName: string, imageCount: number }) => {
+    return <View>
+
+    </View>
+  };
+
   return (
     <View style={styles.container}>
       <Text>Game Code: {roomState.roomCode}</Text>
@@ -101,6 +108,11 @@ export default function GameRoomScreen() {
             <Text>Moderator</Text>
             <Checkbox style={styles.checkbox} value={isModerator} onValueChange={setModerator} />
           </View>
+          <FlatList
+            data={editableGameGoals}
+            renderItem={({ item }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} />}
+            keyExtractor={item => item.categoryName}
+          />
         </>
       ) : (
         <Button title="Exit Game" onPress={handleExitRoom} />
