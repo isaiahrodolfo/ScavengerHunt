@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     marginRight: 15
   },
   text: {
-    fontSize: 13,
+    fontSize: 16,
     color: 'black',
     fontWeight: '500',
     textAlign: 'right',
