@@ -163,7 +163,7 @@ export default PlayerCategoryObject;
 const styles = StyleSheet.create({
   container: {
     width: '100%', // Slightly less than half the screen width
-    height: 130, // Height remains the same for consistency
+    height: 200, // Height remains the same for consistency
     margin: 0,
     borderRadius: 15,
     overflow: 'hidden', // Prevent content overflow but keep rounded corners
@@ -178,14 +178,14 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   number: {
-    fontSize: 40,
+    fontSize: 32,
     fontWeight: 'bold',
     color: 'black',
     marginLeft: 10,
     marginRight: 15
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'black',
     fontWeight: '500',
     textAlign: 'right',
@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
   },
   imagesList: {
     flex: 1, // Takes the other half
-    paddingVertical: 5,
+    marginVertical: 10,
     marginLeft: 5,
     marginRight: 5,
     borderRadius: 10, // Keep images inside rounded container
   },
   scrollView: {
-    height: 60
+    height: 80
   },
   imageContainer: {
     // width: 65, // Fixed width for each image
@@ -213,8 +213,8 @@ const styles = StyleSheet.create({
     // // backgroundColor: '#ccc', // Placeholder for images
   },
   image: {
-    width: 65, // Fixed width for each image
-    height: 50, // Fixed height for each image
+    width: 75, // Fixed width for each image
+    height: 60, // Fixed height for each image
     marginLeft: 5,
     marginRight: 5,
     borderRadius: 10,
@@ -224,8 +224,8 @@ const styles = StyleSheet.create({
     // borderWidth: 3
   },
   overlay: {
-    width: 65, // Fixed width for each image
-    height: 50,
+    width: 75, // Fixed width for each image
+    height: 60,
     position: 'absolute',
     top: 0,
     left: 0,
