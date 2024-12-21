@@ -26,14 +26,14 @@ const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
   function handleDeclareWinner() {
     declareWinner(roomState.roomCode, id)
       .then(() => {
-        router.replace({
-          pathname: '/(screens)/game-over',
-          params: { winnerName: playerProfiles[id].name }
-        })
         // Reset all game data
         setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
         setSelectedPlayerData({});
         setPlayerProgress({});
+        router.replace({
+          pathname: '/(screens)/game-over',
+          params: { winnerName: playerProfiles[id].name }
+        })
       })
   }
 

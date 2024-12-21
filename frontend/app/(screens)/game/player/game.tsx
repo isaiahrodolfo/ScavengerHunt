@@ -56,8 +56,21 @@ export default function PlayerGameScreen() {
       })
     });
 
+    socket.on('endGame', () => {
+      // Reset game data
+      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      setPlayerData([]);
+      setGameState('take');
+      router.replace({
+        pathname: '/(screens)/game-over',
+        params: { winnerName: '' } // No declared winner
+      });
+    });
+
     return () => {
       socket.off('getPlayerData');
+      socket.off('declareWinner');
+      socket.off('endGame');
     }
   }, []);
 

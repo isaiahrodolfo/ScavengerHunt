@@ -65,7 +65,7 @@ export default function GameOverScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>Winner: {winnerName}</Text>
+      {winnerName && <Text>Winner: {winnerName}</Text>} {/* Only show winner when there is one */}
       <Text>Play Again?</Text>
       <Button title="Back to Game Room" onPress={handleRestartRoom} />
       {roomState.isHost && <Button title="Close Game" onPress={handleCloseRoom} />}

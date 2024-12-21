@@ -1,5 +1,5 @@
 const { handleCreateRoom, handleJoinRoom, handleStartRoom, handleRestartRoom, handleCloseRoom, handleExitRoom, handleExitRoomOnDisconnect, handleSetupProfile} = require('./room/roomHandlers');
-const { handleInsertImage, handleGetPlayerData, handleNavigateToPlayerList, handleSetImageStatus, handleDeclareWinner } = require('./game/gameHandlers');
+const { handleInsertImage, handleGetPlayerData, handleNavigateToPlayerList, handleSetImageStatus, handleDeclareWinner, handleEndGame } = require('./game/gameHandlers');
 const { logState } = require('./handler-helpers');
 
 const { Room, rooms } = require('./types');
@@ -32,6 +32,7 @@ io.on('connection', (socket) => {
   socket.on('navigateToPlayerList', (roomCode, callback) => { handleNavigateToPlayerList(roomCode, callback) });
   socket.on('setImageStatus', (roomCode, id, location, status, callback) => { handleSetImageStatus(roomCode, id, location, status, callback, socket) });
   socket.on('declareWinner', (roomCode, id, callback) => { handleDeclareWinner(roomCode, id, callback, socket) });
+  socket.on('endGame', (roomCode, callback) => { handleEndGame(roomCode, callback, socket) });
 
   // TESTING, print out all data on request 
   socket.on('logState', (roomCode) => { logState(roomCode, socket) });

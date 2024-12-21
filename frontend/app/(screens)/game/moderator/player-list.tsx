@@ -1,10 +1,10 @@
-import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import ProgressBar from '../../../../components/game/moderator/playerList/ProgressBar'
 import { router, useFocusEffect } from 'expo-router'
 import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
-import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
+import { endGame, getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { useRoomState } from '@/store/useRoomState'
 import { useSelectedImage } from '@/store/useModeratorSelectedImage'
@@ -78,6 +78,8 @@ export default function PlayerList() {
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
+  const { setSelectedImage } = useSelectedImage();
+  const { setSelectedPlayerData } = useSelectedPlayerData();
   const [sortedPlayerProgress, setSortedPlayerProgress] = useState<PlayerProgressValue[]>();
 
   // Update UI when data changes
@@ -206,15 +208,38 @@ export default function PlayerList() {
     );
   };
 
+  function handleEndGame() {
+    endGame(roomState.roomCode)
+      .then(() => {
+        // Reset all game data
+        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        setSelectedPlayerData({});
+        setPlayerProgress({});
+        router.replace({
+          pathname: '/(screens)/game-over',
+          params: { winnerName: '' } // No declared winner
+        });
+      })
+      .catch((error: Error) => {
+        // TODO: Error message
+        console.error(error);
+      })
+  }
+
   // All users as a list
   return (
-    <ScrollView style={styles.container}>
-      <FlatList
-        data={sortedPlayerProgress}
-        renderItem={({ item }) => <Item {...item} />}
-        keyExtractor={(item) => item.id}
-      />
-    </ScrollView>
+    <View>
+      <ScrollView style={styles.container}>
+        <FlatList
+          data={sortedPlayerProgress}
+          renderItem={({ item }) => <Item {...item} />}
+          keyExtractor={(item) => item.id}
+        />
+      </ScrollView>
+      <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
+        <Text style={styles.buttonText}>End Game For All</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -251,5 +276,19 @@ const styles = StyleSheet.create({
   imagesProgress: {
     fontSize: 16,
     margin: 10
-  }
+  },
+  endGameButton: {
+    position: 'absolute',
+    bottom: 0, // Anchors the button to the bottom
+    left: 0,
+    right: 0, // Ensures the button spans the full width of the screen
+    backgroundColor: 'red',
+    padding: 15,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
