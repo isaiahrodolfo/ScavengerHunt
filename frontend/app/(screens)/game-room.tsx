@@ -187,20 +187,19 @@ export default function GameRoomScreen() {
               keyExtractor={item => item.categoryName}
             />
           </View>
-
-          {/* Joined Players List */}
-          <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Joined Players</Text>
-            <FlatList
-              data={joinedPlayers}
-              renderItem={({ item, index }) => <JoinedPlayer name={item} index={index} />}
-              keyExtractor={item => item}
-            />
-          </View>
         </>
       ) : (
         <Button title="Exit Game" onPress={handleExitRoom} />
       )}
+      {/* Joined Players List */}
+      <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Joined Players</Text>
+        <FlatList
+          data={joinedPlayers}
+          renderItem={({ item, index }) => <JoinedPlayer name={item} index={index} />}
+          keyExtractor={item => item}
+        />
+      </View>
       {errorMessage && <Text style={[styles.errorText, { marginTop: 50 }]}>{errorMessage}</Text>} {/* Display error message */}
     </View>
   );
