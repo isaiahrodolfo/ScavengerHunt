@@ -93,7 +93,7 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                       selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
                       {
                         backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
-                        opacity: image.status == 'unchecked' ? 0 : 0.2, // Adjust the transparency
+                        opacity: image.status == 'unchecked' ? 0 : 0.5, // Adjust the transparency
                       },
                     ]}
                   />
