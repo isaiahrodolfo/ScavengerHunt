@@ -77,6 +77,7 @@ export default function PlayerList() {
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
+  const [sortedPlayerProgress, setSortedPlayerProgress] = useState<PlayerProgressValue[]>();
 
   // Update UI when data changes
   useEffect(() => {
@@ -92,6 +93,40 @@ export default function PlayerList() {
     };
 
   }, []);
+
+  useEffect(() => {
+    setSortedPlayerProgress(
+      Object.values(playerProgress).sort((a, b) => {
+        // Sort by sets.valid (descending)
+        if (b.sets.valid !== a.sets.valid) {
+          return b.sets.valid - a.sets.valid;
+        }
+
+        // Sort by sets.unchecked (descending)
+        if (b.sets.unchecked !== a.sets.unchecked) {
+          return b.sets.unchecked - a.sets.unchecked;
+        }
+
+        // Sort by sets.invalid (descending)
+        if (b.sets.invalid !== a.sets.invalid) {
+          return b.sets.invalid - a.sets.invalid;
+        }
+
+        // Sort by images.valid (descending)
+        if (b.images.valid !== a.images.valid) {
+          return b.images.valid - a.images.valid;
+        }
+
+        // Sort by images.unchecked (descending)
+        if (b.images.unchecked !== a.images.unchecked) {
+          return b.images.unchecked - a.images.unchecked;
+        }
+
+        // Sort by images.invalid (descending)
+        return b.images.invalid - a.images.invalid;
+      })
+    );
+  }, [playerProgress])
 
   // Convert object to array for FlatList
   // const userArray = Object.values(dummyUserProgress);
@@ -147,7 +182,6 @@ export default function PlayerList() {
 
     // TODO: Keep the progress bar the same length, just change individual unit lengths based on how many sets there are
     return (
-      // <View>
       <Pressable style={styles.item} onPress={handleItemPressed}>
         <Text style={styles.title}>{playerProfiles[id].name}</Text>
         <View style={styles.progress}>
@@ -160,7 +194,6 @@ export default function PlayerList() {
           </View>
         </View>
       </Pressable>
-      // </View>
     );
   };
 
@@ -168,7 +201,7 @@ export default function PlayerList() {
   return (
     <ScrollView style={styles.container}>
       <FlatList
-        data={Object.values(playerProgress)}
+        data={sortedPlayerProgress}
         renderItem={({ item }) => <Item {...item} />}
         keyExtractor={(item) => item.id}
       />
