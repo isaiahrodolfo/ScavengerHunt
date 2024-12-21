@@ -23,19 +23,19 @@ export default function PlayerGameScreen() {
   const { playerData, setPlayerData } = usePlayerData();
   const { gameGoals } = useGameGoals();
 
-  // Timer logic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1);
-    }, 1000);
+  // // Timer logic
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setTimer((prev) => prev - 1);
+  //   }, 1000);
 
-    if (timer === 0) {
-      clearInterval(interval);
-      router.replace('/(screens)/game-over');
-    }
+  //   if (timer === 0) {
+  //     clearInterval(interval);
+  //     router.replace('/(screens)/game-over');
+  //   }
 
-    return () => clearInterval(interval);
-  }, [timer]);
+  //   return () => clearInterval(interval);
+  // }, [timer]);
 
   // Receive updated statuses on my images
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function PlayerGameScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.timer}>{timer}</Text>
+      {/* <Text style={styles.timer}>{timer}</Text> */}
 
       {/* Camera View */}
       <View style={styles.camera}>
