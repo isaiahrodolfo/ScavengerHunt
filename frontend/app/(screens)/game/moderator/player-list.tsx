@@ -78,7 +78,7 @@ export default function PlayerList() {
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
-  const { setSelectedImage } = useSelectedImage();
+  const { selectedImage, setSelectedImage } = useSelectedImage();
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const [sortedPlayerProgress, setSortedPlayerProgress] = useState<PlayerProgressValue[]>();
 
@@ -135,37 +135,36 @@ export default function PlayerList() {
         return b.images.invalid - a.images.invalid;
       })
     );
-  }, [playerProgress])
+  }, [playerProgress]);
+
+  // When navigate back to this page, moderator is not on any player's page
+  useFocusEffect(
+    useCallback(() => {
+
+      // Reset player-based data
+      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      console.log('selectedImage', selectedImage); // testing
+      // setSelectedPlayerData(null);
+
+      // Tell the server that the moderator is back at Player List Page
+      const handleNavigation = async () => {
+        const res = await navigateToPlayerList(roomState.roomCode);
+        if (res) {
+          console.error(res);
+        }
+      };
+
+      handleNavigation();
+    }, [])
+  );
 
   // Convert object to array for FlatList
   // const userArray = Object.values(dummyUserProgress);
 
   // Render each user's progress item
-  const Item = ({ id, images, sets }: PlayerProgressValue) => {
+  const Player = ({ id, images, sets }: PlayerProgressValue) => {
 
-    const { selectedImage, setSelectedImage } = useSelectedImage();
     const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
-
-    // When navigate back to this page, moderator is not on any player's page
-    useFocusEffect(
-      useCallback(() => {
-
-        // Reset player-based data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        console.log('selectedImage', selectedImage); // testing
-        // setSelectedPlayerData(null);
-
-        // Tell the server that the moderator is back at Player List Page
-        const handleNavigation = async () => {
-          const res = await navigateToPlayerList(roomState.roomCode);
-          if (res) {
-            console.error(res);
-          }
-        };
-
-        handleNavigation();
-      }, [])
-    );
 
     async function handleItemPressed(event: GestureResponderEvent): Promise<void> { // ? What is Promise<void>?
       const data = await getPlayerData(roomState.roomCode, id);
@@ -228,18 +227,18 @@ export default function PlayerList() {
 
   // All users as a list
   return (
-    <View>
-      <ScrollView style={styles.container}>
-        <FlatList
-          data={sortedPlayerProgress}
-          renderItem={({ item }) => <Item {...item} />}
-          keyExtractor={(item) => item.id}
-        />
-      </ScrollView>
-      <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
-        <Text style={styles.buttonText}>End Game For All</Text>
-      </TouchableOpacity>
-    </View>
+    // <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <FlatList
+        data={sortedPlayerProgress}
+        renderItem={({ item }) => <Player {...item} />}
+        keyExtractor={(item) => item.id}
+      />
+    </ScrollView>
+    //   <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
+    //     <Text style={styles.buttonText}>End Game For All</Text>
+    //   </TouchableOpacity>
+    // </View>
   );
 };
 
@@ -282,13 +281,13 @@ const styles = StyleSheet.create({
     bottom: 0, // Anchors the button to the bottom
     left: 0,
     right: 0, // Ensures the button spans the full width of the screen
-    backgroundColor: 'red',
-    padding: 15,
+    backgroundColor: 'lightgray',
+    padding: 6,
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: '#ff4f4b',
+    // color: '#ff6865',
+    fontSize: 10,
   },
 });
