@@ -247,5 +247,7 @@ export function handleSetupProfile(roomCode: string, name: string, id: string, c
 
   socket.to(roomCode).emit('getPlayers', playerNames); // Send player names to others
 
+  // console.log('playerNames', playerNames); // testing
+
   callback({ success: true, data: playerNames }); // Send player names to yourself
 }

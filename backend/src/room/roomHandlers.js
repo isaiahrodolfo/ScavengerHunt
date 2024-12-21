@@ -205,5 +205,6 @@ function handleSetupProfile(roomCode, name, id, callback, socket) {
     // Tell others this player has joined (and add their name to the others' joined players lists)
     const playerNames = Object.values(types_1.rooms[roomCode].players).map((profile) => profile.name);
     socket.to(roomCode).emit('getPlayers', playerNames); // Send player names to others
+    console.log('playerNames', playerNames); // testing
     callback({ success: true, data: playerNames }); // Send player names to yourself
 }
