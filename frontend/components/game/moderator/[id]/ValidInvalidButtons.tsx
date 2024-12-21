@@ -37,12 +37,14 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
-        <Text style={styles.text}>Valid</Text>
-      </Pressable>
-      <Pressable style={styles.invalid} onPress={() => { handleSetImageStatus('invalid') }}>
-        <Text style={styles.text}>Invalid</Text>
-      </Pressable>
+      {selectedImage.imageUri != '' && <>
+        <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
+          <Text style={styles.text}>Valid</Text>
+        </Pressable>
+        <Pressable style={styles.invalid} onPress={() => { handleSetImageStatus('invalid') }}>
+          <Text style={styles.text}>Invalid</Text>
+        </Pressable>
+      </>}
     </View>
   )
 }
