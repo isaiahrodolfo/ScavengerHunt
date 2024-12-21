@@ -36,6 +36,9 @@ export function joinRoom(roomCode: string): Promise<string>{
           case 'RoomDoesNotExist':
             resolve("The game you're trying to join does not exist.");
             break;
+          case 'RoomStarted':
+            resolve("The game has already started.");
+            break;
           case 'AlreadyInRoom':
             resolve('Error: You are already in a game room. Leave the current room before joining a new one.');
             break;

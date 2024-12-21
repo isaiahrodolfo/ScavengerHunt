@@ -48,6 +48,12 @@ export function handleJoinRoom(roomCode: string, callback: Callback, socket: any
   // Check that user is not already in any room
   if (checkIfInAnyRoom(socket.id, callback)) return;
 
+  // Make sure game has not yet started
+  if (rooms[roomCode].started == true) {
+    callback({ success: false, type: 'RoomStarted', error: 'Cannot join a room that has already started' });
+    return;
+  }
+
   // Add the user to the room
   rooms[roomCode].players[socket.id] = {
     id: socket.id,
