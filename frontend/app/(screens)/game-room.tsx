@@ -148,6 +148,7 @@ export default function GameRoomScreen() {
       display: index == 0 && isModerator ? 'none' : 'flex' // If host is moderator, they are not playing // TODO: Reflect these changes on the player screen
     }}>
       <Text>{name}</Text>
+      <Text style={{ color: 'gray' }}> {isModerator && '(Host)'}</Text>
     </View>
   };
 
