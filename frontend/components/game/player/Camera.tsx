@@ -120,37 +120,39 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   }
 
   return (
-    <View
-      style={styles.container}
-    >
-      {/* Camera View */}
-      <CameraView
-        ref={cameraRef}
-        style={[styles.camera, { aspectRatio: 3 / 4, }]}
-        facing={facing}
-        onCameraReady={() => setIsCameraReady(true)}
+    <View style={{ alignItems: 'center' }}>
+      <View
+        style={styles.container}
       >
-        {/* Image Overlay */}
-        {['put', 'view'].includes(gameState) && (
-          <Image
-            style={StyleSheet.absoluteFillObject}
-            source={{ uri: selectedImage.imageUri }}
-          />
-        )}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+        {/* Camera View */}
+        <CameraView
+          ref={cameraRef}
+          style={[styles.camera, { aspectRatio: 3 / 4, }]}
+          facing={facing}
+          onCameraReady={() => setIsCameraReady(true)}
+        >
+          {/* Image Overlay */}
+          {['put', 'view'].includes(gameState) && (
+            <Image
+              style={StyleSheet.absoluteFillObject}
+              source={{ uri: selectedImage.imageUri }}
+            />
+          )}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
 
-      {/* Capture or Retake Button */}
-      {/* <TouchableOpacity
+        {/* Capture or Retake Button */}
+        {/* <TouchableOpacity
         style={styles.captureButton}
         onPress={handleCaptureButtonPressed}
       >
         <Text style={styles.text}>{['put', 'view'].includes(gameState) ? 'Retake' : 'Take Photo'}</Text>
       </TouchableOpacity> */}
+      </View>
       <CaptureButton
         onPress={handleCaptureButtonPressed}
       />
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    minWidth: 220
   },
   camera: {
     flex: 1,
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
-    margin: 64,
+    // margin: 64,
   },
   button: {
     flex: 1,

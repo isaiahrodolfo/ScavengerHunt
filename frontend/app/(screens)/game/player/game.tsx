@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   camera: {
-    flex: 1,
-    aspectRatio: 3 / 4,
+    // flex: 1,
+    // aspectRatio: 3 / 4,
   },
   scrollContainer: {
     flex: 1,
-    marginTop: 10,
+    marginTop: 0,
   },
   categoryGrid: {
     flexDirection: 'row',
