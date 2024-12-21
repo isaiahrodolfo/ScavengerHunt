@@ -1,3 +1,4 @@
+import { PlayerProfiles } from '@/types/game';
 import { socket } from '@/utils/socket';
 
 export function createRoom(roomCode: string): Promise<string> {
@@ -50,30 +51,30 @@ export function joinRoom(roomCode: string): Promise<string>{
   });
 }
 
-export function startRoom(roomCode: string, gameGoals: {categoryName: string; imageCount: number}[], isModerator: boolean): Promise<string>{
+export function startRoom(roomCode: string, gameGoals: {categoryName: string; imageCount: number}[], isModerator: boolean): Promise<PlayerProfiles>{
   return new Promise((resolve, reject) => {
-    socket.emit('startRoom', roomCode, gameGoals, isModerator, (response: { success: boolean; error?: string; type?: string }) => {
-      if (response.success) {
-        resolve('');
+    socket.emit('startRoom', roomCode, gameGoals, isModerator, (response: { success: boolean; error?: string; type?: string, data: PlayerProfiles }) => {
+      if (response.success && response.data) {
+        resolve(response.data);
       } else {
         switch (response.type) {
           case 'RoomDoesNotExist':
-            resolve("Error: The game you're trying to start does not exist.");
+            reject(new Error("Error: The game you're trying to start does not exist."));
             break;
           case 'NotHost':
-            resolve('Error: You are not the host. Only the host can start the game.');
+            reject(new Error('Error: You are not the host. Only the host can start the game.'));
             break;
           case 'GameEmpty':
-            resolve('Cannot start the game. No players have joined.');
+            reject(new Error('Cannot start the game. No players have joined.'));
             break;
           case 'GameStarted':
-            resolve('You cannot start this game because the game has already started.');
+            reject(new Error('You cannot start this game because the game has already started.'));
             break;
           case 'UnknownError':
-            resolve('An unexpected error occurred. Please try again later.');
+            reject(new Error('An unexpected error occurred. Please try again later.'));
             break;
           default:
-            resolve(response.error || 'An unknown error occurred.');
+            reject(new Error(response.error || 'An unknown error occurred.'));
             break;
         }
       }

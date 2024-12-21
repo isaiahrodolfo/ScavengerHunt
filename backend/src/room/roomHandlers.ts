@@ -122,7 +122,7 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
   // console.log(`Room ${roomCode} started by host ${socket.id}`);
 
   // Callback with success message
-  callback({ success: true });
+  callback({ success: true, data: rooms[roomCode].players });
 }
 
 /**

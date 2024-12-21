@@ -103,7 +103,7 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
     // Log the action for debugging
     // console.log(`Room ${roomCode} started by host ${socket.id}`);
     // Callback with success message
-    callback({ success: true });
+    callback({ success: true, data: types_1.rooms[roomCode].players });
 }
 /**
  * Handles restarting a room.
