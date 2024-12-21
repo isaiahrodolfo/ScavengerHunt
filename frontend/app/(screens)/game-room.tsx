@@ -15,16 +15,9 @@ export default function GameRoomScreen() {
 
   const { roomState, setRoomState } = useRoomState();
   const { setPlayerData } = usePlayerData();
-  const { setGameGoals } = useGameGoals();
+  const { gameGoals, setGameGoals } = useGameGoals();
   const { setPlayerProfiles } = usePlayerProfiles();
-  const [editableGameGoals, setEditableGameGoals] = useState<GameGoals>(
-    [
-      { categoryName: 'musical instruments', imageCount: 2 },
-      { categoryName: 'TVs', imageCount: 5 },
-      { categoryName: 'fridges/freezers', imageCount: 6 },
-      { categoryName: 'different types of bibles', imageCount: 8 }
-    ]
-  ); // TODO: Dummy data, host should start out with a blank slate
+  const [editableGameGoals, setEditableGameGoals] = useState<GameGoals>(gameGoals);
   const [categoryNameInput, setCategoryNameInput] = useState<string>('');
   const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
 

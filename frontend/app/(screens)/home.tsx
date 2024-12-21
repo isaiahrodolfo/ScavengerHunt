@@ -3,6 +3,7 @@ import { View, Button, Text, StyleSheet, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { createRoom, joinRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
+import { useGameGoals } from '@/store/useGameGoals';
 
 export default function HomeScreen() {
 
@@ -10,10 +11,19 @@ export default function HomeScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
 
   const { roomState, setRoomState } = useRoomState();
+  const { setGameGoals } = useGameGoals();
 
   async function handleCreateRoom() {
 
     const createdRoomCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit code // TODO: Make each game code unique
+
+    setGameGoals([
+      { categoryName: 'dummy', imageCount: 1 },
+      // { categoryName: 'musical instruments', imageCount: 2 },
+      // { categoryName: 'TVs', imageCount: 5 },
+      // { categoryName: 'fridges/freezers', imageCount: 6 },
+      // { categoryName: 'different types of bibles', imageCount: 8 }
+    ]); // TODO: Dummy data, host should start out with a blank slate
 
     const res = await createRoom(createdRoomCode);
     if (res) {
