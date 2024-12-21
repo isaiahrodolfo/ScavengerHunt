@@ -102,6 +102,11 @@ export default function GameRoomScreen() {
       return;
     }
 
+    if (categoryNameInput == '') {
+      setErrorMessage("Please enter a category name.");
+      return;
+    }
+
     const updatedEditableGameGoals = [...editableGameGoals, {
       categoryName: categoryNameInput,
       imageCount: parsedImageCount
@@ -151,7 +156,7 @@ export default function GameRoomScreen() {
           </View>
 
           {/* Game Goal Input */}
-          <View>
+          <View style={{ marginTop: 50 }}>
             <TextInput
               style={styles.input}
               placeholder="Number (ex. 8)"
@@ -168,16 +173,18 @@ export default function GameRoomScreen() {
           </View>
 
           {/* Game Goals List */}
-          <FlatList
-            data={editableGameGoals}
-            renderItem={({ item }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} />}
-            keyExtractor={item => item.categoryName}
-          />
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+            <FlatList
+              data={editableGameGoals}
+              renderItem={({ item }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} />}
+              keyExtractor={item => item.categoryName}
+            />
+          </View>
         </>
       ) : (
         <Button title="Exit Game" onPress={handleExitRoom} />
       )}
-      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>} {/* Display error message */}
+      {errorMessage && <Text style={[styles.errorText, { marginTop: 50 }]}>{errorMessage}</Text>} {/* Display error message */}
     </View>
   );
 }
