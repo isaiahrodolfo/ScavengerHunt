@@ -1,12 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useGameState } from '@/store/useGameState';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface CaptureButtonProps {
   onPress: () => void;
 }
-
-// type ButtonFunction = 'take' | 'retake';
 
 const CaptureButton = ({ onPress }: CaptureButtonProps) => {
 
@@ -14,7 +13,15 @@ const CaptureButton = ({ onPress }: CaptureButtonProps) => {
 
   return (
     <TouchableOpacity style={styles.captureButton} onPress={() => { onPress() }}>
-      <Text style={styles.text}>{['put', 'view'].includes(gameState) ? 'Retake' : 'Take Photo'}</Text>
+      {['put', 'view'].includes(gameState) ?
+        <View>
+          <Icon name="camera" size={30} color="black" />
+        </View>
+        :
+        <View>
+          <Icon name="camera" size={30} color="black" />
+        </View>
+      }
     </TouchableOpacity>
   );
 }
