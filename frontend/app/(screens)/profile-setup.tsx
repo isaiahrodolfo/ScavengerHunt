@@ -4,11 +4,13 @@ import { router } from 'expo-router';
 import { useRoomState } from '@/store/useRoomState';
 import { setupProfile } from '@/handlers/roomHandlers';
 import { socket } from '@/utils/socket';
+import { useJoinedPlayers } from '@/store/useJoinedPlayers';
 
 const ProfileSetup = () => {
 
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
+  const { setJoinedPlayers } = useJoinedPlayers();
 
   const { roomState } = useRoomState();
 
@@ -33,8 +35,8 @@ const ProfileSetup = () => {
     }
     setupProfile(roomState.roomCode, name)
       .then((data) => {
-        console.log('joinedPlayers', data)
-        // setJoinedPlayers(data);
+        setJoinedPlayers(data);
+        console.log('joinedPlayersData', data);
       })
       .catch((error) => {
         setErrorMessage(error);

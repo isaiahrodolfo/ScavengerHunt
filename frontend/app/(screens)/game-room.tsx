@@ -10,6 +10,7 @@ import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
 import { TextInput } from 'react-native-gesture-handler';
+import { useJoinedPlayers } from '@/store/useJoinedPlayers';
 
 export default function GameRoomScreen() {
 
@@ -20,7 +21,7 @@ export default function GameRoomScreen() {
   const [editableGameGoals, setEditableGameGoals] = useState<GameGoals>(gameGoals);
   const [categoryNameInput, setCategoryNameInput] = useState<string>('');
   const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
-  const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]); // Type check, isNumber when submitting
+  const { joinedPlayers, setJoinedPlayers } = useJoinedPlayers();
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
