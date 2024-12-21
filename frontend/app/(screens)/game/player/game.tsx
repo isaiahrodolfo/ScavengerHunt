@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView, Pressable } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Camera from '@/components/game/player/Camera';
 import PlayerCategoryObject from '@/components/game/player/PlayerCategoryObject';
@@ -11,6 +11,9 @@ import { PlayerData, PlayerProfiles, Profile } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
 import { useSelectedImage } from '@/store/useSelectedImage';
+import { endGame } from '@/handlers/gameHandlers';
+import { useSelectedPlayerData } from '@/store/useSelectedPlayerData';
+import { usePlayerProgress } from '@/store/usePlayerProgress';
 
 export default function PlayerGameScreen() {
   // const { roomCode, isHost } = useLocalSearchParams();
@@ -22,6 +25,9 @@ export default function PlayerGameScreen() {
   const { gameState, setGameState } = useGameState();
   // const { categoryImages, setCategoryImages } = useCategoryImages();
   const { setSelectedImage } = useSelectedImage();
+  const { roomState } = useRoomState();
+  const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
+  const { setSelectedPlayerData } = useSelectedPlayerData();
   const { playerData, setPlayerData } = usePlayerData();
   const { gameGoals } = useGameGoals();
 
@@ -74,6 +80,24 @@ export default function PlayerGameScreen() {
     }
   }, []);
 
+  function handleEndGame() {
+    endGame(roomState.roomCode)
+      .then(() => {
+        // Reset all game data
+        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        setSelectedPlayerData({});
+        setPlayerProgress({});
+        router.replace({
+          pathname: '/(screens)/game-over',
+          params: { winnerName: '' } // No declared winner
+        });
+      })
+      .catch((error: Error) => {
+        // TODO: Error message
+        console.error(error);
+      })
+  }
+
   function handlePressCancel(event: GestureResponderEvent): void {
     switch (gameState) {
       case 'view': // Canceled viewing an image
@@ -84,6 +108,9 @@ export default function PlayerGameScreen() {
 
   return (
     <View style={styles.container}>
+      {roomState.isHost && <Pressable style={styles.endGameButton} onPress={handleEndGame}>
+        <Text style={styles.endGameText}>End Game For All</Text>
+      </Pressable>}
       {/* <Text style={styles.timer}>{timer}</Text> */}
 
       {/* Camera View */}
@@ -150,4 +177,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
+  endGameButton: {
+    left: 20,
+    top: 20,
+    position: 'absolute'
+  },
+  endGameText: {
+    color: 'black',
+    fontSize: 10
+  }
 });
