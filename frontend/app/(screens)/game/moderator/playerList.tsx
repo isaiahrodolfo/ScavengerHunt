@@ -1,4 +1,4 @@
-import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import ProgressBar from '../../../../components/game/moderator/playerList/ProgressBar'
 import { router, useFocusEffect } from 'expo-router'
@@ -70,6 +70,8 @@ const dummyUserProgress = {
 }
 
 export default function PlayerList() {
+
+  const { width } = useWindowDimensions();
 
   // TODO: Show all players at onset, even if they don't have photos yet
   const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
@@ -192,7 +194,7 @@ export default function PlayerList() {
         <Text style={styles.title}>{playerProfiles[id].name}</Text>
         <View style={styles.progress}>
           <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + calculateTotalImages()}</Text>
-          <View style={styles.progressBar}>
+          <View style={[styles.progressBar, { maxWidth: width * 0.65, minWidth: 300, overflow: 'hidden' }]}>
             <ProgressBar type={'none'} count={calculateTotalImages() - images.invalid - images.unchecked - images.valid - images.completed} totalImages={calculateTotalImages()} />
             <ProgressBar type={'invalid'} count={images.invalid} totalImages={calculateTotalImages()} />
             <ProgressBar type={'unchecked'} count={images.unchecked} totalImages={calculateTotalImages()} />
