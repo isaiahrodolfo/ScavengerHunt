@@ -97,6 +97,11 @@ export default function PlayerList() {
   useEffect(() => {
     setSortedPlayerProgress(
       Object.values(playerProgress).sort((a, b) => {
+        // Sort by images.completed (descending)
+        if (b.images.completed !== a.images.completed) {
+          return b.images.completed - a.images.completed;
+        }
+
         // Sort by sets.valid (descending)
         if (b.sets.valid !== a.sets.valid) {
           return b.sets.valid - a.sets.valid;
