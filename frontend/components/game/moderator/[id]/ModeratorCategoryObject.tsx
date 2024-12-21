@@ -83,6 +83,10 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                     source={{ uri: image.imageUri }}
                     style={[styles.image, selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
                   />
+                  {/* Image number */}
+                  <View style={styles.indexCircle}>
+                    <Text style={styles.indexText}>{index + 1}</Text>
+                  </View>
                   {/* Transparent overlay */}
                   <View
                     style={[
@@ -188,6 +192,26 @@ const styles = StyleSheet.create({
   emptyImagePlaceholder: {
     height: 50, // Fixed height for placeholder image
     borderRadius: 10,
+  },
+  imageWrapper: {
+    position: 'relative', // Required for overlay positioning
+  },
+  indexCircle: {
+    position: 'absolute',
+    top: 5,
+    right: 10,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'gray', // Circle color
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1, // Ensure it stays above the image
+  },
+  indexText: {
+    color: 'white',
+    fontSize: 12,
+    // fontWeight: 'bold',
   },
 });
 

@@ -65,7 +65,7 @@ export default function GameRoomScreen() {
   async function handleStartRoom() {
     // Check if the host has made one or more goals
     if (!editableGameGoals || editableGameGoals.length === 0) {
-      setErrorMessage('You must add at least one game goal before starting the game.');
+      setErrorMessage('You must add at least one goal before starting the game.');
       return;
     }
     // TODO: If host is not moderator, they don't need the player names
@@ -128,6 +128,7 @@ export default function GameRoomScreen() {
 
   function handleDeleteCategory(index: number) {
     const updatedEditableGameGoals = editableGameGoals.filter((_, i) => i !== index); // This makes sure remount
+    console.log('updatedEditableGameGoals', updatedEditableGameGoals); // testing
     setEditableGameGoals(updatedEditableGameGoals);
     setErrorMessage(null); // Clear any previous error
   }
@@ -144,7 +145,7 @@ export default function GameRoomScreen() {
   const JoinedPlayer = ({ name, index }: { name: string, index: number }) => {
     return <View style={{
       flexDirection: 'row', alignContent: 'center',
-      display: index == 0 && isModerator ? 'none' : 'flex' // If host is moderator, they are not playing
+      display: index == 0 && isModerator ? 'none' : 'flex' // If host is moderator, they are not playing // TODO: Reflect these changes on the player screen
     }}>
       <Text>{name}</Text>
     </View>
@@ -193,7 +194,7 @@ export default function GameRoomScreen() {
       )}
       {/* Joined Players List */}
       <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Joined Players</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Players</Text>
         <FlatList
           data={joinedPlayers}
           renderItem={({ item, index }) => <JoinedPlayer name={item} index={index} />}
