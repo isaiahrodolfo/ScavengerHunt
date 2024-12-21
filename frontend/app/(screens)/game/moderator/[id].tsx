@@ -12,6 +12,7 @@ import { useSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
+import DeclareWinnerButton from '@/components/game/moderator/[id]/DeclareWinnerButton';
 
 const Player = () => {
 
@@ -62,11 +63,14 @@ const Player = () => {
   return (
     <View style={styles.container}>
       {/* <Text>{id}</Text> */}
-      <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() => {
+      {/* <Pressable style={{ width: 20, height: 20, backgroundColor: 'gray' }} onPress={() => {
         console.log('playerProfiles', playerProfiles); // testing
         socket.emit('logState', roomState.roomCode);
       } // TESTING: Using the flip camera button to check server state
-      } />
+      } /> */}
+
+
+      <DeclareWinnerButton id={id.toString()} />
 
       {/* Show selected image */}
       <View style={styles.image}>
