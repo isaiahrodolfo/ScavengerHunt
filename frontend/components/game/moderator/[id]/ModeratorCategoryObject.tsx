@@ -118,7 +118,7 @@ export default ModeratorCategoryObject;
 const styles = StyleSheet.create({
   container: {
     width: '100%', // Slightly less than half the screen width
-    height: 200, // Height remains the same for consistency
+    height: 210, // Height remains the same for consistency
     margin: 0,
     borderRadius: 15,
     overflow: 'hidden', // Prevent content overflow but keep rounded corners
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Keep images inside rounded container
   },
   scrollView: {
-    height: 80
+    height: 85
   },
   imageContainer: {
     // width: 65, // Fixed width for each image

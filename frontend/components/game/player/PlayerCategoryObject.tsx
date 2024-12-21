@@ -109,6 +109,7 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text,
           {playerData[categoryIndex].length > 0 ? (
             <ScrollView
               style={styles.scrollView}
+              contentContainerStyle={{ alignItems: 'flex-start' }}
               horizontal showsHorizontalScrollIndicator={true}
               pointerEvents={['put'].includes(gameState) ? 'none' : 'auto'}
               ref={scrollViewRef}
@@ -163,7 +164,7 @@ export default PlayerCategoryObject;
 const styles = StyleSheet.create({
   container: {
     width: '100%', // Slightly less than half the screen width
-    height: 200, // Height remains the same for consistency
+    height: 210, // Height remains the same for consistency
     margin: 0,
     borderRadius: 15,
     overflow: 'hidden', // Prevent content overflow but keep rounded corners
@@ -175,17 +176,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
-    paddingTop: 10,
+    paddingTop: 0,
+    height: 100
   },
   number: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: 'black',
     marginLeft: 10,
     marginRight: 15
   },
   text: {
-    fontSize: 14,
+    fontSize: 13,
     color: 'black',
     fontWeight: '500',
     textAlign: 'right',
@@ -194,13 +196,13 @@ const styles = StyleSheet.create({
   },
   imagesList: {
     flex: 1, // Takes the other half
-    marginVertical: 10,
+    marginVertical: 0,
     marginLeft: 5,
     marginRight: 5,
     borderRadius: 10, // Keep images inside rounded container
   },
   scrollView: {
-    height: 80
+    height: 95,
   },
   imageContainer: {
     // width: 65, // Fixed width for each image
