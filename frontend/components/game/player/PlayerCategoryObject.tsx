@@ -130,8 +130,8 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                     style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index ? { borderColor: 'blue', borderWidth: 3 } : { borderWidth: 0 }]}
                   />
                   {/* Image number */}
-                  <View style={[styles.indexCircle, { backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'yellow' }]}>
-                    <Text style={[styles.indexText, { color: image.status == 'unchecked' ? 'black' : 'white' }]}>{index + 1}</Text>
+                  <View style={[styles.indexCircle, { backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : image.status == 'unchecked' && roomState.hasModerator ? 'yellow' : 'gray' }]}>
+                    <Text style={[styles.indexText, { color: image.status == 'unchecked' && roomState.hasModerator ? 'black' : 'white' }]}>{index + 1}</Text>
                   </View>
                   {/* Transparent overlay */}
                   <View
