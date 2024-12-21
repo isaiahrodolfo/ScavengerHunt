@@ -9,6 +9,7 @@ import { GameGoals, PlayerData, PlayerProfiles } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
+import { TextInput } from 'react-native-gesture-handler';
 
 export default function GameRoomScreen() {
 
@@ -21,9 +22,11 @@ export default function GameRoomScreen() {
       { categoryName: 'musical instruments', imageCount: 2 },
       { categoryName: 'TVs', imageCount: 5 },
       { categoryName: 'fridges/freezers', imageCount: 6 },
-      { categoryName: 'different types of bibles', imageCount: 8 }
+      // { categoryName: 'different types of bibles', imageCount: 8 }
     ]
   );
+  const [categoryNameInput, setCategoryNameInput] = useState<string>('');
+  const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -91,9 +94,47 @@ export default function GameRoomScreen() {
     }
   }
 
+  function handleAddCategory() {
+    const parsedImageCount = parseInt(imageCountInput, 10);
+
+    if (isNaN(parsedImageCount) || parsedImageCount > 20 || parsedImageCount < 1) {
+      setErrorMessage("Please enter a valid number between 1 and 20.");
+      return;
+    }
+
+    const updatedEditableGameGoals = [...editableGameGoals, {
+      categoryName: categoryNameInput,
+      imageCount: parsedImageCount
+    }];
+
+    setEditableGameGoals(updatedEditableGameGoals);
+    setCategoryNameInput('');
+    setImageCountInput('');
+    setErrorMessage(null); // Clear any previous error
+  }
+
+
+  // const GameGoalInput = () => {
+  //   return <View>
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Number (ex. 8)"
+  //       value={imageCountInput}
+  //       onChangeText={setImageCountInput}
+  //     />
+  //     <TextInput
+  //       style={styles.input}
+  //       placeholder="Item (ex. bugs)"
+  //       value={categoryNameInput}
+  //       onChangeText={setCategoryNameInput}
+  //     />
+  //     <Button title={'Add Category'} onPress={handleAddCategory} />
+  //   </View>
+  // };
+
   const GameGoal = ({ categoryName, imageCount }: { categoryName: string, imageCount: number }) => {
     return <View>
-
+      <Text>{imageCount} {categoryName}</Text>
     </View>
   };
 
@@ -108,6 +149,25 @@ export default function GameRoomScreen() {
             <Text>Moderator</Text>
             <Checkbox style={styles.checkbox} value={isModerator} onValueChange={setModerator} />
           </View>
+
+          {/* Game Goal Input */}
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Number (ex. 8)"
+              value={imageCountInput}
+              onChangeText={setImageCountInput}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Item (ex. bugs)"
+              value={categoryNameInput}
+              onChangeText={setCategoryNameInput}
+            />
+            <Button title={'Add Category'} onPress={handleAddCategory} />
+          </View>
+
+          {/* Game Goals List */}
           <FlatList
             data={editableGameGoals}
             renderItem={({ item }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} />}
@@ -127,6 +187,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  input: {
+    borderWidth: 1,
+    marginVertical: 10,
+    padding: 5,
+    width: 200
   },
   errorText: {
     color: 'red',
