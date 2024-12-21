@@ -202,8 +202,8 @@ function handleSetupProfile(roomCode, name, id, callback, socket) {
     // TODO: Add error handlers here
     // Set name
     types_1.rooms[roomCode].players[id] = { id, name };
-    // Tell others I've joined (and add my name to the joined players list)
+    // Tell others this player has joined (and add their name to the others' joined players lists)
     const playerNames = Object.values(types_1.rooms[roomCode].players).map((profile) => profile.name);
-    socket.nsp.to(roomCode).emit('getPlayers', playerNames); // Send player names to yourself
-    callback({ success: true });
+    socket.to(roomCode).emit('getPlayers', playerNames); // Send player names to others
+    callback({ success: true, data: playerNames }); // Send player names to yourself
 }

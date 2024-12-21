@@ -245,7 +245,7 @@ export function handleSetupProfile(roomCode: string, name: string, id: string, c
   // Tell others this player has joined (and add their name to the others' joined players lists)
   const playerNames = Object.values(rooms[roomCode].players).map((profile) => profile.name);
 
-  socket.nsp.to(roomCode).emit('getPlayers', playerNames); // Send player names to yourself
+  socket.to(roomCode).emit('getPlayers', playerNames); // Send player names to others
 
-  callback({ success: true });
+  callback({ success: true, data: playerNames }); // Send player names to yourself
 }

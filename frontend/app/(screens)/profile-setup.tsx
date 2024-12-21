@@ -31,11 +31,16 @@ const ProfileSetup = () => {
       setErrorMessage('Please enter a name before proceeding.');
       return;
     }
-    const res = await setupProfile(roomState.roomCode, name);
-    if (res) {
-      setErrorMessage(res);
-      return;
-    }
+    setupProfile(roomState.roomCode, name)
+      .then((data) => {
+        console.log('joinedPlayers', data)
+        // setJoinedPlayers(data);
+      })
+      .catch((error) => {
+        setErrorMessage(error);
+        return;
+
+      })
     router.replace('/(screens)/game-room');
   }
 
