@@ -141,6 +141,12 @@ export default function GameRoomScreen() {
     </View>
   };
 
+  const JoinedPlayer = ({ name, index }: { name: string, index: number }) => {
+    return <View style={{ flexDirection: 'row', alignContent: 'center' }}>
+      <Text>{name}</Text>
+    </View>
+  };
+
   return (
     <View style={styles.container}>
       <Text>Game Code: {roomState.roomCode}</Text>
@@ -176,6 +182,16 @@ export default function GameRoomScreen() {
               data={editableGameGoals}
               renderItem={({ item, index }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} index={index} />}
               keyExtractor={item => item.categoryName}
+            />
+          </View>
+
+          {/* Joined Players List */}
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Joined Players</Text>
+            <FlatList
+              data={joinedPlayers}
+              renderItem={({ item, index }) => <JoinedPlayer name={item} index={index} />}
+              keyExtractor={item => item}
             />
           </View>
         </>

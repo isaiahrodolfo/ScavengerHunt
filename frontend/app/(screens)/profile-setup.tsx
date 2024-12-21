@@ -36,7 +36,6 @@ const ProfileSetup = () => {
     setupProfile(roomState.roomCode, name)
       .then((data) => {
         setJoinedPlayers(data);
-        console.log('joinedPlayersData', data);
       })
       .catch((error) => {
         setErrorMessage(error);
