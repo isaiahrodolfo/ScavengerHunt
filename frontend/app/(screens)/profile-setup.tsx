@@ -26,6 +26,11 @@ const ProfileSetup = () => {
   }, []);
 
   async function handleSetupProfile() {
+    // Make sure user inputted a name
+    if (!name) {
+      setErrorMessage('Please enter a name before proceeding.');
+      return;
+    }
     const res = await setupProfile(roomState.roomCode, name);
     if (res) {
       setErrorMessage(res);
