@@ -20,6 +20,7 @@ export default function GameRoomScreen() {
   const [editableGameGoals, setEditableGameGoals] = useState<GameGoals>(gameGoals);
   const [categoryNameInput, setCategoryNameInput] = useState<string>('');
   const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
+  const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]); // Type check, isNumber when submitting
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -44,10 +45,18 @@ export default function GameRoomScreen() {
       router.replace('/(screens)/countdown');
     });
 
+    // Get the players who have joined
+    // TODO: Remove player if they disconnect
+    socket.on('getPlayers', (joinedPlayers: string[]) => {
+      console.log('joinedPlayers', joinedPlayers); // testing
+      setJoinedPlayers(joinedPlayers);
+    });
+
     // Clean up socket listeners
     return () => {
       socket.off('exitRoom');
       socket.off('startGame');
+      socket.off('getPlayers');
     };
   }, []);
 

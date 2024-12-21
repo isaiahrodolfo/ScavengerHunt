@@ -198,8 +198,12 @@ function handleExitRoomOnDisconnect(socket) {
 /**
  * Handles setting up a profile
  */
-function handleSetupProfile(roomCode, name, id, callback) {
+function handleSetupProfile(roomCode, name, id, callback, socket) {
     // TODO: Add error handlers here
+    // Set name
     types_1.rooms[roomCode].players[id] = { id, name };
+    // Tell others I've joined (and add my name to the joined players list)
+    const playerNames = Object.values(types_1.rooms[roomCode].players).map((profile) => profile.name);
+    socket.nsp.to(roomCode).emit('getPlayers', playerNames); // Send player names to yourself
     callback({ success: true });
 }
