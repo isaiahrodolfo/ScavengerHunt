@@ -84,8 +84,8 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                     style={[styles.image, selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
                   />
                   {/* Image number */}
-                  <View style={styles.indexCircle}>
-                    <Text style={styles.indexText}>{index + 1}</Text>
+                  <View style={[styles.indexCircle, { backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'yellow', }]}>
+                    <Text style={[styles.indexText, { color: image.status == 'unchecked' ? 'black' : 'white' }]}>{index + 1}</Text>
                   </View>
                   {/* Transparent overlay */}
                   <View
@@ -94,7 +94,7 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                       selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
                       {
                         backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
-                        opacity: image.status == 'unchecked' ? 0 : 0.5, // Adjust the transparency
+                        opacity: image.status == 'unchecked' ? 0 : 0.2, // Adjust the transparency
                       },
                     ]}
                   />
@@ -200,17 +200,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 5,
     right: 10,
-    width: 20,
-    height: 20,
+    width: 16,
+    height: 16,
     borderRadius: 10,
-    backgroundColor: 'gray', // Circle color
+    // backgroundColor: 'gray', // Circle color
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1, // Ensure it stays above the image
   },
   indexText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 10,
     // fontWeight: 'bold',
   },
 });
