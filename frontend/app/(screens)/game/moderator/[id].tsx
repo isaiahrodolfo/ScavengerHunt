@@ -88,7 +88,6 @@ const Player = () => {
       } // TESTING: Using the flip camera button to check server state
       } /> */}
 
-
       {areAllImagesValid && <DeclareWinnerButton id={id.toString()} />}
 
       {/* Show selected image */}

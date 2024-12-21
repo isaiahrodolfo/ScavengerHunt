@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 
 export default function CountdownScreen() {
 
-  const [countdown, setCountdown] = useState(1);
+  const [countdown, setCountdown] = useState(1); // TODO: Set countdown to 3
 
   useEffect(() => {
     const interval = setInterval(() => {

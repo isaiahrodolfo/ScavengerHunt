@@ -97,8 +97,9 @@ export function setImageStatus(roomCode: string, id: string, location: {category
 }
 
 export function declareWinner(roomCode: string, id: string): Promise<string> {
+  // console.log('winner is', id); // testing
   return new Promise((resolve, reject) => {
-    socket.emit('insertImage', roomCode, id, (response: Callback) => {
+    socket.emit('declareWinner', roomCode, id, (response: Callback) => {
       if (response.success) {
         resolve('');
       } else {

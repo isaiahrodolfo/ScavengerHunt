@@ -7,7 +7,7 @@ import { router } from 'expo-router'
 import { usePlayerProfiles } from '@/store/usePlayerProfiles'
 
 interface DeclareWinnerButtonProps {
-  id: string
+  id: string;
 }
 
 const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
