@@ -194,7 +194,7 @@ export default function PlayerList() {
       <Pressable style={styles.item} onPress={handleItemPressed}>
         <Text style={styles.title}>{playerProfiles[id].name}</Text>
         <View style={styles.progress}>
-          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + calculateTotalImages()}</Text>
+          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid + images.completed) + "/" + calculateTotalImages()}</Text>
           <View style={[styles.progressBar, { maxWidth: width * 0.65, minWidth: 300, overflow: 'hidden' }]}>
             <ProgressBar type={'none'} count={calculateTotalImages() - images.invalid - images.unchecked - images.valid - images.completed} totalImages={calculateTotalImages()} />
             <ProgressBar type={'invalid'} count={images.invalid} totalImages={calculateTotalImages()} />
@@ -227,18 +227,18 @@ export default function PlayerList() {
 
   // All users as a list
   return (
-    // <View style={styles.container}>
-    <ScrollView style={styles.container}>
-      <FlatList
-        data={sortedPlayerProgress}
-        renderItem={({ item }) => <Player {...item} />}
-        keyExtractor={(item) => item.id}
-      />
-    </ScrollView>
-    //   <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
-    //     <Text style={styles.buttonText}>End Game For All</Text>
-    //   </TouchableOpacity>
-    // </View>
+    <View style={styles.container}>
+      <ScrollView >
+        <FlatList
+          data={sortedPlayerProgress}
+          renderItem={({ item }) => <Player {...item} />}
+          keyExtractor={(item) => item.id}
+        />
+      </ScrollView>
+      <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
+        <Text style={styles.buttonText}>End Game For All</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
