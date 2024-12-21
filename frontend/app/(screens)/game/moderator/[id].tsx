@@ -42,7 +42,7 @@ const Player = () => {
   // Set header title
   const navigation = useNavigation();
   navigation.setOptions({
-    headerTitle: `${id}`
+    headerTitle: `${playerProfiles[id.toString()].name}`
   });
 
   const getBorderColor = (status: Status) => {

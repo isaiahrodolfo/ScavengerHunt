@@ -28,8 +28,6 @@ export default function GameRoomScreen() {
       router.replace('/(screens)/home');
     });
 
-
-    // TODO: Make this a callback of startRoom instead?
     // (Player) receive start game emission
     // ? tell server to start the game (we're not doing that here)
     socket.on('startGame', (hasModerator: boolean, gameGoals: { categoryName: string, imageCount: number }[]) => { // Receive message that there is or is not a moderator here
@@ -58,6 +56,7 @@ export default function GameRoomScreen() {
 
   // Methods
   async function handleStartRoom() {
+    // TODO: If host is not moderator, they don't need the player names
     await startRoom(roomState.roomCode, gameGoals, isModerator)
       .then((data) => {
         setRoomState({ ...roomState, isModerator, hasModerator: true });
@@ -69,13 +68,6 @@ export default function GameRoomScreen() {
       .catch((error: Error) => {
         setErrorMessage(error.message);
       });
-    // if (res) {
-    //   setErrorMessage(res);
-    // } else {
-    //   setRoomState({ ...roomState, isModerator, hasModerator: true });
-    //   setGameGoals(gameGoals);
-    //   router.replace('/(screens)/countdown');
-    // }
   }
 
   async function handleCloseRoom() {

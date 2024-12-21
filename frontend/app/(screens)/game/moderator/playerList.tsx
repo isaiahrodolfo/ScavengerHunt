@@ -10,6 +10,7 @@ import { useRoomState } from '@/store/useRoomState'
 import { useSelectedImage } from '@/store/useModeratorSelectedImage'
 import { usePlayerProgress } from '@/store/usePlayerProgress'
 import { useGameGoals } from '@/store/useGameGoals'
+import { usePlayerProfiles } from '@/store/usePlayerProfiles'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -75,6 +76,7 @@ export default function PlayerList() {
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
+  const { playerProfiles } = usePlayerProfiles();
 
   // Update UI when data changes
   useEffect(() => {
@@ -147,7 +149,7 @@ export default function PlayerList() {
     return (
       // <View>
       <Pressable style={styles.item} onPress={handleItemPressed}>
-        <Text style={styles.title}>{id}</Text>
+        <Text style={styles.title}>{playerProfiles[id].name}</Text>
         <View style={styles.progress}>
           <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + calculateTotalImages()}</Text>
           <View style={styles.progressBar}>
