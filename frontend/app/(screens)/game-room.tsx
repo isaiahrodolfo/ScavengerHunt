@@ -41,6 +41,7 @@ export default function GameRoomScreen() {
       // console.log(playerProfiles); // testing
       setRoomState({ ...roomState, hasModerator });
       setGameGoals(gameGoals);
+      // TODO: Only set player data if game has moderator?
       setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
       // setPlayerProfiles(playerProfiles);
       router.replace('/(screens)/countdown');
@@ -68,12 +69,15 @@ export default function GameRoomScreen() {
       setErrorMessage('You must add at least one goal before starting the game.');
       return;
     }
-    // TODO: If host is not moderator, they don't need the player names
+
     await startRoom(roomState.roomCode, editableGameGoals, isModerator)
       .then((data) => {
         setRoomState({ ...roomState, isModerator, hasModerator: true });
         setGameGoals(editableGameGoals);
         setPlayerProfiles(data);
+        if (!isModerator) {
+          setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
+        }
         console.log('player profiles', data);
         router.replace('/(screens)/countdown');
       })

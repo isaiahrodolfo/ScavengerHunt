@@ -13,14 +13,14 @@ import { useGameGoals } from '@/store/useGameGoals';
 import { useSelectedImage } from '@/store/useSelectedImage';
 
 export default function PlayerGameScreen() {
-  const { roomCode, isHost } = useLocalSearchParams();
-  const [timer, setTimer] = useState(1000);
+  // const { roomCode, isHost } = useLocalSearchParams();
+  // const [timer, setTimer] = useState(1000);
   const { width } = useWindowDimensions();
 
-  const { roomState } = useRoomState();
+  // const { roomState } = useRoomState();
 
   const { gameState, setGameState } = useGameState();
-  const { categoryImages, setCategoryImages } = useCategoryImages();
+  // const { categoryImages, setCategoryImages } = useCategoryImages();
   const { setSelectedImage } = useSelectedImage();
   const { playerData, setPlayerData } = usePlayerData();
   const { gameGoals } = useGameGoals();
@@ -50,7 +50,6 @@ export default function PlayerGameScreen() {
       setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
       setPlayerData([]);
       setGameState('take');
-      setCategoryImages({ imageUri: '', categoryIndex: 0, imageIndex: undefined }) // set to 0?
       router.replace({
         pathname: '/(screens)/game-over',
         params: { winnerName: data.name }

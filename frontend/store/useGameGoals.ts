@@ -9,7 +9,7 @@ interface GameGoalsState {
  
 const createGameGoalsStore = () => 
   create<GameGoalsState>()(
-  // devtools
+  devtools
   ((set) => ({
     gameGoals: [{categoryName: '', imageCount: 0}],
     setGameGoals: (to) => set((state) => ({ gameGoals: to })),
