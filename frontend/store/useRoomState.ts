@@ -10,7 +10,8 @@ interface RoomState {
 
 const createRoomStore = () =>
   createStore<RoomState>()(
-    devtools((set) => ({
+    // devtools
+    ((set) => ({
       roomState: { roomCode: '', isHost: false, isModerator: false, hasModerator: false },
       setRoomState: (to) => set(() => ({ roomState: to })),
     }))

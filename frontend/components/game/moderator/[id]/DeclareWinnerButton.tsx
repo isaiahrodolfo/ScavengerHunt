@@ -1,5 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { socket } from '@/utils/socket'
+import { useRoomState } from '@/store/useRoomState'
+import { declareWinner } from '@/handlers/gameHandlers'
+import { router } from 'expo-router'
+import { usePlayerProfiles } from '@/store/usePlayerProfiles'
 
 interface DeclareWinnerButtonProps {
   id: string
@@ -7,8 +12,17 @@ interface DeclareWinnerButtonProps {
 
 const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
 
-  function handleDeclareWinner() {
+  const { roomState } = useRoomState();
+  const { playerProfiles } = usePlayerProfiles();
 
+  function handleDeclareWinner() {
+    declareWinner(roomState.roomCode, id)
+      .then(() => {
+        router.replace({
+          pathname: '/(screens)/game-over',
+          params: { winnerName: playerProfiles[id].name }
+        })
+      })
   }
 
   return (

@@ -1,10 +1,13 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { closeRoom, exitRoom, restartRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
 
 export default function GameOverScreen() {
+
+  const { winnerName } = useLocalSearchParams();
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
 
   const { roomState, setRoomState } = useRoomState();
@@ -48,7 +51,7 @@ export default function GameOverScreen() {
 
   return (
     <View style={styles.container}>
-
+      <Text>Winner: {winnerName}</Text>
       <Text>Play Again?</Text>
       <Button title="Back to Game Room" onPress={handleRestartRoom} />
       {roomState.isHost && <Button title="Close Game" onPress={handleCloseRoom} />}

@@ -147,3 +147,15 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
   // Invoke the callback to notify success
   callback({ success: true, data: rooms[roomCode].gameProgress});
 }
+
+export function handleDeclareWinner(roomCode: string, id: string, callback: Callback, socket: any) {
+  // TODO: Add error handlers here
+
+  // Get profile of winner
+  rooms[roomCode].players[id]
+    
+  // TODO: Return the progress for all players
+  socket.to(roomCode).emit('declareWinner', rooms[roomCode].players[id]); // Return with the winner
+
+  callback({ success: true});
+}

@@ -126,13 +126,13 @@ const PlayerCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                 >
                   <Image
                     source={{ uri: image.imageUri }}
-                    style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
+                    style={[styles.image, ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index ? { borderColor: 'blue', borderWidth: 3 } : { borderWidth: 0 }]}
                   />
                   {/* Transparent overlay */}
                   <View
-                    style={['view', 'retake'].includes(gameState) && [
+                    style={[
                       styles.overlay,
-                      selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
+                      ['view', 'retake'].includes(gameState) && selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
                       {
                         backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
                         opacity: image.status == 'unchecked' ? 0 : 0.5, // Adjust the transparency

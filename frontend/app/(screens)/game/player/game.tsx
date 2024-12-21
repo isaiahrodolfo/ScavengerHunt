@@ -7,7 +7,7 @@ import { useGameState } from '@/store/useGameState';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
 import { socket } from '@/utils/socket';
-import { PlayerData } from '@/types/game';
+import { PlayerData, PlayerProfiles, Profile } from '@/types/game';
 import { usePlayerData } from '@/store/usePlayerData';
 import { useGameGoals } from '@/store/useGameGoals';
 
@@ -41,6 +41,13 @@ export default function PlayerGameScreen() {
   useEffect(() => {
     socket.on('getPlayerData', (data: PlayerData) => {
       setPlayerData(data);
+    });
+
+    socket.on('declareWinner', (data: Profile) => {
+      router.replace({
+        pathname: '/(screens)/game-over',
+        params: { winnerName: data.name }
+      })
     });
 
     return () => {

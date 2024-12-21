@@ -19,17 +19,20 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
   const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
 
   async function handleSetImageStatus(status: Status) {
-    setImageStatus(
-      roomState.roomCode,
-      id,
-      {
-        categoryIndex: selectedImage.categoryIndex!,
-        imageIndex: selectedImage.imageIndex!
-      },
-      status) // Update status globally
-      .then((data) => {
-        setPlayerProgress(data); // Update status locally
-      })
+    if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {
+      setImageStatus(
+        roomState.roomCode,
+        id,
+        {
+          categoryIndex: selectedImage.categoryIndex!,
+          imageIndex: selectedImage.imageIndex!
+        },
+        status) // Update status globally
+        .then((data) => {
+          setPlayerProgress(data); // Update status locally
+        })
+    }
+
   }
 
   return (
