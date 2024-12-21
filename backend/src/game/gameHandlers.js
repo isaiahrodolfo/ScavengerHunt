@@ -41,7 +41,7 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
         console.log('emit updateProgress to room host:', hostId);
         socket.to(hostId).emit('updateProgress', types_1.rooms[roomCode].gameProgress);
         // If the host is on the player's page, update the host's player data so there will be dynamic changes
-        if (types_1.rooms[roomCode].hostOnPlayerPage) {
+        if (types_1.rooms[roomCode].hostOnPlayerPage == socket.id) {
             socket.to(hostId).emit('getPlayerData', types_1.rooms[roomCode].gameData[socket.id]); // TODO: Use the updated const instead of going back into the whole thing
         }
     }
@@ -103,7 +103,7 @@ function handleSetImageStatus(roomCode, id, location, status, callback, socket) 
     types_1.rooms[roomCode].gameProgress[id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, id);
     const playerProgress = types_1.rooms[roomCode].gameData[id];
     // If the host is on the player's page, update the host's player data so there will be dynamic changes
-    if (types_1.rooms[roomCode].hostOnPlayerPage) {
+    if (types_1.rooms[roomCode].hostOnPlayerPage == id) {
         socket.emit('getPlayerData', playerProgress); // TODO: Use the updated const instead of going back into the whole thing
     }
     // Update the player with the new statuses of their images

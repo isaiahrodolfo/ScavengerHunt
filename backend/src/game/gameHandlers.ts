@@ -44,7 +44,7 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
     socket.to(hostId).emit('updateProgress', rooms[roomCode].gameProgress);
 
     // If the host is on the player's page, update the host's player data so there will be dynamic changes
-    if (rooms[roomCode].hostOnPlayerPage) {
+    if (rooms[roomCode].hostOnPlayerPage == socket.id) {
        socket.to(hostId).emit('getPlayerData', rooms[roomCode].gameData[socket.id]); // TODO: Use the updated const instead of going back into the whole thing
     }
   }
@@ -137,7 +137,7 @@ export function handleSetImageStatus(roomCode: string, id: string, location: {ca
   const playerProgress = rooms[roomCode].gameData[id];
 
   // If the host is on the player's page, update the host's player data so there will be dynamic changes
-  if (rooms[roomCode].hostOnPlayerPage) {
+  if (rooms[roomCode].hostOnPlayerPage == id) {
     socket.emit('getPlayerData', playerProgress); // TODO: Use the updated const instead of going back into the whole thing
   }
 

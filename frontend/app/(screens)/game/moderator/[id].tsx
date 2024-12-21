@@ -30,9 +30,11 @@ const Player = () => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
       setSelectedPlayerData(updatedPlayerData);
       console.log('updatedPlayerData', updatedPlayerData);
-      console.log('selectedImage', selectedImage);
-      const updatedSelectedImage = updatedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].imageUri;
-      setSelectedImage({ ...selectedImage, imageUri: updatedSelectedImage });
+      console.log('currentSelectedImage', selectedImage);
+      if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {
+        const updatedSelectedImage = updatedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].imageUri;
+        setSelectedImage({ ...selectedImage, imageUri: updatedSelectedImage });
+      }
       console.log('selectedImage', selectedImage);
     });
 
@@ -53,7 +55,7 @@ const Player = () => {
 
   useEffect(() => {
     setAreAllImagesValid(
-      playerProgress[id.toString()].images.valid == calculateTotalImages()
+      playerProgress[id.toString()].images.valid >= calculateTotalImages()
     );
   }, [playerProgress]);
 
