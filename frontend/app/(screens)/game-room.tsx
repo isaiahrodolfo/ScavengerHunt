@@ -138,8 +138,9 @@ export default function GameRoomScreen() {
   // };
 
   const GameGoal = ({ categoryName, imageCount }: { categoryName: string, imageCount: number }) => {
-    return <View>
-      <Text>{imageCount} {categoryName}</Text>
+    return <View style={{ flexDirection: 'row', alignContent: 'center' }}>
+      <Text style={{ width: 200 }}>{imageCount} {categoryName}</Text>
+      <Text style={{ color: 'red', fontWeight: 'bold' }}>✕</Text>
     </View>
   };
 
@@ -156,7 +157,7 @@ export default function GameRoomScreen() {
           </View>
 
           {/* Game Goal Input */}
-          <View style={{ marginTop: 50 }}>
+          <View style={{ marginTop: 30 }}>
             <TextInput
               style={styles.input}
               placeholder="Number (ex. 8)"

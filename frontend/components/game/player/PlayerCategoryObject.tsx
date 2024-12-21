@@ -158,9 +158,9 @@ export default PlayerCategoryObject;
 
 const styles = StyleSheet.create({
   container: {
-    width: '45%', // Slightly less than half the screen width
+    width: '100%', // Slightly less than half the screen width
     height: 130, // Height remains the same for consistency
-    margin: 10,
+    margin: 0,
     borderRadius: 15,
     overflow: 'hidden', // Prevent content overflow but keep rounded corners
     backgroundColor: 'lavender', // Default background color
