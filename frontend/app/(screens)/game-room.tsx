@@ -22,9 +22,9 @@ export default function GameRoomScreen() {
       { categoryName: 'musical instruments', imageCount: 2 },
       { categoryName: 'TVs', imageCount: 5 },
       { categoryName: 'fridges/freezers', imageCount: 6 },
-      // { categoryName: 'different types of bibles', imageCount: 8 }
+      { categoryName: 'different types of bibles', imageCount: 8 }
     ]
-  );
+  ); // TODO: Dummy data, host should start out with a blank slate
   const [categoryNameInput, setCategoryNameInput] = useState<string>('');
   const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
 
@@ -60,6 +60,11 @@ export default function GameRoomScreen() {
 
   // Methods
   async function handleStartRoom() {
+    // Check if the host has made one or more goals
+    if (!editableGameGoals || editableGameGoals.length === 0) {
+      setErrorMessage('You must add at least one game goal before starting the game.');
+      return;
+    }
     // TODO: If host is not moderator, they don't need the player names
     await startRoom(roomState.roomCode, editableGameGoals, isModerator)
       .then((data) => {
