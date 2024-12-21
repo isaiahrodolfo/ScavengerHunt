@@ -1,8 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { closeRoom, exitRoom, restartRoom } from '@/handlers/roomHandlers';
 import { useRoomState } from '@/store/useRoomState';
+import { socket } from '@/utils/socket';
 
 export default function GameOverScreen() {
 
@@ -11,6 +12,19 @@ export default function GameOverScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
 
   const { roomState, setRoomState } = useRoomState();
+
+  useEffect(() => {
+    // (Player) receive exit room emission, tell server to exit the Socket room and go back home
+    socket.on('exitRoom', () => {
+      socket.emit('exitRoom', { roomCode: roomState.roomCode, roomIsClosed: true });
+      router.replace('/(screens)/home');
+    });
+
+    // Clean up socket listeners
+    return () => {
+      socket.off('exitRoom');
+    };
+  }, []);
 
   async function handleRestartRoom() {
     if (roomState.isHost) {

@@ -1,8 +1,9 @@
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router';
 import { useRoomState } from '@/store/useRoomState';
 import { setupProfile } from '@/handlers/roomHandlers';
+import { socket } from '@/utils/socket';
 
 const ProfileSetup = () => {
 
@@ -10,6 +11,19 @@ const ProfileSetup = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
 
   const { roomState } = useRoomState();
+
+  useEffect(() => {
+    // (Player) receive exit room emission, tell server to exit the Socket room and go back home
+    socket.on('exitRoom', () => {
+      socket.emit('exitRoom', { roomCode: roomState.roomCode, roomIsClosed: true });
+      router.replace('/(screens)/home');
+    });
+
+    // Clean up socket listeners
+    return () => {
+      socket.off('exitRoom');
+    };
+  }, []);
 
   async function handleSetupProfile() {
     const res = await setupProfile(roomState.roomCode, name);
