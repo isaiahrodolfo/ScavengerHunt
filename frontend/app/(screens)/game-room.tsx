@@ -72,7 +72,7 @@ export default function GameRoomScreen() {
 
     await startRoom(roomState.roomCode, editableGameGoals, isModerator)
       .then((data) => {
-        setRoomState({ ...roomState, isModerator, hasModerator: true });
+        setRoomState({ ...roomState, isModerator, hasModerator: isModerator });
         setGameGoals(editableGameGoals);
         setPlayerProfiles(data);
         if (!isModerator) {
