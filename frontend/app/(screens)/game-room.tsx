@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Checkbox } from 'expo-checkbox';
 import { socket } from '@/utils/socket'
@@ -118,29 +118,18 @@ export default function GameRoomScreen() {
     setErrorMessage(null); // Clear any previous error
   }
 
+  function handleDeleteCategory(index: number) {
+    const updatedEditableGameGoals = editableGameGoals.filter((_, i) => i !== index); // This makes sure remount
+    setEditableGameGoals(updatedEditableGameGoals);
+    setErrorMessage(null); // Clear any previous error
+  }
 
-  // const GameGoalInput = () => {
-  //   return <View>
-  //     <TextInput
-  //       style={styles.input}
-  //       placeholder="Number (ex. 8)"
-  //       value={imageCountInput}
-  //       onChangeText={setImageCountInput}
-  //     />
-  //     <TextInput
-  //       style={styles.input}
-  //       placeholder="Item (ex. bugs)"
-  //       value={categoryNameInput}
-  //       onChangeText={setCategoryNameInput}
-  //     />
-  //     <Button title={'Add Category'} onPress={handleAddCategory} />
-  //   </View>
-  // };
-
-  const GameGoal = ({ categoryName, imageCount }: { categoryName: string, imageCount: number }) => {
+  const GameGoal = ({ categoryName, imageCount, index }: { categoryName: string, imageCount: number, index: number }) => {
     return <View style={{ flexDirection: 'row', alignContent: 'center' }}>
       <Text style={{ width: 200 }}>{imageCount} {categoryName}</Text>
-      <Text style={{ color: 'red', fontWeight: 'bold' }}>✕</Text>
+      <Pressable onPress={() => { handleDeleteCategory(index) }}>
+        <Text style={{ color: 'red', fontWeight: 'bold' }}>✕</Text>
+      </Pressable>
     </View>
   };
 
@@ -177,7 +166,7 @@ export default function GameRoomScreen() {
           <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
             <FlatList
               data={editableGameGoals}
-              renderItem={({ item }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} />}
+              renderItem={({ item, index }) => <GameGoal categoryName={item.categoryName} imageCount={item.imageCount} index={index} />}
               keyExtractor={item => item.categoryName}
             />
           </View>
