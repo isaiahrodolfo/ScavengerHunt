@@ -93,7 +93,7 @@ export default function GameOverScreen() {
   }
 
   function handleViewGame() {
-    router.replace('/(screens)/game');
+    router.push('/(screens)/game');
   }
 
   return (
