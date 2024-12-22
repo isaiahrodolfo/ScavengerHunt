@@ -55,6 +55,46 @@ export function handleInsertImage(roomCode: string, imageAndLocation: ImageAndLo
 }
 
 /**
+ * Handles image deletion.
+ */
+export function handleDeleteImage(roomCode: string, categoryIndex: number, imageIndex: number, callback: Callback, socket: any) {
+
+
+  if(checkIfRoomDoesNotExist(roomCode, callback)) return;
+
+  const room = rooms[roomCode];
+
+  // TODO: Create a handler helper to check if player does not exist
+  // Ensure gameData exists for the socket ID 
+  if (!room.gameData[socket.id]) {
+    callback({ success: false, type: 'UserNotFound', error: 'User not found in gameData' });
+    return;
+  }
+
+  // Delete image from list
+  room.gameData[socket.id][categoryIndex].splice(imageIndex, 1);
+
+  rooms[roomCode].gameProgress[socket.id] = calculateProgress(roomCode, socket.id);
+
+  if (room.hostIsModerator) { // TODO: Test when there is no moderator, if this still runs
+    const hostId = room.host;
+    
+    console.log('emit updateProgress to room host:', hostId)
+    socket.to(hostId).emit('updateProgress', rooms[roomCode].gameProgress);
+
+    // If the host is on the player's page, update the host's player data so there will be dynamic changes
+    if (rooms[roomCode].hostOnPlayerPage == socket.id) {
+       socket.to(hostId).emit('getPlayerData', rooms[roomCode].gameData[socket.id]); // TODO: Use the updated const instead of going back into the whole thing
+    }
+  }
+
+  // Invoke the callback to notify success
+  callback({ success: true });
+  
+}
+
+
+/**
  * Handles getting a player's whole record from the database (images, status, locations).
  */
 export function handleGetPlayerData(roomCode: string, id: string, callback: Callback) {

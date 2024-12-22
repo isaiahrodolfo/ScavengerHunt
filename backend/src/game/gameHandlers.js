@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleInsertImage = handleInsertImage;
+exports.handleDeleteImage = handleDeleteImage;
 exports.handleGetPlayerData = handleGetPlayerData;
 exports.handleNavigateToPlayerList = handleNavigateToPlayerList;
 exports.handleSetImageStatus = handleSetImageStatus;
@@ -37,6 +38,34 @@ function handleInsertImage(roomCode, imageAndLocation, callback, socket) {
             status: 'unchecked', // Reset status after update
         };
     }
+    types_1.rooms[roomCode].gameProgress[socket.id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, socket.id);
+    if (room.hostIsModerator) { // TODO: Test when there is no moderator, if this still runs
+        const hostId = room.host;
+        console.log('emit updateProgress to room host:', hostId);
+        socket.to(hostId).emit('updateProgress', types_1.rooms[roomCode].gameProgress);
+        // If the host is on the player's page, update the host's player data so there will be dynamic changes
+        if (types_1.rooms[roomCode].hostOnPlayerPage == socket.id) {
+            socket.to(hostId).emit('getPlayerData', types_1.rooms[roomCode].gameData[socket.id]); // TODO: Use the updated const instead of going back into the whole thing
+        }
+    }
+    // Invoke the callback to notify success
+    callback({ success: true });
+}
+/**
+ * Handles image deletion.
+ */
+function handleDeleteImage(roomCode, categoryIndex, imageIndex, callback, socket) {
+    if ((0, handler_helpers_1.checkIfRoomDoesNotExist)(roomCode, callback))
+        return;
+    const room = types_1.rooms[roomCode];
+    // TODO: Create a handler helper to check if player does not exist
+    // Ensure gameData exists for the socket ID 
+    if (!room.gameData[socket.id]) {
+        callback({ success: false, type: 'UserNotFound', error: 'User not found in gameData' });
+        return;
+    }
+    // Delete image from list
+    room.gameData[socket.id][categoryIndex].splice(imageIndex, 1);
     types_1.rooms[roomCode].gameProgress[socket.id] = (0, gameHandlerHelpers_1.calculateProgress)(roomCode, socket.id);
     if (room.hostIsModerator) { // TODO: Test when there is no moderator, if this still runs
         const hostId = room.host;
@@ -116,10 +145,7 @@ function handleSetImageStatus(roomCode, id, location, status, callback, socket) 
 function handleDeclareWinner(roomCode, id, callback, socket) {
     // TODO: Add error handlers here
     // Reset game
-    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { 
-        // gameData: {}, // Reset all game data and progress
-        // gameProgress: {},
-        hostOnPlayerPage: '' });
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostOnPlayerPage: '' });
     // Get profile of winner
     types_1.rooms[roomCode].players[id];
     // TODO: Return the progress for all players
@@ -129,10 +155,7 @@ function handleDeclareWinner(roomCode, id, callback, socket) {
 function handleEndGame(roomCode, callback, socket) {
     // TODO: Add error handlers here
     // Reset game
-    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { 
-        // gameData: {}, // Reset all game data and progress
-        // gameProgress: {},
-        hostOnPlayerPage: '' });
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostOnPlayerPage: '' });
     // TODO: Return the progress for all players
     socket.to(roomCode).emit('endGame');
     callback({ success: true });

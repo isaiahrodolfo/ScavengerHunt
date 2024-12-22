@@ -54,11 +54,11 @@ export default function Camera({ setHasPermissions, onPressCancel }: CameraProps
   function handleDeleteImagePressed() {
     const { categoryIndex, imageIndex } = selectedImage;
     if (typeof categoryIndex == 'number' && typeof imageIndex == 'number') {
-      // // UPDATE PLAYER DATA GLOBALLY
-      // deleteImage(roomState.roomCode, categoryIndex, imageIndex)
-      //   .catch((error: Error) => {
-      //     console.log(error.message);
-      //   })
+      // UPDATE PLAYER DATA GLOBALLY
+      deleteImage(roomState.roomCode, categoryIndex, imageIndex)
+        .catch((error: Error) => {
+          console.log(error.message);
+        })
       // UPDATE PLAYER DATA LOCALLY
       console.log('playerData', playerData); // testing
       const updatedPlayerData = playerData;
