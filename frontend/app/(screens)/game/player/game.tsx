@@ -64,6 +64,7 @@ export default function PlayerGameScreen() {
     });
 
     socket.on('endGame', () => {
+      setRoomState({ ...roomState, gameInProgress: false });
       // // Reset game data
       // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
       // setPlayerData([]);
