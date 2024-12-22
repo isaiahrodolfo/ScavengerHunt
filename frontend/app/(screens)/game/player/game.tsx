@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView, Pressable, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Camera from '@/components/game/player/Camera';
 import PlayerCategoryObject from '@/components/game/player/PlayerCategoryObject';
@@ -24,7 +24,7 @@ export default function PlayerGameScreen() {
 
   const { gameState, setGameState } = useGameState();
   // const { categoryImages, setCategoryImages } = useCategoryImages();
-  const { setSelectedImage } = useSelectedImage();
+  const { selectedImage } = useSelectedImage();
   const { roomState, setRoomState } = useRoomState();
   const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { setSelectedPlayerData } = useSelectedPlayerData();
@@ -53,6 +53,7 @@ export default function PlayerGameScreen() {
 
     socket.on('declareWinner', (data: Profile) => {
       // // Reset game data
+      setRoomState({ ...roomState, gameInProgress: false });
       // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
       // setPlayerData([]);
       // setGameState('take');
@@ -107,6 +108,10 @@ export default function PlayerGameScreen() {
     }
   }
 
+  function imageIsSelected(): boolean {
+    return (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex == 'number' && typeof selectedImage.imageIndex == 'number');
+  }
+
   return (
     <View style={styles.container}>
       {roomState.isHost && roomState.gameInProgress && <Pressable style={styles.endGameButton} onPress={handleEndGame}>
@@ -114,13 +119,28 @@ export default function PlayerGameScreen() {
       </Pressable>}
       {/* <Text style={styles.timer}>{timer}</Text> */}
 
-      {/* Camera View */}
-      <View style={styles.camera}>
-        <Camera setHasPermissions={() => { }} />
-      </View>
+      {/* Camera View (while game is in progess) */}
+      {roomState.gameInProgress &&
+        <View>
+          <Camera setHasPermissions={() => { }} />
+        </View>
+      }
+
+      {/* Image View (when game is over) */}
+      {!roomState.gameInProgress && (imageIsSelected() ?
+        <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+        :
+        <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
+          <Text style={{ textAlign: 'center' }}>Select an image</Text>
+        </View>)
+      }
 
       {/* Cancel Button */}
-      {['view', 'retake'].includes(gameState) && <Button title={'Cancel'} onPress={handlePressCancel} />}
+      {roomState.gameInProgress && ['view', 'retake'].includes(gameState) &&
+        <View style={{ marginTop: 10 }}>
+          <Button title={'Cancel'} onPress={handlePressCancel} />
+        </View>
+      }
 
       <ScrollView
         style={[styles.scrollContainer, { width: width - 20 }]}
@@ -156,9 +176,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
   },
-  camera: {
-    // flex: 1,
-    // aspectRatio: 3 / 4,
+  image: {
+    flex: 1,
+    aspectRatio: 3 / 4,
   },
   scrollContainer: {
     flex: 1,
