@@ -67,7 +67,12 @@ export default function Camera({ setHasPermissions, onPressCancel }: CameraProps
       setPlayerData(updatedPlayerData);
       const nextValidImageIndex = Math.min(imageIndex, updatedPlayerData[categoryIndex].length - 1);
       // If selected coordiates causes no selected image, use the next available image as the selected one 
-      setSelectedImage({ ...selectedImage, imageUri: updatedPlayerData[categoryIndex][nextValidImageIndex].imageUri, imageIndex: nextValidImageIndex });
+      if (nextValidImageIndex >= 0) {
+        setSelectedImage({ ...selectedImage, imageUri: updatedPlayerData[categoryIndex][nextValidImageIndex].imageUri, imageIndex: nextValidImageIndex });
+      } else {
+        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        setGameState('take');
+      }
     }
   }
 
