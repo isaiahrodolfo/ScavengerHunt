@@ -52,10 +52,10 @@ export default function PlayerGameScreen() {
     });
 
     socket.on('declareWinner', (data: Profile) => {
-      // Reset game data
-      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-      setPlayerData([]);
-      setGameState('take');
+      // // Reset game data
+      // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      // setPlayerData([]);
+      // setGameState('take');
       router.replace({
         pathname: '/(screens)/game-over',
         params: { winnerName: data.name }
@@ -63,10 +63,10 @@ export default function PlayerGameScreen() {
     });
 
     socket.on('endGame', () => {
-      // Reset game data
-      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-      setPlayerData([]);
-      setGameState('take');
+      // // Reset game data
+      // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      // setPlayerData([]);
+      // setGameState('take');
       router.replace({
         pathname: '/(screens)/game-over',
         params: { winnerName: '' } // No declared winner
