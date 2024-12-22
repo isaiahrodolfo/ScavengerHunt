@@ -28,6 +28,7 @@ export default function PlayerGameScreen() {
   const { roomState, setRoomState } = useRoomState();
   const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { setSelectedPlayerData } = useSelectedPlayerData();
+  const { setSelectedImage } = useSelectedImage();
   const { playerData, setPlayerData } = usePlayerData();
   const { gameGoals } = useGameGoals();
 

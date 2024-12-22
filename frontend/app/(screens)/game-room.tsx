@@ -11,6 +11,7 @@ import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
 import { TextInput } from 'react-native-gesture-handler';
 import { useJoinedPlayers } from '@/store/useJoinedPlayers';
+import { useSelectedImage } from '@/store/useSelectedImage';
 
 export default function GameRoomScreen() {
 
@@ -22,6 +23,7 @@ export default function GameRoomScreen() {
   const [categoryNameInput, setCategoryNameInput] = useState<string>('');
   const [imageCountInput, setImageCountInput] = useState<string>(''); // Type check, isNumber when submitting
   const { joinedPlayers, setJoinedPlayers } = useJoinedPlayers();
+  const { setSelectedImage } = useSelectedImage();
 
   // Get local search params
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
@@ -39,6 +41,9 @@ export default function GameRoomScreen() {
     socket.on('startGame', (hasModerator: boolean, gameGoals: { categoryName: string, imageCount: number }[]) => { // Receive message that there is or is not a moderator here
       console.log('starting game...'); // testing
       // console.log(playerProfiles); // testing
+      // Reset data
+      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      setPlayerData([]);
       setRoomState({ ...roomState, hasModerator, gameInProgress: true });
       setGameGoals(gameGoals);
       // TODO: Only set player data if game has moderator?
