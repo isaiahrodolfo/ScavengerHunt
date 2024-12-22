@@ -34,8 +34,13 @@ const Player = () => {
       console.log('updatedPlayerData', updatedPlayerData);
       console.log('currentModeratorSelectedImage', moderatorSelectedImage);
       if (moderatorSelectedImage.imageUri != '' && typeof moderatorSelectedImage.categoryIndex != 'undefined' && typeof moderatorSelectedImage.imageIndex != 'undefined') {
-        const updatedModeratorSelectedImage = updatedPlayerData[moderatorSelectedImage.categoryIndex!][moderatorSelectedImage.imageIndex!].imageUri;
-        setModeratorSelectedImage({ ...moderatorSelectedImage, imageUri: updatedModeratorSelectedImage });
+        // const updatedModeratorSelectedImage = updatedPlayerData[moderatorSelectedImage.categoryIndex!][moderatorSelectedImage.imageIndex!].imageUri;
+        // setModeratorSelectedImage({ ...moderatorSelectedImage, imageUri: updatedModeratorSelectedImage });
+
+        // If selected coordiates causes no selected image, use the next available image as the selected one 
+        const { categoryIndex, imageIndex } = moderatorSelectedImage;
+        const nextValidImageIndex = Math.min(imageIndex, updatedPlayerData[categoryIndex].length - 1);
+        setModeratorSelectedImage({ ...moderatorSelectedImage, imageUri: updatedPlayerData[categoryIndex][nextValidImageIndex].imageUri, imageIndex: nextValidImageIndex });
       }
       console.log('moderatorSelectedImage', moderatorSelectedImage);
     });
