@@ -36,13 +36,13 @@ const ProfileSetup = () => {
     setupProfile(roomState.roomCode, name)
       .then((data) => {
         setJoinedPlayers(data);
-        console.log('joined players', joinedPlayers); // testing
+        // console.log('joined players', joinedPlayers); // testing
+        router.replace('/(screens)/game-room');
       })
       .catch((error) => {
-        setErrorMessage(error);
+        setErrorMessage(error.message);
         return;
       })
-    router.replace('/(screens)/game-room');
   }
 
   return (
