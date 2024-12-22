@@ -109,6 +109,10 @@ export default function PlayerGameScreen() {
     }
   }
 
+  function handleNavigateToGameRoom(event: GestureResponderEvent): void {
+    router.replace('/(screens)/game-room');
+  }
+
   function imageIsSelected(): boolean {
     return (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex == 'number' && typeof selectedImage.imageIndex == 'number');
   }
@@ -127,6 +131,13 @@ export default function PlayerGameScreen() {
         </View>
       }
 
+      {/* Cancel Button (while game is in progess) */}
+      {roomState.gameInProgress && ['view', 'retake'].includes(gameState) &&
+        <View style={{ marginTop: 10 }}>
+          <Button title={'Cancel'} onPress={handlePressCancel} />
+        </View>
+      }
+
       {/* Image View (when game is over) */}
       {!roomState.gameInProgress && (imageIsSelected() ?
         <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
@@ -136,10 +147,10 @@ export default function PlayerGameScreen() {
         </View>)
       }
 
-      {/* Cancel Button */}
-      {roomState.gameInProgress && ['view', 'retake'].includes(gameState) &&
+      {/* Back to game room button (when game is over) */}
+      {!roomState.gameInProgress &&
         <View style={{ marginTop: 10 }}>
-          <Button title={'Cancel'} onPress={handlePressCancel} />
+          <Button title={'Back to Game Room'} onPress={handleNavigateToGameRoom} />
         </View>
       }
 
