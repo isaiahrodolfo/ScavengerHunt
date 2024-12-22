@@ -128,14 +128,7 @@ export default function PlayerGameScreen() {
       {/* Camera View (while game is in progess) */}
       {roomState.gameInProgress &&
         <View>
-          <Camera setHasPermissions={() => { }} />
-        </View>
-      }
-
-      {/* Cancel Button (while game is in progess) */}
-      {roomState.gameInProgress && ['view', 'retake'].includes(gameState) &&
-        <View style={{ marginTop: 10 }}>
-          <Button title={'Cancel'} onPress={handlePressCancel} />
+          <Camera setHasPermissions={() => { }} onPressCancel={handlePressCancel} />
         </View>
       }
 

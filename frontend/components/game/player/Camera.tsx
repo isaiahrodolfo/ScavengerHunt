@@ -10,12 +10,15 @@ import { socket } from '@/utils/socket';
 import { usePlayerData } from '@/store/usePlayerData';
 import CaptureButton from './CaptureButton';
 import FlipCameraButton from './FlipCameraButton';
+import DeleteImageButton from './DeleteImageButton';
+import CancelButton from './CancelButton';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
+  onPressCancel: () => void;
 }
 
-export default function Camera({ setHasPermissions }: CameraProps) {
+export default function Camera({ setHasPermissions, onPressCancel }: CameraProps) {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
@@ -46,6 +49,10 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   function toggleCameraFacing() {
     console.log('playerData', playerData);// TESTING: Using the flip camera button to check playerData
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
+  }
+
+  function handleDeleteImagePressed() {
+
   }
 
   async function takePicture() {
@@ -145,7 +152,20 @@ export default function Camera({ setHasPermissions }: CameraProps) {
 
         {/* Capture or Retake Button */}
       </View>
-      <CaptureButton onPress={handleCaptureButtonPressed} />
+
+      {/* Camera Buttons (while game is in progess) */}
+      {roomState.gameInProgress &&
+        <View style={styles.radioContainer}>
+          {/* Cancel Button */}
+          <CancelButton onPress={onPressCancel} />
+
+          {/* Radio Button */}
+          <CaptureButton onPress={handleCaptureButtonPressed} />
+
+          {/* Trash Can Button */}
+          <DeleteImageButton onPress={handleDeleteImagePressed} />
+        </View>
+      }
     </View>
   );
 }
@@ -174,6 +194,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'flex-end',
     alignItems: 'center',
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', // Vertically center items
+    justifyContent: 'center', // Adjust as needed
+    // padding: 10,
+    marginTop: 10,
+    width: '100%',
   },
   captureButton: {
     padding: 10,
