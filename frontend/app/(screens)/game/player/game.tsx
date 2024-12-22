@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, Button, GestureResponderEvent, ScrollView, Pressable, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Camera from '@/components/game/player/Camera';
 import PlayerCategoryObject from '@/components/game/player/PlayerCategoryObject';
@@ -24,8 +24,8 @@ export default function PlayerGameScreen() {
 
   const { gameState, setGameState } = useGameState();
   // const { categoryImages, setCategoryImages } = useCategoryImages();
-  const { setSelectedImage } = useSelectedImage();
-  const { roomState } = useRoomState();
+  const { selectedImage } = useSelectedImage();
+  const { roomState, setRoomState } = useRoomState();
   const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const { playerData, setPlayerData } = usePlayerData();
@@ -52,10 +52,11 @@ export default function PlayerGameScreen() {
     });
 
     socket.on('declareWinner', (data: Profile) => {
-      // Reset game data
-      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-      setPlayerData([]);
-      setGameState('take');
+      // // Reset game data
+      setRoomState({ ...roomState, gameInProgress: false });
+      // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      // setPlayerData([]);
+      // setGameState('take');
       router.replace({
         pathname: '/(screens)/game-over',
         params: { winnerName: data.name }
@@ -63,10 +64,11 @@ export default function PlayerGameScreen() {
     });
 
     socket.on('endGame', () => {
-      // Reset game data
-      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-      setPlayerData([]);
-      setGameState('take');
+      setRoomState({ ...roomState, gameInProgress: false });
+      // // Reset game data
+      // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      // setPlayerData([]);
+      // setGameState('take');
       router.replace({
         pathname: '/(screens)/game-over',
         params: { winnerName: '' } // No declared winner
@@ -83,10 +85,11 @@ export default function PlayerGameScreen() {
   function handleEndGame() {
     endGame(roomState.roomCode)
       .then(() => {
-        // Reset all game data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        setSelectedPlayerData({});
-        setPlayerProgress({});
+        setRoomState({ ...roomState, gameInProgress: false });
+        // // Reset all game data
+        // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        // setSelectedPlayerData({});
+        // setPlayerProgress({});
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: '' } // No declared winner
@@ -106,20 +109,50 @@ export default function PlayerGameScreen() {
     }
   }
 
+  function handleNavigateToGameRoom(event: GestureResponderEvent): void {
+    router.replace('/(screens)/game-room');
+  }
+
+  function imageIsSelected(): boolean {
+    return (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex == 'number' && typeof selectedImage.imageIndex == 'number');
+  }
+
   return (
     <View style={styles.container}>
-      {roomState.isHost && <Pressable style={styles.endGameButton} onPress={handleEndGame}>
+      {roomState.isHost && roomState.gameInProgress && <Pressable style={styles.endGameButton} onPress={handleEndGame}>
         <Text style={styles.endGameText}>End Game For All</Text>
       </Pressable>}
       {/* <Text style={styles.timer}>{timer}</Text> */}
 
-      {/* Camera View */}
-      <View style={styles.camera}>
-        <Camera setHasPermissions={() => { }} />
-      </View>
+      {/* Camera View (while game is in progess) */}
+      {roomState.gameInProgress &&
+        <View>
+          <Camera setHasPermissions={() => { }} />
+        </View>
+      }
 
-      {/* Cancel Button */}
-      {['view', 'retake'].includes(gameState) && <Button title={'Cancel'} onPress={handlePressCancel} />}
+      {/* Cancel Button (while game is in progess) */}
+      {roomState.gameInProgress && ['view', 'retake'].includes(gameState) &&
+        <View style={{ marginTop: 10 }}>
+          <Button title={'Cancel'} onPress={handlePressCancel} />
+        </View>
+      }
+
+      {/* Image View (when game is over) */}
+      {!roomState.gameInProgress && (imageIsSelected() ?
+        <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+        :
+        <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
+          <Text style={{ textAlign: 'center' }}>Select an image</Text>
+        </View>)
+      }
+
+      {/* Back to game room button (when game is over) */}
+      {!roomState.gameInProgress &&
+        <View style={{ marginTop: 10 }}>
+          <Button title={'Back to Game Room'} onPress={handleNavigateToGameRoom} />
+        </View>
+      }
 
       <ScrollView
         style={[styles.scrollContainer, { width: width - 20 }]}
@@ -155,9 +188,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
   },
-  camera: {
-    // flex: 1,
-    // aspectRatio: 3 / 4,
+  image: {
+    flex: 1,
+    aspectRatio: 3 / 4,
   },
   scrollContainer: {
     flex: 1,

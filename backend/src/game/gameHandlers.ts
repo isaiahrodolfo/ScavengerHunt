@@ -154,8 +154,6 @@ export function handleDeclareWinner(roomCode: string, id: string, callback: Call
   // Reset game
   rooms[roomCode] = {
     ...rooms[roomCode], // Keep the same game goals
-    gameData: {}, // Reset all game data and progress
-    gameProgress: {},
     hostOnPlayerPage: '', // Moderator starts back on player list page // TODO: Rename this "moderatorOnPlayerPage"
   }
 
@@ -173,9 +171,7 @@ export function handleEndGame(roomCode: string, callback: Callback, socket: any)
 
   // Reset game
   rooms[roomCode] = {
-    ...rooms[roomCode], // Keep the same game goals
-    gameData: {}, // Reset all game data and progress
-    gameProgress: {},
+    ...rooms[roomCode], // Keep the same game goals, etc.
     hostOnPlayerPage: '', // Moderator starts back on player list page // TODO: Rename this "moderatorOnPlayerPage"
   }
     

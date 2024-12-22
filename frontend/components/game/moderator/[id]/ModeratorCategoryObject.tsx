@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { CameraCapturedPicture } from 'expo-camera';
 import { ImageAndLocation, Status } from '@/types/game';
 import { useGameState } from '@/store/useGameState';
-import { useSelectedImage } from '@/store/useModeratorSelectedImage';
+import { useModeratorSelectedImage } from '@/store/useModeratorSelectedImage';
 import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
 
@@ -17,7 +17,7 @@ interface CategoryObjectProps {
 
 const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text, images }: CategoryObjectProps) => {
 
-  const { selectedImage, setSelectedImage } = useSelectedImage();
+  const { moderatorSelectedImage, setModeratorSelectedImage } = useModeratorSelectedImage();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -29,9 +29,9 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
   // }, [images]); // This will trigger whenever images change
 
   function handleImagePressed({ imageUri, categoryIndex, imageIndex }: { imageUri: string, categoryIndex: number, imageIndex: number }) {
-    setSelectedImage({ imageUri, categoryIndex, imageIndex });
+    setModeratorSelectedImage({ imageUri, categoryIndex, imageIndex });
     console.log("categoryIndex, imageIndex", categoryIndex, imageIndex); // testing
-    console.log("categoryIndex, imageIndex", selectedImage.categoryIndex, selectedImage.imageIndex); // testing
+    console.log("categoryIndex, imageIndex", moderatorSelectedImage.categoryIndex, moderatorSelectedImage.imageIndex); // testing
   }
 
   function getStatusColor(status: Status): string {
@@ -81,7 +81,7 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                 >
                   <Image
                     source={{ uri: image.imageUri }}
-                    style={[styles.image, selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
+                    style={[styles.image, moderatorSelectedImage.categoryIndex == categoryIndex && moderatorSelectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 }]}
                   />
                   {/* Image number */}
                   <View style={[styles.indexCircle, { backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'yellow', }]}>
@@ -91,7 +91,7 @@ const ModeratorCategoryObject = ({ categoryIndex, backgroundColor, number, text,
                   <View
                     style={[
                       styles.overlay,
-                      selectedImage.categoryIndex == categoryIndex && selectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
+                      moderatorSelectedImage.categoryIndex == categoryIndex && moderatorSelectedImage.imageIndex == index && { borderColor: 'blue', borderWidth: 3 },
                       {
                         backgroundColor: image.status == 'valid' ? 'green' : image.status == 'invalid' ? 'red' : 'gray',
                         opacity: image.status == 'unchecked' ? 0 : 0.2, // Adjust the transparency

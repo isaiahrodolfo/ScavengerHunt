@@ -3,7 +3,7 @@ import React from 'react'
 import { useImageStatus } from '@/store/useImageStatus'
 import { Status } from '@/types/game'
 import { socket } from '@/utils/socket'
-import { useSelectedImage } from '@/store/useModeratorSelectedImage'
+import { useModeratorSelectedImage } from '@/store/useModeratorSelectedImage'
 import { setImageStatus } from '@/handlers/gameHandlers'
 import { useRoomState } from '@/store/useRoomState'
 import { usePlayerProgress } from '@/store/usePlayerProgress'
@@ -15,17 +15,17 @@ interface ValidInvalidButtonsProps {
 const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   const { roomState } = useRoomState();
-  const { selectedImage } = useSelectedImage();
+  const { moderatorSelectedImage } = useModeratorSelectedImage();
   const { setPlayerProgress } = usePlayerProgress(); // Multiple players' progresses
 
   async function handleSetImageStatus(status: Status) {
-    if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {
+    if (moderatorSelectedImage.imageUri != '' && typeof moderatorSelectedImage.categoryIndex != 'undefined' && typeof moderatorSelectedImage.imageIndex != 'undefined') {
       setImageStatus(
         roomState.roomCode,
         id,
         {
-          categoryIndex: selectedImage.categoryIndex!,
-          imageIndex: selectedImage.imageIndex!
+          categoryIndex: moderatorSelectedImage.categoryIndex!,
+          imageIndex: moderatorSelectedImage.imageIndex!
         },
         status) // Update status globally
         .then((data) => {
@@ -37,7 +37,7 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   return (
     <View style={styles.container}>
-      {selectedImage.imageUri != '' && <>
+      {roomState.gameInProgress && moderatorSelectedImage.imageUri != '' && <>
         <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
           <Text style={styles.text}>Valid</Text>
         </Pressable>

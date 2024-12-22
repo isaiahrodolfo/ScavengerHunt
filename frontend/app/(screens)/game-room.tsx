@@ -39,7 +39,7 @@ export default function GameRoomScreen() {
     socket.on('startGame', (hasModerator: boolean, gameGoals: { categoryName: string, imageCount: number }[]) => { // Receive message that there is or is not a moderator here
       console.log('starting game...'); // testing
       // console.log(playerProfiles); // testing
-      setRoomState({ ...roomState, hasModerator });
+      setRoomState({ ...roomState, hasModerator, gameInProgress: true });
       setGameGoals(gameGoals);
       // TODO: Only set player data if game has moderator?
       setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
@@ -72,7 +72,7 @@ export default function GameRoomScreen() {
 
     await startRoom(roomState.roomCode, editableGameGoals, isModerator)
       .then((data) => {
-        setRoomState({ ...roomState, isModerator, hasModerator: isModerator });
+        setRoomState({ ...roomState, isModerator, hasModerator: isModerator, gameInProgress: true });
         setGameGoals(editableGameGoals);
         setPlayerProfiles(data);
         if (!isModerator) {
@@ -91,7 +91,7 @@ export default function GameRoomScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false, gameInProgress: false });
       router.replace('/(screens)/home');
     }
   }
@@ -101,7 +101,7 @@ export default function GameRoomScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false, gameInProgress: false });
       router.replace('/(screens)/home');
     }
   }

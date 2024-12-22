@@ -102,6 +102,14 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
     }
   }
 
+  // Reset game data and progress
+  rooms[roomCode] = {
+    ...rooms[roomCode], 
+    hostIsModerator: true,
+    gameData: {},
+    gameProgress: {},
+  }
+
   // console.log('players after', rooms[roomCode].players); // testing players after
 
   if (isModerator) {

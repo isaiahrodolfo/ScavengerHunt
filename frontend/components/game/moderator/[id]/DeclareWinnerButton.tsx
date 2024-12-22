@@ -5,7 +5,7 @@ import { useRoomState } from '@/store/useRoomState'
 import { declareWinner } from '@/handlers/gameHandlers'
 import { router } from 'expo-router'
 import { usePlayerProfiles } from '@/store/usePlayerProfiles'
-import { useSelectedImage } from '@/store/useModeratorSelectedImage';
+import { useModeratorSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 
@@ -16,20 +16,13 @@ interface DeclareWinnerButtonProps {
 
 const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
 
-  const { roomState } = useRoomState();
+  const { roomState, setRoomState } = useRoomState();
   const { playerProfiles } = usePlayerProfiles();
-  const { setPlayerProgress } = usePlayerProgress(); // Multiple players' progresses
-  const { setSelectedImage } = useSelectedImage();
-  const { setSelectedPlayerData } = useSelectedPlayerData();
-
 
   function handleDeclareWinner() {
     declareWinner(roomState.roomCode, id)
       .then(() => {
-        // Reset all game data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        setSelectedPlayerData({});
-        setPlayerProgress({});
+        setRoomState({ ...roomState, gameInProgress: false });
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: playerProfiles[id].name }
@@ -39,9 +32,9 @@ const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.button} onPress={() => { handleDeclareWinner() }}>
+      {roomState.gameInProgress && <Pressable style={styles.button} onPress={() => { handleDeclareWinner() }}>
         <Text style={styles.text}>Declare Winner</Text>
-      </Pressable>
+      </Pressable>}
     </View>
   )
 }

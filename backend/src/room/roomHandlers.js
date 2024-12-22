@@ -85,14 +85,16 @@ function handleStartRoom(roomCode, gameGoals, isModerator, callback, socket) {
     // const emptyPlayerData = gameGoals.map(({ imageCount }) => {
     //   return new Array(imageCount).fill({ image: '', status: 'none' });
     // });  
-    console.log('players before', types_1.rooms[roomCode].players); // testing players before
+    // console.log('players before', rooms[roomCode].players); // testing players before
     // Remove players with no name
     for (const playerId of Object.keys(types_1.rooms[roomCode].players)) {
         if (!types_1.rooms[roomCode].players[playerId].name) {
             delete types_1.rooms[roomCode].players[playerId];
         }
     }
-    console.log('players after', types_1.rooms[roomCode].players); // testing players after
+    // Reset game data and progress
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true, gameData: {}, gameProgress: {} });
+    // console.log('players after', rooms[roomCode].players); // testing players after
     if (isModerator) {
         types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { hostIsModerator: true });
         // Moderator joins rooms of players, so they can emit to each one separately

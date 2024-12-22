@@ -2,15 +2,15 @@ import { ImageAndTargetLocation } from '@/types/game';
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-interface SelectedImage {
-  selectedImage: {imageUri: string; categoryIndex: number | undefined; imageIndex: number | undefined};
-  setSelectedImage: (to: {imageUri: string; categoryIndex: number | undefined; imageIndex: number | undefined}) => void;
+interface ModeratorSelectedImage {
+  moderatorSelectedImage: {imageUri: string; categoryIndex: number | undefined; imageIndex: number | undefined};
+  setModeratorSelectedImage: (to: {imageUri: string; categoryIndex: number | undefined; imageIndex: number | undefined}) => void;
 }
 
-export const useSelectedImage = create<SelectedImage>()(
+export const useModeratorSelectedImage = create<ModeratorSelectedImage>()(
   // devtools
   ((set) => ({
-    selectedImage: {imageUri: '', categoryIndex: 0, imageIndex: 0},
-    setSelectedImage: (to) => set((state) => ({ selectedImage: to })),
+    moderatorSelectedImage: {imageUri: '', categoryIndex: 0, imageIndex: 0},
+    setModeratorSelectedImage: (to) => set((state) => ({ moderatorSelectedImage: to })),
   }))
 );

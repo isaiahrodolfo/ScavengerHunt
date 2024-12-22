@@ -24,7 +24,7 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   const { selectedImage, setSelectedImage } = useSelectedImage();
   const { categoryImages, setCategoryImages } = useCategoryImages();
   const { playerData, setPlayerData } = usePlayerData();
-  const { roomState, setRoomState } = useRoomState();
+  const { roomState } = useRoomState();
 
   const cameraRef = useRef<any>(null);
 
@@ -44,8 +44,6 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   setHasPermissions(true);
 
   function toggleCameraFacing() {
-    // setRoomState({ ...roomState }); // TESTING: Using the flip camera button to check roomState
-    // socket.emit('logState', roomState.roomCode);// TESTING: Using the flip camera button to check server state
     console.log('playerData', playerData);// TESTING: Using the flip camera button to check playerData
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
