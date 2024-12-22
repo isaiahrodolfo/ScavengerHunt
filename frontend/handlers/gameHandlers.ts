@@ -26,6 +26,30 @@ export function insertImage(roomCode: string, imageAndLocation: ImageAndLocation
   });
 }
 
+export function deleteImage(roomCode: string, categoryIndex: number, imageIndex: number): Promise<string> {
+  console.log('sending photo to server...'); // testing 
+  return new Promise((resolve, reject) => {
+    socket.emit('deleteImage', roomCode, categoryIndex, imageIndex, (response: Callback) => {
+      if (response.success) {
+        resolve('image deleted');
+      } else {
+        switch (response.type) {
+          case 'RoomDoesNotExist':
+            resolve('Error: The room you are trying to connect to does not exist.');
+          case 'UserNotFound':
+            resolve('Error: The user was not found in the server.');
+          case 'UnknownError':
+            resolve('An unexpected error occurred. Please try again later.');
+            break;
+          default: 
+            resolve (response.error || 'An unknown error occurred.');
+            break;
+        }
+      }
+    });
+  });
+}
+
 export function getPlayerData(roomCode: string, id: string) {
   return new Promise((resolve, reject) => {
     socket.emit('getPlayerData', roomCode, id, ((response: Callback) => {

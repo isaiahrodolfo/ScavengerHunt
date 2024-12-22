@@ -5,7 +5,7 @@ import { useGameState } from '@/store/useGameState';
 import { useSelectedImage } from '@/store/useSelectedImage';
 import { useCategoryImages } from '@/store/useCategoryImages';
 import { useRoomState } from '@/store/useRoomState';
-import { insertImage } from '@/handlers/gameHandlers';
+import { deleteImage, insertImage } from '@/handlers/gameHandlers';
 import { socket } from '@/utils/socket';
 import { usePlayerData } from '@/store/usePlayerData';
 import CaptureButton from './CaptureButton';
@@ -52,7 +52,23 @@ export default function Camera({ setHasPermissions, onPressCancel }: CameraProps
   }
 
   function handleDeleteImagePressed() {
-
+    const { categoryIndex, imageIndex } = selectedImage;
+    if (typeof categoryIndex == 'number' && typeof imageIndex == 'number') {
+      // // UPDATE PLAYER DATA GLOBALLY
+      // deleteImage(roomState.roomCode, categoryIndex, imageIndex)
+      //   .catch((error: Error) => {
+      //     console.log(error.message);
+      //   })
+      // UPDATE PLAYER DATA LOCALLY
+      console.log('playerData', playerData); // testing
+      const updatedPlayerData = playerData;
+      updatedPlayerData[categoryIndex].splice(imageIndex, 1);
+      console.log('updatedPlayerData', updatedPlayerData); // testing
+      setPlayerData(updatedPlayerData);
+      const nextValidImageIndex = Math.min(imageIndex, updatedPlayerData[categoryIndex].length - 1);
+      // If selected coordiates causes no selected image, use the next available image as the selected one 
+      setSelectedImage({ ...selectedImage, imageUri: updatedPlayerData[categoryIndex][nextValidImageIndex].imageUri, imageIndex: nextValidImageIndex });
+    }
   }
 
   async function takePicture() {
