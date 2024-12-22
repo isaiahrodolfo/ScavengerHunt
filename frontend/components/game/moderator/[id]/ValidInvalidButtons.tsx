@@ -54,19 +54,21 @@ export default ValidInvalidButtons
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row', // TODO: Add spacing between these buttons
-    // justifyContent: 'space-between',
-    // maxWidth: 500,
+    justifyContent: 'space-between',
+    maxWidth: 300,
     marginVertical: 10,
   },
   valid: {
     padding: 10,
     backgroundColor: 'green',
     borderRadius: 10,
+    marginRight: 5
   },
   invalid: {
     padding: 10,
     backgroundColor: 'red',
     borderRadius: 10,
+    marginLeft: 5
   },
   text: {
     fontSize: 20,

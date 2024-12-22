@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   categoryWrapper: {
-    width: '45%', // Two per row with some spacing
-    height: 130,
+    width: '95%', // One per row with some spacing
+    height: 135,
     marginHorizontal: 10, // Horizontal spacing
     marginVertical: 10, // Fixed vertical spacing
     aspectRatio: 1.5, // Rectangle shape

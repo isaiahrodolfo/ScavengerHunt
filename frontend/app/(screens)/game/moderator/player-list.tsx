@@ -1,10 +1,10 @@
-import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, GestureResponderEvent, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import ProgressBar from '../../../../components/game/moderator/playerList/ProgressBar'
 import { router, useFocusEffect } from 'expo-router'
 import { socket } from '@/utils/socket'
 import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/types/game'
-import { getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
+import { endGame, getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { useRoomState } from '@/store/useRoomState'
 import { useSelectedImage } from '@/store/useModeratorSelectedImage'
@@ -71,11 +71,15 @@ const dummyUserProgress = {
 
 export default function PlayerList() {
 
+  const { width } = useWindowDimensions();
+
   // TODO: Show all players at onset, even if they don't have photos yet
   const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
+  const { selectedImage, setSelectedImage } = useSelectedImage();
+  const { setSelectedPlayerData } = useSelectedPlayerData();
   const [sortedPlayerProgress, setSortedPlayerProgress] = useState<PlayerProgressValue[]>();
 
   // Update UI when data changes
@@ -131,37 +135,36 @@ export default function PlayerList() {
         return b.images.invalid - a.images.invalid;
       })
     );
-  }, [playerProgress])
+  }, [playerProgress]);
+
+  // When navigate back to this page, moderator is not on any player's page
+  useFocusEffect(
+    useCallback(() => {
+
+      // Reset player-based data
+      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      console.log('selectedImage', selectedImage); // testing
+      // setSelectedPlayerData(null);
+
+      // Tell the server that the moderator is back at Player List Page
+      const handleNavigation = async () => {
+        const res = await navigateToPlayerList(roomState.roomCode);
+        if (res) {
+          console.error(res);
+        }
+      };
+
+      handleNavigation();
+    }, [])
+  );
 
   // Convert object to array for FlatList
   // const userArray = Object.values(dummyUserProgress);
 
   // Render each user's progress item
-  const Item = ({ id, images, sets }: PlayerProgressValue) => {
+  const Player = ({ id, images, sets }: PlayerProgressValue) => {
 
-    const { selectedImage, setSelectedImage } = useSelectedImage();
     const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
-
-    // When navigate back to this page, moderator is not on any player's page
-    useFocusEffect(
-      useCallback(() => {
-
-        // Reset player-based data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        console.log('selectedImage', selectedImage); // testing
-        // setSelectedPlayerData(null);
-
-        // Tell the server that the moderator is back at Player List Page
-        const handleNavigation = async () => {
-          const res = await navigateToPlayerList(roomState.roomCode);
-          if (res) {
-            console.error(res);
-          }
-        };
-
-        handleNavigation();
-      }, [])
-    );
 
     async function handleItemPressed(event: GestureResponderEvent): Promise<void> { // ? What is Promise<void>?
       const data = await getPlayerData(roomState.roomCode, id);
@@ -191,8 +194,8 @@ export default function PlayerList() {
       <Pressable style={styles.item} onPress={handleItemPressed}>
         <Text style={styles.title}>{playerProfiles[id].name}</Text>
         <View style={styles.progress}>
-          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid) + "/" + calculateTotalImages()}</Text>
-          <View style={styles.progressBar}>
+          <Text style={styles.imagesProgress}>{(images.unchecked + images.valid + images.completed) + "/" + calculateTotalImages()}</Text>
+          <View style={[styles.progressBar, { maxWidth: width * 0.65, minWidth: 300, overflow: 'hidden' }]}>
             <ProgressBar type={'none'} count={calculateTotalImages() - images.invalid - images.unchecked - images.valid - images.completed} totalImages={calculateTotalImages()} />
             <ProgressBar type={'invalid'} count={images.invalid} totalImages={calculateTotalImages()} />
             <ProgressBar type={'unchecked'} count={images.unchecked} totalImages={calculateTotalImages()} />
@@ -204,15 +207,38 @@ export default function PlayerList() {
     );
   };
 
+  function handleEndGame() {
+    endGame(roomState.roomCode)
+      .then(() => {
+        // Reset all game data
+        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        setSelectedPlayerData({});
+        setPlayerProgress({});
+        router.replace({
+          pathname: '/(screens)/game-over',
+          params: { winnerName: '' } // No declared winner
+        });
+      })
+      .catch((error: Error) => {
+        // TODO: Error message
+        console.error(error);
+      })
+  }
+
   // All users as a list
   return (
-    <ScrollView style={styles.container}>
-      <FlatList
-        data={sortedPlayerProgress}
-        renderItem={({ item }) => <Item {...item} />}
-        keyExtractor={(item) => item.id}
-      />
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView >
+        <FlatList
+          data={sortedPlayerProgress}
+          renderItem={({ item }) => <Player {...item} />}
+          keyExtractor={(item) => item.id}
+        />
+      </ScrollView>
+      <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
+        <Text style={styles.buttonText}>End Game For All</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -249,5 +275,19 @@ const styles = StyleSheet.create({
   imagesProgress: {
     fontSize: 16,
     margin: 10
-  }
+  },
+  endGameButton: {
+    position: 'absolute',
+    bottom: 0, // Anchors the button to the bottom
+    left: 0,
+    right: 0, // Ensures the button spans the full width of the screen
+    backgroundColor: 'lightgray',
+    padding: 6,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#ff4f4b',
+    // color: '#ff6865',
+    fontSize: 10,
+  },
 });

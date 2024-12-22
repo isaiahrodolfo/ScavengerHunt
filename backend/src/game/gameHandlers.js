@@ -5,6 +5,7 @@ exports.handleGetPlayerData = handleGetPlayerData;
 exports.handleNavigateToPlayerList = handleNavigateToPlayerList;
 exports.handleSetImageStatus = handleSetImageStatus;
 exports.handleDeclareWinner = handleDeclareWinner;
+exports.handleEndGame = handleEndGame;
 const handler_helpers_1 = require("../handler-helpers");
 const types_1 = require("../types");
 const gameHandlerHelpers_1 = require("./gameHandlerHelpers");
@@ -120,5 +121,13 @@ function handleDeclareWinner(roomCode, id, callback, socket) {
     types_1.rooms[roomCode].players[id];
     // TODO: Return the progress for all players
     socket.to(roomCode).emit('declareWinner', types_1.rooms[roomCode].players[id]); // Return with the winner
+    callback({ success: true });
+}
+function handleEndGame(roomCode, callback, socket) {
+    // TODO: Add error handlers here
+    // Reset game
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { gameData: {}, gameProgress: {}, hostOnPlayerPage: '' });
+    // TODO: Return the progress for all players
+    socket.to(roomCode).emit('endGame');
     callback({ success: true });
 }

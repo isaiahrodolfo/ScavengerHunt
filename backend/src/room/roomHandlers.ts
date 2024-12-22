@@ -48,6 +48,13 @@ export function handleJoinRoom(roomCode: string, callback: Callback, socket: any
   // Check that user is not already in any room
   if (checkIfInAnyRoom(socket.id, callback)) return;
 
+  // TODO: Write tests for these new types of errors
+  // Make sure game has not yet started
+  if (rooms[roomCode].started == true) {
+    callback({ success: false, type: 'RoomStarted', error: 'Cannot join a room that has already started' });
+    return;
+  }
+
   // Add the user to the room
   rooms[roomCode].players[socket.id] = {
     id: socket.id,
@@ -69,7 +76,7 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
   // Ensure the user is the host
   if (checkIfNotHost(roomCode, callback, socket.id)) return;
 
-  // TODO: Write tests for these new types
+  // TODO: Write tests for these new types of errors
   // Ensure the room has players (excluding the host)
   if (Object.keys(rooms[roomCode].players).length <= 1) {
     callback({ success: false, type: 'RoomEmpty', error: 'Cannot start a room with no players' });
@@ -85,6 +92,17 @@ export function handleStartRoom(roomCode: string, gameGoals: {categoryName: stri
   // const emptyPlayerData = gameGoals.map(({ imageCount }) => {
   //   return new Array(imageCount).fill({ image: '', status: 'none' });
   // });  
+
+  // console.log('players before', rooms[roomCode].players); // testing players before
+
+  // Remove players with no name
+  for (const playerId of Object.keys(rooms[roomCode].players)) {
+    if (!rooms[roomCode].players[playerId].name) {
+      delete rooms[roomCode].players[playerId];
+    }
+  }
+
+  // console.log('players after', rooms[roomCode].players); // testing players after
 
   if (isModerator) {
     rooms[roomCode] = {
@@ -239,6 +257,13 @@ export function handleExitRoomOnDisconnect(socket: any) {
 export function handleSetupProfile(roomCode: string, name: string, id: string, callback: Callback, socket: any) {
   // TODO: Add error handlers here
 
+  // TODO: Write tests for these new types of errors
+  // Make sure game has not yet started
+  if (rooms[roomCode].started == true) {
+    callback({ success: false, type: 'RoomStarted', error: 'Cannot join a room that has already started' });
+    return;
+  }
+
   // Set name
   rooms[roomCode].players[id] = { id, name };
 
@@ -246,6 +271,8 @@ export function handleSetupProfile(roomCode: string, name: string, id: string, c
   const playerNames = Object.values(rooms[roomCode].players).map((profile) => profile.name);
 
   socket.to(roomCode).emit('getPlayers', playerNames); // Send player names to others
+
+  // console.log('playerNames', playerNames); // testing
 
   callback({ success: true, data: playerNames }); // Send player names to yourself
 }

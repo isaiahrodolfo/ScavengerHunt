@@ -119,3 +119,25 @@ export function declareWinner(roomCode: string, id: string): Promise<string> {
     });
   });
 }
+
+export function endGame(roomCode: string): Promise<string> {
+  // console.log('winner is', id); // testing
+  return new Promise((resolve, reject) => {
+    socket.emit('endGame', roomCode, (response: Callback) => {
+      if (response.success) {
+        resolve('');
+      } else {
+        switch (response.type) {
+          case 'RoomDoesNotExist':
+            reject(new Error('Error: The room you are trying to connect to does not exist.'));
+          case 'UnknownError':
+            reject(new Error('An unexpected error occurred. Please try again later.'));
+            break;
+          default: 
+          reject(new Error (response.error || 'An unknown error occurred.'));
+            break;
+        }
+      }
+    });
+  });
+}

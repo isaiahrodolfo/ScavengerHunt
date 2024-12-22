@@ -41,13 +41,14 @@ export default function GameRoomScreen() {
       // console.log(playerProfiles); // testing
       setRoomState({ ...roomState, hasModerator });
       setGameGoals(gameGoals);
+      // TODO: Only set player data if game has moderator?
       setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
       // setPlayerProfiles(playerProfiles);
       router.replace('/(screens)/countdown');
     });
 
-    // Get the players who have joined
     // TODO: Remove player if they disconnect
+    // Get the players who have joined
     socket.on('getPlayers', (joinedPlayers: string[]) => {
       console.log('joinedPlayers', joinedPlayers); // testing
       setJoinedPlayers(joinedPlayers);
@@ -65,15 +66,18 @@ export default function GameRoomScreen() {
   async function handleStartRoom() {
     // Check if the host has made one or more goals
     if (!editableGameGoals || editableGameGoals.length === 0) {
-      setErrorMessage('You must add at least one game goal before starting the game.');
+      setErrorMessage('You must add at least one goal before starting the game.');
       return;
     }
-    // TODO: If host is not moderator, they don't need the player names
+
     await startRoom(roomState.roomCode, editableGameGoals, isModerator)
       .then((data) => {
-        setRoomState({ ...roomState, isModerator, hasModerator: true });
+        setRoomState({ ...roomState, isModerator, hasModerator: isModerator });
         setGameGoals(editableGameGoals);
         setPlayerProfiles(data);
+        if (!isModerator) {
+          setPlayerData(Array.from({ length: gameGoals.length }, () => ([])));
+        }
         console.log('player profiles', data);
         router.replace('/(screens)/countdown');
       })
@@ -128,6 +132,7 @@ export default function GameRoomScreen() {
 
   function handleDeleteCategory(index: number) {
     const updatedEditableGameGoals = editableGameGoals.filter((_, i) => i !== index); // This makes sure remount
+    console.log('updatedEditableGameGoals', updatedEditableGameGoals); // testing
     setEditableGameGoals(updatedEditableGameGoals);
     setErrorMessage(null); // Clear any previous error
   }
@@ -142,12 +147,24 @@ export default function GameRoomScreen() {
   };
 
   const JoinedPlayer = ({ name, index }: { name: string, index: number }) => {
-    return <View style={{
-      flexDirection: 'row', alignContent: 'center',
-      display: index == 0 && isModerator ? 'none' : 'flex' // If host is moderator, they are not playing
-    }}>
-      <Text>{name}</Text>
-    </View>
+    if (index == 0) {
+      return (
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Host</Text>
+          <Text style={{ marginBottom: 20 }}>{name}</Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Players</Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row' }}>
+          <Text>{name}</Text>
+          <Text style={{ color: 'gray' }}> {index == 0 && '(Host)'}</Text>
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -193,7 +210,6 @@ export default function GameRoomScreen() {
       )}
       {/* Joined Players List */}
       <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Joined Players</Text>
         <FlatList
           data={joinedPlayers}
           renderItem={({ item, index }) => <JoinedPlayer name={item} index={index} />}

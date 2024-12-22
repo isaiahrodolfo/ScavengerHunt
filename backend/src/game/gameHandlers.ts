@@ -167,3 +167,20 @@ export function handleDeclareWinner(roomCode: string, id: string, callback: Call
 
   callback({ success: true});
 }
+
+export function handleEndGame(roomCode: string, callback: Callback, socket: any) {
+  // TODO: Add error handlers here
+
+  // Reset game
+  rooms[roomCode] = {
+    ...rooms[roomCode], // Keep the same game goals
+    gameData: {}, // Reset all game data and progress
+    gameProgress: {},
+    hostOnPlayerPage: '', // Moderator starts back on player list page // TODO: Rename this "moderatorOnPlayerPage"
+  }
+    
+  // TODO: Return the progress for all players
+  socket.to(roomCode).emit('endGame');
+
+  callback({ success: true});
+}

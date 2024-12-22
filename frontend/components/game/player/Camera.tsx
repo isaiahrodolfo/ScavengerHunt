@@ -8,6 +8,8 @@ import { useRoomState } from '@/store/useRoomState';
 import { insertImage } from '@/handlers/gameHandlers';
 import { socket } from '@/utils/socket';
 import { usePlayerData } from '@/store/usePlayerData';
+import CaptureButton from './CaptureButton';
+import FlipCameraButton from './FlipCameraButton';
 
 interface CameraProps {
   setHasPermissions: (hasPermissions: boolean) => void;
@@ -119,37 +121,33 @@ export default function Camera({ setHasPermissions }: CameraProps) {
   }
 
   return (
-    <View
-      style={styles.container}
-    >
-      {/* Camera View */}
-      <CameraView
-        ref={cameraRef}
-        style={[styles.camera, { aspectRatio: 3 / 4, }]}
-        facing={facing}
-        onCameraReady={() => setIsCameraReady(true)}
+    <View style={{ alignItems: 'center' }}>
+      <View
+        style={styles.container}
       >
-        {/* Image Overlay */}
-        {['put', 'view'].includes(gameState) && (
-          <Image
-            style={StyleSheet.absoluteFillObject}
-            source={{ uri: selectedImage.imageUri }}
-          />
-        )}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+        {/* Camera View */}
+        <CameraView
+          ref={cameraRef}
+          style={[styles.camera, { aspectRatio: 3 / 4, }]}
+          facing={facing}
+          onCameraReady={() => setIsCameraReady(true)}
+        >
+          {/* Image Overlay */}
+          {['put', 'view'].includes(gameState) && (
+            <Image
+              style={StyleSheet.absoluteFillObject}
+              source={{ uri: selectedImage.imageUri }}
+            />
+          )}
+          {/* Flip Camera Button */}
+          <View style={styles.flipCameraButtonContainer}>
+            <FlipCameraButton onPress={toggleCameraFacing} />
+          </View>
+        </CameraView>
 
-      {/* Capture or Retake Button */}
-      <TouchableOpacity
-        style={styles.captureButton}
-        onPress={handleCaptureButtonPressed}
-      >
-        <Text style={styles.text}>{['put', 'view'].includes(gameState) ? 'Retake' : 'Take Photo'}</Text>
-      </TouchableOpacity>
+        {/* Capture or Retake Button */}
+      </View>
+      <CaptureButton onPress={handleCaptureButtonPressed} />
     </View>
   );
 }
@@ -158,7 +156,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    minWidth: 220
   },
   camera: {
     flex: 1,
@@ -169,11 +167,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingBottom: 10,
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
+  flipCameraButtonContainer: {
+    top: 240,
+    left: 170,
+    position: 'relative'
   },
   button: {
     flex: 1,

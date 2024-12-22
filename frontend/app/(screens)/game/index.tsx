@@ -6,7 +6,7 @@ export default function GameScreen() {
   const { roomState } = useRoomState();
 
   if (roomState.isModerator) {
-    router.replace('/(screens)/game/moderator/playerList');
+    router.replace('/(screens)/game/moderator/player-list');
   } else {
     router.replace('/(screens)/game/player/game')
   }

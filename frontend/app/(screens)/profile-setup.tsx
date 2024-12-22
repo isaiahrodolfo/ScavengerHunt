@@ -10,7 +10,7 @@ const ProfileSetup = () => {
 
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for storing error message
-  const { setJoinedPlayers } = useJoinedPlayers();
+  const { joinedPlayers, setJoinedPlayers } = useJoinedPlayers();
 
   const { roomState } = useRoomState();
 
@@ -36,13 +36,13 @@ const ProfileSetup = () => {
     setupProfile(roomState.roomCode, name)
       .then((data) => {
         setJoinedPlayers(data);
+        // console.log('joined players', joinedPlayers); // testing
+        router.replace('/(screens)/game-room');
       })
       .catch((error) => {
-        setErrorMessage(error);
+        setErrorMessage(error.message);
         return;
-
       })
-    router.replace('/(screens)/game-room');
   }
 
   return (
