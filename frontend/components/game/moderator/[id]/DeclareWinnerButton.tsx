@@ -16,12 +16,13 @@ interface DeclareWinnerButtonProps {
 
 const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
 
-  const { roomState } = useRoomState();
+  const { roomState, setRoomState } = useRoomState();
   const { playerProfiles } = usePlayerProfiles();
 
   function handleDeclareWinner() {
     declareWinner(roomState.roomCode, id)
       .then(() => {
+        setRoomState({ ...roomState, gameInProgress: false });
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: playerProfiles[id].name }
@@ -31,9 +32,9 @@ const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.button} onPress={() => { handleDeclareWinner() }}>
+      {roomState.gameInProgress && <Pressable style={styles.button} onPress={() => { handleDeclareWinner() }}>
         <Text style={styles.text}>Declare Winner</Text>
-      </Pressable>
+      </Pressable>}
     </View>
   )
 }

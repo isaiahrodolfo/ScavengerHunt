@@ -3,4 +3,5 @@ export type State = {
   isHost: boolean;
   isModerator: boolean;
   hasModerator: boolean;
+  gameInProgress: boolean;
 };

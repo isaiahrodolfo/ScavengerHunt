@@ -75,7 +75,7 @@ export default function PlayerList() {
 
   // TODO: Show all players at onset, even if they don't have photos yet
   const { playerProgress, setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
-  const { roomState } = useRoomState();
+  const { roomState, setRoomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
   const { moderatorSelectedImage, setModeratorSelectedImage } = useModeratorSelectedImage();
@@ -210,6 +210,7 @@ export default function PlayerList() {
   function handleEndGame() {
     endGame(roomState.roomCode)
       .then(() => {
+        setRoomState({ ...roomState, gameInProgress: false });
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: '' } // No declared winner
@@ -231,9 +232,9 @@ export default function PlayerList() {
           keyExtractor={(item) => item.id}
         />
       </ScrollView>
-      <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
+      {roomState.gameInProgress && <TouchableOpacity style={styles.endGameButton} onPress={handleEndGame}>
         <Text style={styles.buttonText}>End Game For All</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>}
     </View>
   );
 };

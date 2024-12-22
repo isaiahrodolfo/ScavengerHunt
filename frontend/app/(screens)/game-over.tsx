@@ -75,7 +75,7 @@ export default function GameOverScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false, gameInProgress: false });
       resetGameVariables();
       router.replace('/(screens)/home');
     }
@@ -86,7 +86,7 @@ export default function GameOverScreen() {
     if (res) {
       setErrorMessage(res);
     } else {
-      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false });
+      setRoomState({ roomCode: '', isHost: false, isModerator: false, hasModerator: false, gameInProgress: false });
       resetGameVariables();
       router.replace('/(screens)/home');
     }

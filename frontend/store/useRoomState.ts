@@ -12,7 +12,7 @@ const createRoomStore = () =>
   createStore<RoomState>()(
     // devtools
     ((set) => ({
-      roomState: { roomCode: '', isHost: false, isModerator: false, hasModerator: false },
+      roomState: { roomCode: '', isHost: false, isModerator: false, hasModerator: false, gameInProgress: false},
       setRoomState: (to) => set(() => ({ roomState: to })),
     }))
   );

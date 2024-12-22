@@ -37,7 +37,7 @@ const ValidInvalidButtons = ({ id }: ValidInvalidButtonsProps) => {
 
   return (
     <View style={styles.container}>
-      {moderatorSelectedImage.imageUri != '' && <>
+      {roomState.gameInProgress && moderatorSelectedImage.imageUri != '' && <>
         <Pressable style={styles.valid} onPress={() => { handleSetImageStatus('valid') }}>
           <Text style={styles.text}>Valid</Text>
         </Pressable>

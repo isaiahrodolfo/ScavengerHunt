@@ -25,7 +25,7 @@ export default function PlayerGameScreen() {
   const { gameState, setGameState } = useGameState();
   // const { categoryImages, setCategoryImages } = useCategoryImages();
   const { setSelectedImage } = useSelectedImage();
-  const { roomState } = useRoomState();
+  const { roomState, setRoomState } = useRoomState();
   const { setPlayerProgress } = usePlayerProgress(); // Multiple player's progresses
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const { playerData, setPlayerData } = usePlayerData();
@@ -83,6 +83,7 @@ export default function PlayerGameScreen() {
   function handleEndGame() {
     endGame(roomState.roomCode)
       .then(() => {
+        setRoomState({ ...roomState, gameInProgress: false });
         // // Reset all game data
         // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
         // setSelectedPlayerData({});
@@ -108,7 +109,7 @@ export default function PlayerGameScreen() {
 
   return (
     <View style={styles.container}>
-      {roomState.isHost && <Pressable style={styles.endGameButton} onPress={handleEndGame}>
+      {roomState.isHost && roomState.gameInProgress && <Pressable style={styles.endGameButton} onPress={handleEndGame}>
         <Text style={styles.endGameText}>End Game For All</Text>
       </Pressable>}
       {/* <Text style={styles.timer}>{timer}</Text> */}
