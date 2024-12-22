@@ -116,7 +116,10 @@ function handleSetImageStatus(roomCode, id, location, status, callback, socket) 
 function handleDeclareWinner(roomCode, id, callback, socket) {
     // TODO: Add error handlers here
     // Reset game
-    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { gameData: {}, gameProgress: {}, hostOnPlayerPage: '' });
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { 
+        // gameData: {}, // Reset all game data and progress
+        // gameProgress: {},
+        hostOnPlayerPage: '' });
     // Get profile of winner
     types_1.rooms[roomCode].players[id];
     // TODO: Return the progress for all players
@@ -126,7 +129,10 @@ function handleDeclareWinner(roomCode, id, callback, socket) {
 function handleEndGame(roomCode, callback, socket) {
     // TODO: Add error handlers here
     // Reset game
-    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { gameData: {}, gameProgress: {}, hostOnPlayerPage: '' });
+    types_1.rooms[roomCode] = Object.assign(Object.assign({}, types_1.rooms[roomCode]), { 
+        // gameData: {}, // Reset all game data and progress
+        // gameProgress: {},
+        hostOnPlayerPage: '' });
     // TODO: Return the progress for all players
     socket.to(roomCode).emit('endGame');
     callback({ success: true });

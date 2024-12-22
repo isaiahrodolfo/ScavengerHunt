@@ -7,10 +7,10 @@ import { ImageAndLocation, PlayerProgressState, PlayerProgressValue } from '@/ty
 import { endGame, getPlayerData, navigateToPlayerList } from '@/handlers/gameHandlers'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 import { useRoomState } from '@/store/useRoomState'
-import { useSelectedImage } from '@/store/useModeratorSelectedImage'
 import { usePlayerProgress } from '@/store/usePlayerProgress'
 import { useGameGoals } from '@/store/useGameGoals'
 import { usePlayerProfiles } from '@/store/usePlayerProfiles'
+import { useModeratorSelectedImage } from '@/store/useModeratorSelectedImage'
 
 // This is how the backend is formatted
 const dummyUserCategoryImages = {
@@ -78,7 +78,7 @@ export default function PlayerList() {
   const { roomState } = useRoomState();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
-  const { selectedImage, setSelectedImage } = useSelectedImage();
+  const { moderatorSelectedImage, setModeratorSelectedImage } = useModeratorSelectedImage();
   const { setSelectedPlayerData } = useSelectedPlayerData();
   const [sortedPlayerProgress, setSortedPlayerProgress] = useState<PlayerProgressValue[]>();
 
@@ -142,8 +142,8 @@ export default function PlayerList() {
     useCallback(() => {
 
       // Reset player-based data
-      setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-      console.log('selectedImage', selectedImage); // testing
+      setModeratorSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+      console.log('moderatorSelectedImage', moderatorSelectedImage); // testing
       // setSelectedPlayerData(null);
 
       // Tell the server that the moderator is back at Player List Page
@@ -210,10 +210,6 @@ export default function PlayerList() {
   function handleEndGame() {
     endGame(roomState.roomCode)
       .then(() => {
-        // Reset all game data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        setSelectedPlayerData({});
-        setPlayerProgress({});
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: '' } // No declared winner

@@ -83,10 +83,10 @@ export default function PlayerGameScreen() {
   function handleEndGame() {
     endGame(roomState.roomCode)
       .then(() => {
-        // Reset all game data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        setSelectedPlayerData({});
-        setPlayerProgress({});
+        // // Reset all game data
+        // setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
+        // setSelectedPlayerData({});
+        // setPlayerProgress({});
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: '' } // No declared winner

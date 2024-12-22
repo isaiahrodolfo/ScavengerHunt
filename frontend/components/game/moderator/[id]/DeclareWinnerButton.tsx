@@ -5,7 +5,7 @@ import { useRoomState } from '@/store/useRoomState'
 import { declareWinner } from '@/handlers/gameHandlers'
 import { router } from 'expo-router'
 import { usePlayerProfiles } from '@/store/usePlayerProfiles'
-import { useSelectedImage } from '@/store/useModeratorSelectedImage';
+import { useModeratorSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress'
 import { useSelectedPlayerData } from '@/store/useSelectedPlayerData'
 
@@ -18,18 +18,10 @@ const DeclareWinnerButton = ({ id }: DeclareWinnerButtonProps) => {
 
   const { roomState } = useRoomState();
   const { playerProfiles } = usePlayerProfiles();
-  const { setPlayerProgress } = usePlayerProgress(); // Multiple players' progresses
-  const { setSelectedImage } = useSelectedImage();
-  const { setSelectedPlayerData } = useSelectedPlayerData();
-
 
   function handleDeclareWinner() {
     declareWinner(roomState.roomCode, id)
       .then(() => {
-        // Reset all game data
-        setSelectedImage({ imageUri: '', categoryIndex: undefined, imageIndex: undefined });
-        setSelectedPlayerData({});
-        setPlayerProgress({});
         router.replace({
           pathname: '/(screens)/game-over',
           params: { winnerName: playerProfiles[id].name }

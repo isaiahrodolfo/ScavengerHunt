@@ -8,7 +8,7 @@ import { useSelectedPlayerData } from '@/store/useSelectedPlayerData';
 import { PlayerData, Status } from '@/types/game';
 import ValidInvalidButtons from '@/components/game/moderator/[id]/ValidInvalidButtons';
 import ModeratorCategoryObject from '@/components/game/moderator/[id]/ModeratorCategoryObject';
-import { useSelectedImage } from '@/store/useModeratorSelectedImage';
+import { useModeratorSelectedImage } from '@/store/useModeratorSelectedImage';
 import { usePlayerProgress } from '@/store/usePlayerProgress';
 import { useGameGoals } from '@/store/useGameGoals';
 import { usePlayerProfiles } from '@/store/usePlayerProfiles';
@@ -22,7 +22,7 @@ const Player = () => {
 
   const { roomState } = useRoomState();
   const { selectedPlayerData, setSelectedPlayerData } = useSelectedPlayerData();
-  const { selectedImage, setSelectedImage } = useSelectedImage();
+  const { moderatorSelectedImage, setModeratorSelectedImage } = useModeratorSelectedImage();
   const { gameGoals } = useGameGoals();
   const { playerProfiles } = usePlayerProfiles();
   const { playerProgress } = usePlayerProgress(); // Multiple player's progresses
@@ -32,19 +32,19 @@ const Player = () => {
     socket.on('getPlayerData', (updatedPlayerData: PlayerData) => {
       setSelectedPlayerData(updatedPlayerData);
       console.log('updatedPlayerData', updatedPlayerData);
-      console.log('currentSelectedImage', selectedImage);
-      if (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex != 'undefined' && typeof selectedImage.imageIndex != 'undefined') {
-        const updatedSelectedImage = updatedPlayerData[selectedImage.categoryIndex!][selectedImage.imageIndex!].imageUri;
-        setSelectedImage({ ...selectedImage, imageUri: updatedSelectedImage });
+      console.log('currentModeratorSelectedImage', moderatorSelectedImage);
+      if (moderatorSelectedImage.imageUri != '' && typeof moderatorSelectedImage.categoryIndex != 'undefined' && typeof moderatorSelectedImage.imageIndex != 'undefined') {
+        const updatedModeratorSelectedImage = updatedPlayerData[moderatorSelectedImage.categoryIndex!][moderatorSelectedImage.imageIndex!].imageUri;
+        setModeratorSelectedImage({ ...moderatorSelectedImage, imageUri: updatedModeratorSelectedImage });
       }
-      console.log('selectedImage', selectedImage);
+      console.log('moderatorSelectedImage', moderatorSelectedImage);
     });
 
     // Clean up socket listeners
     return () => {
       socket.off('getPlayerData');
     };
-  }, [selectedImage])
+  }, [moderatorSelectedImage])
 
   // TODO: Make this global
   function calculateTotalImages(): number {
@@ -78,7 +78,7 @@ const Player = () => {
   };
 
   function imageIsSelected(): boolean {
-    return (selectedImage.imageUri != '' && typeof selectedImage.categoryIndex == 'number' && typeof selectedImage.imageIndex == 'number');
+    return (moderatorSelectedImage.imageUri != '' && typeof moderatorSelectedImage.categoryIndex == 'number' && typeof moderatorSelectedImage.imageIndex == 'number');
   }
 
   return (
@@ -95,7 +95,7 @@ const Player = () => {
       {/* Show selected image */}
       <View style={styles.image}>
         {imageIsSelected() ?
-          <Image style={styles.image} source={{ uri: selectedImage.imageUri }} />
+          <Image style={styles.image} source={{ uri: moderatorSelectedImage.imageUri }} />
           :
           <View style={[styles.image, { alignContent: 'center', justifyContent: 'center' }]}>
             <Text style={{ textAlign: 'center' }}>Select an image</Text>
